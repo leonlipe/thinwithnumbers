@@ -1,0 +1,24 @@
+{
+  "uuid": "053989a0-ad94-4386-a468-9e62275fe55d",
+  "shortName": "ThinWithNumbers",
+  "longName": "ThinWithNumbers",
+  "companyName": "RedLeon",
+  "versionCode": 1,
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["aplite", "basalt"],
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": [
+    {
+      "type": "png",
+      "name": "IMAGE_BACKGROUND",
+      "file": "images/background.png"
+    }]
+  }
+}
