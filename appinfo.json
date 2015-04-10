@@ -4,7 +4,7 @@
   "longName": "ThinWithNumbers",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.1",
+  "versionLabel": "1.2",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {
@@ -22,7 +22,7 @@
     },
     {
       "type": "png",
-      "name": "IMAGE_BACKGROUND_NO_MUNITE",
+      "name": "IMAGE_BACKGROUND_NO_MINUTE",
       "file": "images/background_no_minute.png"
     },
     {
@@ -39,7 +39,17 @@
       "file": "images/battery-charge.png",
       "name": "BATTERY_CHARGE",
       "type": "png"
-    }  
+    },
+    {
+      "type": "png",
+      "name": "IMAGE_BACKGROUND_MAIN_NUMBERS",
+      "file": "images/background_main_numbers.png"
+    },
+    {
+      "type": "png",
+      "name": "IMAGE_BACKGROUND_OLD_FONT",
+      "file": "images/background_old_font.png"
+    }   
     ]
   }
 }
