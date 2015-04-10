@@ -284,12 +284,14 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
 
   if (!battery_plugged) {
-    graphics_draw_bitmap_in_rect(ctx, icon_battery, GRect(0, 0, 24, 12));
-    graphics_context_set_stroke_color(ctx, GColorBlack);
-    graphics_context_set_fill_color(ctx, GColorWhite);
-    graphics_fill_rect(ctx, GRect(7, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
+    if (!battery_plugged && battery_level < 20){
+      graphics_draw_bitmap_in_rect(ctx, icon_battery, GRect(0, 0, 24, 12));
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+      graphics_context_set_fill_color(ctx, GColorWhite);
+      graphics_fill_rect(ctx, GRect(7, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
+    }
   } else {
-    graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(0, 0, 24, 12));
+    //graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(0, 0, 24, 12));
   }
 }
 

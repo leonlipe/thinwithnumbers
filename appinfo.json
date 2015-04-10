@@ -21,6 +21,16 @@
       "file": "images/background.png"
     },
     {
+      "type": "png",
+      "name": "IMAGE_BACKGROUND_NO_MUNITE",
+      "file": "images/background_no_minute.png"
+    },
+    {
+      "type": "png",
+      "name": "IMAGE_BACKGROUND_NO_MUNITE_AND_NUMBER",
+      "file": "images/background_no_min_num.png"
+    },
+    {
       "file": "images/battery_icon.png",
       "name": "BATTERY_ICON",
       "type": "png"
