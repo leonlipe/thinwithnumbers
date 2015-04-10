@@ -2,14 +2,20 @@
 
 static Window *s_main_window;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer;
-static Layer *s_canvas_layer, *s_bg_layer;
+static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 
 static BitmapLayer *s_bitmapbackground_layer;
 static GBitmap *s_background_bitmap;
+static GBitmap *icon_battery;
+static GBitmap *icon_battery_charge;
 
 static Time s_last_time, s_anim_time;
 static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3];
 static bool s_animating, s_connected;
+
+static uint8_t battery_level;
+static bool battery_plugged;
+
 
 static void bg_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
@@ -91,13 +97,21 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   GPoint center = grect_center_point(&bounds);
 
   Time now;
+  
   if(s_animating) {
     now = s_anim_time;
   } else {
     now = s_last_time;
   }
 
+  int now_plus_30_seconds = now.seconds + 30;
+  if (now_plus_30_seconds > 60){
+    now_plus_30_seconds -= 60;
+  }
+
+
   // Plot hand ends
+  GPoint second_hand_inverse = make_hand_point(now_plus_30_seconds, 60, HAND_LENGTH_SEC_INVERSE, center);
   GPoint second_hand_long = make_hand_point(now.seconds, 60, HAND_LENGTH_SEC, center);
   GPoint minute_hand_long = make_hand_point(now.minutes, 60, HAND_LENGTH_MIN, center);
   GPoint second_hand_short = make_hand_point(now.seconds, 60, (HAND_LENGTH_SEC - MARGIN + 2), center);
@@ -146,38 +160,43 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   if(config_get(PERSIST_KEY_SECOND_HAND)) {
     for(int y = 0; y < THICKNESS - 1; y++) {
       for(int x = 0; x < THICKNESS - 1; x++) {
-#ifdef PBL_COLOR
-        graphics_context_set_stroke_color(ctx, GColorDarkCandyAppleRed);
-#elif PBL_BW
-        graphics_context_set_stroke_color(ctx, GColorWhite);
-#endif
-#if defined(ANTIALIASING) && defined(PBL_COLOR)
-        graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y), GColorDarkCandyAppleRed);
-#else
-        graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y));
-#endif
+        #ifdef PBL_COLOR
+                graphics_context_set_stroke_color(ctx, GColorDarkCandyAppleRed);
+        #elif PBL_BW
+                graphics_context_set_stroke_color(ctx, GColorWhite);
+        #endif
+        #if defined(ANTIALIASING) && defined(PBL_COLOR)
+                graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y), GColorDarkCandyAppleRed);
+        #else
+                 graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_inverse.x + x, second_hand_inverse.y + y));
+                 graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y));
+        #endif
 
-        // Draw second hand tip
-#ifdef PBL_COLOR
-        graphics_context_set_stroke_color(ctx, GColorChromeYellow);
-#elif PBL_BW
-        graphics_context_set_stroke_color(ctx, GColorWhite);
-#endif
-#if defined(ANTIALIASING) && defined(PBL_COLOR)
-        graphics_draw_line_antialiased(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y), GColorChromeYellow);
-#else
-        graphics_draw_line(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y));
-#endif
+                // Draw second hand tip
+        #ifdef PBL_COLOR
+                graphics_context_set_stroke_color(ctx, GColorChromeYellow);
+        #elif PBL_BW
+                graphics_context_set_stroke_color(ctx, GColorWhite);
+        #endif
+        #if defined(ANTIALIASING) && defined(PBL_COLOR)
+                graphics_draw_line_antialiased(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y), GColorChromeYellow);
+        #else
+                graphics_draw_line(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y));
+        #endif
       }
     }
   }
 
   // Center
+  graphics_context_set_stroke_color(ctx, GColorBlack);
   graphics_context_set_fill_color(ctx, GColorWhite);
 #if defined(ANTIALIASING) && defined(PBL_COLOR)
   graphics_fill_circle_antialiased(ctx, GPoint(center.x + 1, center.y + 1), 4, GColorWhite);
 #else
-  graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 4);
+  graphics_draw_circle(ctx, GPoint(center.x + 1, center.y + 1), 4);
+  graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 3);
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 1);
 #endif
 
   // Draw black if disconnected
@@ -186,6 +205,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
     graphics_fill_circle_antialiased(ctx, GPoint(center.x + 1, center.y + 1), 3, GColorBlack);
 #else
     graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_draw_circle(ctx, GPoint(center.x + 1, center.y + 1), 4);
     graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 3);
 #endif
   }
@@ -243,11 +264,42 @@ static void bt_handler(bool connected) {
   layer_mark_dirty(s_canvas_layer);
 }
 
-static void batt_handler(BatteryChargeState state) {
+/*static void batt_handler(BatteryChargeState state) {
   layer_mark_dirty(s_canvas_layer);
+}
+*/
+void battery_state_handler(BatteryChargeState charge) {
+  battery_level = charge.charge_percent;
+  battery_plugged = charge.is_plugged;
+  layer_mark_dirty(s_battery_layer);
+ // if (!battery_plugged && battery_level < 20)
+ //   conserve_power(true);
+ // else
+ //   conserve_power(false);
+}
+
+
+void battery_layer_update_callback(Layer *layer, GContext *ctx) {
+
+  graphics_context_set_compositing_mode(ctx, GCompOpAssign);
+
+  if (!battery_plugged) {
+    graphics_draw_bitmap_in_rect(ctx, icon_battery, GRect(0, 0, 24, 12));
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+    graphics_context_set_fill_color(ctx, GColorWhite);
+    graphics_fill_rect(ctx, GRect(7, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
+  } else {
+    graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(0, 0, 24, 12));
+  }
 }
 
 static void window_load(Window *window) {
+
+  icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
+  icon_battery_charge = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGE);
+  
+
+
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
@@ -277,8 +329,6 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_day_in_month_layer, GColorClear);
 
 
-// Numerales
-
   
 
   s_month_layer = text_layer_create(GRect(50, 95, 44, 40));
@@ -295,6 +345,16 @@ static void window_load(Window *window) {
     layer_add_child(window_layer, text_layer_get_layer(s_month_layer));
   }
 
+
+  //Layer de bateria
+  BatteryChargeState initial = battery_state_service_peek();
+  battery_level = initial.charge_percent;
+  battery_plugged = initial.is_plugged;
+  s_battery_layer = layer_create(GRect(63,20,24,12));
+  layer_set_update_proc(s_battery_layer, &battery_layer_update_callback);
+  layer_add_child(window_layer, s_battery_layer);
+
+
   s_canvas_layer = layer_create(bounds);
   layer_set_update_proc(s_canvas_layer, draw_proc);
   layer_add_child(window_layer, s_canvas_layer);
@@ -303,6 +363,7 @@ static void window_load(Window *window) {
 static void window_unload(Window *window) {
   layer_destroy(s_canvas_layer);
   layer_destroy(s_bg_layer);
+  layer_destroy(s_battery_layer);
 
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);
@@ -318,6 +379,7 @@ void main_window_push() {
   } else {
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
   }
+  battery_state_service_subscribe (&battery_state_handler);
 
   s_main_window = window_create();
   window_set_background_color(s_main_window, GColorBlack);
@@ -328,7 +390,7 @@ void main_window_push() {
   window_stack_push(s_main_window, true);
 
   // TODO make charging pref
-  battery_state_service_subscribe(batt_handler);
+  //battery_state_service_subscribe(batt_handler);
 
   time_t t = time(NULL);
   struct tm *tm_now = localtime(&t);

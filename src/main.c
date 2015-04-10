@@ -4,6 +4,7 @@
 #include "config.h"
 
 int main() {
+  setlocale(LC_TIME, "es_ES");
   comm_init();
   config_init();
 

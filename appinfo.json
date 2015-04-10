@@ -19,6 +19,17 @@
       "type": "png",
       "name": "IMAGE_BACKGROUND",
       "file": "images/background.png"
-    }]
+    },
+    {
+      "file": "images/battery_icon.png",
+      "name": "BATTERY_ICON",
+      "type": "png"
+    },
+    {
+      "file": "images/battery-charge.png",
+      "name": "BATTERY_CHARGE",
+      "type": "png"
+    }  
+    ]
   }
 }
