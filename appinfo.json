@@ -4,7 +4,7 @@
   "longName": "ThinWithNumbers",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.2",
+  "versionLabel": "1.3",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {
@@ -47,8 +47,18 @@
     },
     {
       "type": "png",
+      "name": "IMAGE_BACKGROUND_MAIN_NUMBERS_DATE",
+      "file": "images/background_main_numbers_date.png"
+    },
+    {
+      "type": "png",
       "name": "IMAGE_BACKGROUND_OLD_FONT",
       "file": "images/background_old_font.png"
+    },
+    {
+        "type": "png",
+        "name": "BLUETOOTH_DISCONNECTED",
+        "file": "images/Icon Bluetooth disconnected.png"
     }   
     ]
   }
