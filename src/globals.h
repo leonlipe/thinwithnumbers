@@ -24,6 +24,12 @@
 #define PERSIST_KEY_SECOND_HAND 4
 #define NUM_SETTINGS            5
 
+
+
+
+#define GRECT_FULL_WINDOW GRect(0,0,144,168)
+
+				
 typedef struct {
   int days;
   int hours;

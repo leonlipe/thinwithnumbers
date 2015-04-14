@@ -1,4 +1,27 @@
 #include "main_window.h"
+/*const GPathInfo MINUTE_HAND_PATH_POINTS = { 5, (GPoint[] ) { 
+  { 0, 0 },
+  { -5, -50 }, 
+  { 0, -70 }, 
+  { 5, -50 }, 
+  { 0, 0 },
+} };
+*/
+
+
+const GPathInfo MINUTE_HAND_PATH_POINTS = { 4, (GPoint[] ) { 
+  { -2, 0 },
+  { 4, 0 }, 
+  { 4, -70 }, 
+  { -2, -70 }, 
+} };
+
+const GPathInfo HOUR_HAND_PATH_POINTS = { 4, (GPoint[] ) { 
+  { -2, 0 },
+  { 4, 0 }, 
+  { 4, -50 }, 
+  { -2, -50 }, 
+} };
 
 static Window *s_main_window;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer;
@@ -10,12 +33,15 @@ static GBitmap *icon_battery;
 static GBitmap *icon_battery_charge;
 static GBitmap *icon_bt_disconected;
 
+static GPath *minute_hand_path, *hour_hand_path;
+
 static Time s_last_time, s_anim_time;
 static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3];
 static bool s_animating, s_connected;
 
 static uint8_t battery_level;
 static bool battery_plugged;
+
 
 
 static void bg_update_proc(Layer *layer, GContext *ctx) {
@@ -111,6 +137,11 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   }
 
 
+
+ 
+
+
+
   // Plot hand ends
   GPoint second_hand_inverse = make_hand_point(now_plus_30_seconds, 60, HAND_LENGTH_SEC_INVERSE, center);
   GPoint second_hand_inverse_circle = make_hand_point(now_plus_30_seconds, 60, HAND_LENGTH_SEC_INVERSE+4, center);
@@ -149,11 +180,29 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       graphics_draw_line_antialiased(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y), GColorDarkGray);
       graphics_draw_line_antialiased(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y), GColorDarkGray);
 #else
-      graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
+      /*graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
       graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_line(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
       graphics_draw_line(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
+      */
+       gpath_rotate_to(hour_hand_path, hour_angle);
+      graphics_context_set_fill_color(ctx, GColorWhite);
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+      gpath_draw_filled(ctx, hour_hand_path);
+      gpath_draw_outline(ctx, hour_hand_path);
+
+      // Draw minute hand with path
+      gpath_rotate_to(minute_hand_path, minute_angle);
+      graphics_context_set_fill_color(ctx, GColorWhite);
+      graphics_context_set_stroke_color(ctx, GColorBlack);
+      gpath_draw_filled(ctx, minute_hand_path);
+      gpath_draw_outline(ctx, minute_hand_path);
+
+     
+
+      
+      // End draw hand
 #endif
     }
   }
@@ -226,7 +275,10 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
   }
   */
+ // gpath_rotate_to(minute_hand_path, (TRIG_MAX_ANGLE / 360) * angle);
+
  
+
 }
 
 static void anim_handler(void *context) {
@@ -259,6 +311,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   s_last_time.minutes = tick_time->tm_min;
   s_last_time.seconds = tick_time->tm_sec;
 
+  
   snprintf(s_day_in_month_buffer, sizeof(s_day_in_month_buffer), "%d", s_last_time.days);
   strftime(s_weekday_buffer, sizeof(s_weekday_buffer), "%a", tick_time);
   strftime(s_month_buffer, sizeof(s_month_buffer), "%b", tick_time);
@@ -325,6 +378,10 @@ static void window_load(Window *window) {
   icon_battery_charge = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGE);
   icon_bt_disconected = gbitmap_create_with_resource(RESOURCE_ID_BLUETOOTH_DISCONNECTED);
 
+  minute_hand_path = gpath_create(&MINUTE_HAND_PATH_POINTS);
+  gpath_move_to(minute_hand_path, grect_center_point(&GRECT_FULL_WINDOW));
+  hour_hand_path = gpath_create(&HOUR_HAND_PATH_POINTS);
+  gpath_move_to(hour_hand_path, grect_center_point(&GRECT_FULL_WINDOW));
 
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
@@ -398,6 +455,8 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);
   text_layer_destroy(s_month_layer);
+  gpath_destroy(minute_hand_path);
+  gpath_destroy(hour_hand_path);
 
   // Self destroying
   window_destroy(s_main_window);
