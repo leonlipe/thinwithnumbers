@@ -31,6 +31,11 @@
       "file": "images/background_no_min_num.png"
     },
     {
+      "type": "png",
+      "name": "IMAGE_BACKGROUND_ALL_NUMBERS_DATE",
+      "file": "images/background_all_numbers_date.png"
+    },
+    {
       "file": "images/battery_icon.png",
       "name": "BATTERY_ICON",
       "type": "png"

@@ -395,13 +395,13 @@ static void window_load(Window *window) {
   layer_set_update_proc(s_bg_layer, bg_update_proc);
   layer_add_child(window_layer, s_bg_layer);
 
-  s_weekday_layer = text_layer_create(GRect(94, 64, 44, 40));
+  s_weekday_layer = text_layer_create(GRect(94, 59, 44, 40));
   text_layer_set_text_alignment(s_weekday_layer, GTextAlignmentCenter);
   text_layer_set_font(s_weekday_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_weekday_layer, GColorWhite);
   text_layer_set_background_color(s_weekday_layer, GColorClear);
 
-  s_day_in_month_layer = text_layer_create(GRect(94, 74, 44, 40));
+  s_day_in_month_layer = text_layer_create(GRect(94, 69, 44, 40));
   text_layer_set_text_alignment(s_day_in_month_layer, GTextAlignmentCenter);
   text_layer_set_font(s_day_in_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
 #ifdef PBL_COLOR
@@ -414,7 +414,7 @@ static void window_load(Window *window) {
 
   
 
-  s_month_layer = text_layer_create(GRect(94, 98, 44, 40));
+  s_month_layer = text_layer_create(GRect(94, 93, 44, 40));
   text_layer_set_text_alignment(s_month_layer, GTextAlignmentCenter);
   text_layer_set_font(s_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_month_layer, GColorWhite);
