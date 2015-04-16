@@ -7,7 +7,8 @@
   { 0, 0 },
 } };
 */
-
+#define KEY_TEMPERATURE 0
+#define KEY_CONDITIONS 1
 
 /*
 Flat Minutes
@@ -64,7 +65,7 @@ const GPathInfo HOUR_HAND_PATH_INNER_POINTS = { 5, (GPoint[] ) {
 } };
 
 static Window *s_main_window;
-static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer;
+static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 
 static BitmapLayer *s_bitmapbackground_layer;
@@ -374,6 +375,19 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
 
   // Finally
   layer_mark_dirty(s_canvas_layer);
+
+    // Get weather update every 30 minutes
+  if(tick_time->tm_min % 60 == 0) {
+    // Begin dictionary
+    DictionaryIterator *iter;
+    app_message_outbox_begin(&iter);
+
+    // Add a key-value pair
+    dict_write_uint8(iter, 0, 0);
+
+    // Send the message!
+    app_message_outbox_send();
+  }
 }
 
 static void bt_handler(bool connected) {
@@ -505,6 +519,15 @@ static void window_load(Window *window) {
   layer_set_update_proc(s_battery_layer, &battery_layer_update_callback);
   layer_add_child(window_layer, s_battery_layer);
 
+  // Layer del clima
+  s_weather_layer = text_layer_create(GRect(0, 90, 144, 25));
+  text_layer_set_background_color(s_weather_layer, GColorClear);
+  text_layer_set_text_color(s_weather_layer, GColorWhite);
+  text_layer_set_font(s_weather_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
+  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
+  text_layer_set_text(s_weather_layer, "--");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
+
 
   s_canvas_layer = layer_create(bounds);
   layer_set_update_proc(s_canvas_layer, draw_proc);
@@ -523,6 +546,8 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);
   text_layer_destroy(s_month_layer);
+  text_layer_destroy(s_weather_layer);
+
   gpath_destroy(minute_hand_path);
   gpath_destroy(minute_hand_path_inner);
   gpath_destroy(hour_hand_path_inner);
@@ -561,4 +586,71 @@ void main_window_push() {
     bluetooth_connection_service_subscribe(bt_handler);
     bt_handler(bluetooth_connection_service_peek());
   }
+}
+
+static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
+
+   // Store incoming information
+  static char temperature_buffer[8];
+  static char conditions_buffer[32];
+  static char weather_layer_buffer[32];
+ // Read first item
+  Tuple *t = dict_read_first(iterator);
+
+  // For all items
+  while(t != NULL) {
+    // Which key was received?
+    switch(t->key) {
+    case KEY_TEMPERATURE:
+            snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
+
+      break;
+    case KEY_CONDITIONS:
+              snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
+
+      break;
+    default:
+      APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
+      break;
+    }
+
+    // Look for next item
+    t = dict_read_next(iterator);
+  }
+
+ snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s %s", temperature_buffer, conditions_buffer);
+  text_layer_set_text(s_weather_layer, weather_layer_buffer);
+ /* Tuple *t = dict_read_first(iter);
+  while(t) {
+    persist_write_bool(t->key, strcmp(t->value->cstring, "true") == 0 ? true : false);
+    t = dict_read_next(iter);
+  }
+
+  // Refresh live store
+  config_init();
+  vibes_short_pulse();
+  */
+}
+
+static void inbox_dropped_callback(AppMessageResult reason, void *context) {
+  APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
+}
+
+static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
+  APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
+}
+
+static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
+  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
+}
+
+
+void comm_init() {
+  app_message_register_inbox_received(inbox_received_callback);
+  app_message_register_inbox_dropped(inbox_dropped_callback);
+  app_message_register_outbox_failed(outbox_failed_callback);
+  app_message_register_outbox_sent(outbox_sent_callback);
+
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+
 }

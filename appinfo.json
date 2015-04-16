@@ -11,8 +11,12 @@
     "watchface": true
   },
   "appKeys": {
-    "dummy": 0
+    "dummy": 0,
+    "KEY_TEMPERATURE": 0,
+    "KEY_CONDITIONS": 1
   },
+  "capabilities": 
+  [ "location" ],
   "resources": {
     "media": [
     {

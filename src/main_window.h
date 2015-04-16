@@ -8,3 +8,5 @@
 #endif
 
 void main_window_push();
+void comm_init();
+
