@@ -24,6 +24,7 @@
 #define PERSIST_KEY_SECOND_HAND 4
 #define NUM_SETTINGS            5
 
+#define HAND_TYPE            0
 
 
 
