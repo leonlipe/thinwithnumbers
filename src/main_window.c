@@ -9,7 +9,10 @@
 */
 #define KEY_TEMPERATURE 0
 #define KEY_CONDITIONS 1
-
+#define KEY_HUMIDITY 2
+#define KEY_WIND 3
+#define KEY_SUNRISE 4
+#define KEY_SUNSET 5
 /*
 Flat Minutes
 */
@@ -520,10 +523,10 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, s_battery_layer);
 
   // Layer del clima
-  s_weather_layer = text_layer_create(GRect(0, 90, 144, 25));
+  s_weather_layer = text_layer_create(GRect(0, 90, 144, 50));
   text_layer_set_background_color(s_weather_layer, GColorClear);
   text_layer_set_text_color(s_weather_layer, GColorWhite);
-  text_layer_set_font(s_weather_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
+  text_layer_set_font(s_weather_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
   text_layer_set_text(s_weather_layer, "--");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
@@ -593,7 +596,11 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
    // Store incoming information
   static char temperature_buffer[8];
   static char conditions_buffer[32];
-  static char weather_layer_buffer[32];
+  static char humidity_buffer[32];
+  static char wind_speed_buffer[32];
+  static char sunrise_buffer[6];
+  static char sunset_buffer[6];
+  static char weather_layer_buffer[64];
  // Read first item
   Tuple *t = dict_read_first(iterator);
 
@@ -609,6 +616,22 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
               snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
 
       break;
+     case KEY_HUMIDITY:
+              snprintf(humidity_buffer, sizeof(humidity_buffer), "%d %%", (int)t->value->int32);
+
+      break;
+     case KEY_WIND:
+              snprintf(wind_speed_buffer, sizeof(wind_speed_buffer), "%s kph", t->value->cstring);
+
+      break; 
+       case KEY_SUNRISE:
+              snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s", t->value->cstring);
+
+      break;   
+       case KEY_SUNSET:
+              snprintf(sunset_buffer, sizeof(sunset_buffer), "%s", t->value->cstring);
+
+      break;      
     default:
       APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
       break;
@@ -618,7 +641,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
 
- snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s %s", temperature_buffer, conditions_buffer);
+ snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s %s\n%s %s\n%s - %s", temperature_buffer, conditions_buffer,humidity_buffer,wind_speed_buffer,sunrise_buffer, sunset_buffer);
   text_layer_set_text(s_weather_layer, weather_layer_buffer);
  /* Tuple *t = dict_read_first(iter);
   while(t) {

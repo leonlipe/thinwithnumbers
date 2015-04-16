@@ -13,7 +13,12 @@
   "appKeys": {
     "dummy": 0,
     "KEY_TEMPERATURE": 0,
-    "KEY_CONDITIONS": 1
+    "KEY_CONDITIONS": 1,
+    "KEY_HUMIDITY": 2,
+    "KEY_WIND": 3,
+    "KEY_SUNRISE": 4,
+    "KEY_SUNSET": 5
+
   },
   "capabilities": 
   [ "location" ],

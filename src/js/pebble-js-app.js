@@ -27,10 +27,21 @@ function locationSuccess(pos) {
       var conditions = json.weather[0].main;      
       console.log('Conditions are ' + conditions);
 
+      console.log('Humidity ' +  json.main.humidity);
+     // console.log('Wind ' +  (json.wind.speed / 0.62137));
+
+     var wind_speed = Math.floor((json.wind.speed / 0.62137) * 100) / 100  ;
+     var sunrise = new Date(json.sys.sunrise*1000);
+     var sunset = new Date(json.sys.sunset*1000);
+
       // Assemble dictionary using our keys
 		var dictionary = {
 		  'KEY_TEMPERATURE': temperature,
-		  'KEY_CONDITIONS': conditions
+		  'KEY_CONDITIONS': conditions,
+      'KEY_HUMIDITY': json.main.humidity,
+      'KEY_WIND': wind_speed.toString(),
+      'KEY_SUNRISE': sunrise.getHours()+":"+sunrise.getMinutes(),
+      'KEY_SUNSET': sunset.getHours()+":"+sunset.getMinutes()
 		};
 
 		// Send to Pebble
