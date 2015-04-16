@@ -4,7 +4,7 @@
   "longName": "ThinWithNumbers",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.4",
+  "versionLabel": "1.6",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {

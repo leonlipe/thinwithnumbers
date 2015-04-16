@@ -11,21 +11,21 @@
 
 /*
 Flat Minutes
-
- const GPathInfo MINUTE_HAND_PATH_POINTS = { 5, (GPoint[] ) { 
+*/
+ const GPathInfo MINUTE_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
   { -3, 0 },
   { 3, 0 }, 
   { 3, -70 }, 
   { -3, -70 }, 
 } };
 
-const GPathInfo HOUR_HAND_PATH_POINTS = { 5, (GPoint[] ) { 
+const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
   { -3, 0 },
   { 3, 0 }, 
   { 3, -50 }, 
   { -3, -50 }, 
 } };
-*/
+
 
 
 
@@ -232,10 +232,12 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       gpath_draw_filled(ctx, hour_hand_path);
       gpath_draw_outline(ctx, hour_hand_path);
 
+
+      if (HAND_TYPE == 1){
        gpath_rotate_to(hour_hand_path_inner, hour_angle);
       graphics_context_set_fill_color(ctx, GColorBlack);
       gpath_draw_filled(ctx, hour_hand_path_inner);
-
+      }
 
       // Draw minute hand with path
       gpath_rotate_to(minute_hand_path, minute_angle);
@@ -244,10 +246,11 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       gpath_draw_filled(ctx, minute_hand_path);
       gpath_draw_outline(ctx, minute_hand_path);
 
+       if (HAND_TYPE == 1){
       gpath_rotate_to(minute_hand_path_inner, minute_angle);
       graphics_context_set_fill_color(ctx, GColorBlack);
       gpath_draw_filled(ctx, minute_hand_path_inner);
-
+      }
      
 
       
@@ -427,13 +430,22 @@ static void window_load(Window *window) {
   icon_battery_charge = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGE);
   icon_bt_disconected = gbitmap_create_with_resource(RESOURCE_ID_BLUETOOTH_DISCONNECTED);
 
-  minute_hand_path = gpath_create(&MINUTE_HAND_PATH_POINTS);
+  if (HAND_TYPE == 1){
+    minute_hand_path = gpath_create(&MINUTE_HAND_PATH_POINTS);
+  }else{
+    minute_hand_path = gpath_create(&MINUTE_HAND_PATH_POINTS_FLAT);
+  }
   gpath_move_to(minute_hand_path, grect_center_point(&GRECT_FULL_WINDOW));
 
   minute_hand_path_inner = gpath_create(&MINUTE_HAND_PATH_INNER_POINTS);
   gpath_move_to(minute_hand_path_inner, grect_center_point(&GRECT_FULL_WINDOW));
 
-  hour_hand_path = gpath_create(&HOUR_HAND_PATH_POINTS);
+  if (HAND_TYPE == 1){
+    hour_hand_path = gpath_create(&HOUR_HAND_PATH_POINTS);
+  }else{
+    hour_hand_path = gpath_create(&HOUR_HAND_PATH_POINTS_FLAT);
+  }
+
   gpath_move_to(hour_hand_path, grect_center_point(&GRECT_FULL_WINDOW));
 
   hour_hand_path_inner = gpath_create(&HOUR_HAND_PATH_INNER_POINTS);
