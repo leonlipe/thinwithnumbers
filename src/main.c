@@ -1,6 +1,5 @@
 #include "globals.h"
 #include "main_window.h"
-#include "comm.h"
 #include "config.h"
 
 int main() {

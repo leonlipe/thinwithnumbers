@@ -45,8 +45,13 @@
       "file": "images/background_all_numbers_date.png"
     },
     {
-      "file": "images/battery_icon.png",
+      "file": "images/battery-icon.png",
       "name": "BATTERY_ICON",
+      "type": "png"
+    },
+    {
+      "file": "images/battery-icon-low.png",
+      "name": "BATTERY_ICON_LOW",
       "type": "png"
     },
     {
@@ -72,7 +77,7 @@
     {
         "type": "png",
         "name": "BLUETOOTH_DISCONNECTED",
-        "file": "images/Icon Bluetooth disconnected.png"
+        "file": "images/bluetooth-disconected.png"
     }   
     ]
   }
