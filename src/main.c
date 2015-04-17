@@ -6,6 +6,7 @@ int main() {
   setlocale(LC_TIME, "es_ES");
   comm_init();
   config_init();
+  main_init();
 
   main_window_push();
   

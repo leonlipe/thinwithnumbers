@@ -80,6 +80,7 @@ static GBitmap *icon_bt_disconected;
 static GPath *minute_hand_path, *minute_hand_path_inner, *hour_hand_path, *hour_hand_path_inner;
 
 static Time s_last_time, s_anim_time;
+static uint8_t s_last_unit_weather_change;
 static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3];
 static bool s_animating, s_connected;
 
@@ -275,12 +276,9 @@ static void draw_proc(Layer *layer, GContext *ctx) {
         #if defined(ANTIALIASING) && defined(PBL_COLOR)
                 graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y), GColorDarkCandyAppleRed);
         #else
-                 graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
- 
                  graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_inverse.x + x, second_hand_inverse.y + y));
                  graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y));
         #endif
-
                 // Draw second hand tip
         #ifdef PBL_COLOR
                 graphics_context_set_stroke_color(ctx, GColorChromeYellow);
@@ -295,6 +293,13 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       }
     }
   }
+  // Draw circle for seconds hand
+ graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
+ graphics_context_set_stroke_color(ctx, GColorBlack);
+ graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 3);
+ graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 5);
+ graphics_context_set_stroke_color(ctx, GColorWhite);
+
 
   // Center
   graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -367,6 +372,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   s_last_time.minutes = tick_time->tm_min;
   s_last_time.seconds = tick_time->tm_sec;
 
+
   
   snprintf(s_day_in_month_buffer, sizeof(s_day_in_month_buffer), "%d", s_last_time.days);
   strftime(s_weekday_buffer, sizeof(s_weekday_buffer), "%a", tick_time);
@@ -380,7 +386,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   layer_mark_dirty(s_canvas_layer);
 
     // Get weather update every 30 minutes
-  if(tick_time->tm_min % 60 == 0) {
+   //  APP_LOG(APP_LOG_LEVEL_INFO, "Before:");
+  if(tick_time->tm_hour != s_last_unit_weather_change) {
+    // APP_LOG(APP_LOG_LEVEL_INFO, "Send:");
+    s_last_unit_weather_change = tick_time->tm_hour;
     // Begin dictionary
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
@@ -682,4 +691,8 @@ void comm_init() {
 
   app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
 
+}
+
+void main_init(){
+  s_last_unit_weather_change = 0;
 }

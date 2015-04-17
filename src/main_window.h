@@ -9,4 +9,5 @@
 
 void main_window_push();
 void comm_init();
+void main_init();
 
