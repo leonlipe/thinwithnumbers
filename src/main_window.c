@@ -17,17 +17,17 @@
 Flat Minutes
 */
  const GPathInfo MINUTE_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
-  { -3, 0 },
-  { 3, 0 }, 
-  { 3, -70 }, 
-  { -3, -70 }, 
+  { MINUTE_HAND_TICKNESS*-1, 0 },
+  { MINUTE_HAND_TICKNESS, 0 }, 
+  { MINUTE_HAND_TICKNESS, -70 }, 
+  { MINUTE_HAND_TICKNESS*-1, -70 }, 
 } };
 
 const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
-  { -3, 0 },
-  { 3, 0 }, 
-  { 3, -50 }, 
-  { -3, -50 }, 
+  { HOUR_HAND_TICKNESS*-1, 0 },
+  { HOUR_HAND_TICKNESS, 0 }, 
+  { HOUR_HAND_TICKNESS, -50 }, 
+  { HOUR_HAND_TICKNESS*-1, -50 }, 
 } };
 
 
