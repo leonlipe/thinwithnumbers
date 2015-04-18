@@ -99,9 +99,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   int batt_hours = (int)(12.0F * ((float)perc / 100.0F)) + 1;
   
 
-  /*for(int h = 0; h < 12; h++) {
-    for(int y = 0; y < THICKNESSMARKS; y++) {
-      for(int x = 0; x < THICKNESSMARKS; x++) {
+  for(int h = 0; h < 12; h++) {   
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
           //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
@@ -135,7 +133,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
                       graphics_context_set_stroke_color(ctx, GColorWhite);
                     } else {
                       // Empty segment
-                      graphics_context_set_stroke_color(ctx, GColorBlack);
+                      graphics_context_set_stroke_color(ctx, GColorWhite);
                     }
                   } else {
                     // No battery indicator
@@ -145,16 +143,19 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
           #if defined(ANTIALIASING) && defined(PBL_COLOR)
                   graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(point.x + x, point.y + y), GColorWhite);
           #else
-                  graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(point.x + x, point.y + y));
+            for(int y = 0; y < THICKNESSMARKS; y++) {
+              for(int x = 0; x < THICKNESSMARKS; x++) {
+                graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(point.x + x, point.y + y));
+              }
+            }
           #endif
-      }
-    }
+    
   }
 
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, GRect(MARGIN, MARGIN, bounds.size.w - (2 * MARGIN), bounds.size.h - (2 * MARGIN)), 0, GCornerNone);
-  */
+  graphics_fill_rect(ctx, GRect(MARGIN, MARGIN, bounds.size.w - (MARGIN+1), bounds.size.h - (MARGIN+1)), 0, GCornerNone);
+  
 }
 
 static GPoint make_hand_point(int quantity, int intervals, int len, GPoint center) {
@@ -487,8 +488,8 @@ static void window_load(Window *window) {
 
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS_DATE);
   s_bitmapbackground_layer = bitmap_layer_create(GRect(0,0,144,168));
-  bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
-  layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
+  //bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
+  //layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
 
   s_bg_layer = layer_create(bounds);
   layer_set_update_proc(s_bg_layer, bg_update_proc);
