@@ -49,6 +49,11 @@
       "name": "BATTERY_ICON",
       "type": "png"
     },
+     {
+      "file": "images/battery-blank.png",
+      "name": "BATTERY_ICON_BLANK",
+      "type": "png"
+    },
     {
       "file": "images/battery-icon-low.png",
       "name": "BATTERY_ICON_LOW",

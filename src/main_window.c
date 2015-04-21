@@ -73,7 +73,7 @@ static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 
 static BitmapLayer *s_bitmapbackground_layer;
 static GBitmap *s_background_bitmap;
-static GBitmap *icon_battery, *icon_battery_low;
+static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank;
 static GBitmap *icon_battery_charge;
 static GBitmap *icon_bt_disconected;
 
@@ -354,12 +354,12 @@ static void draw_proc(Layer *layer, GContext *ctx) {
     }
   }
   // Draw circle for seconds hand
- graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
+/* graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
  graphics_context_set_stroke_color(ctx, GColorBlack);
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 3);
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 5);
  graphics_context_set_stroke_color(ctx, GColorWhite);
-
+*/
 
   // Center
   graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -371,12 +371,12 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   //graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 3);
   //graphics_context_set_fill_color(ctx, GColorBlack);
   //graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 1);
-    graphics_context_set_fill_color(ctx, GColorBlack);
-    graphics_context_set_stroke_color(ctx, GColorWhite);
+   // graphics_context_set_fill_color(ctx, GColorBlack);
+   // graphics_context_set_stroke_color(ctx, GColorWhite);
     graphics_draw_circle(ctx, GPoint(center.x + 1, center.y + 1), 4);
     graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 3);
-    graphics_context_set_fill_color(ctx, GColorWhite);
-    graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 1);
+    //graphics_context_set_fill_color(ctx, GColorWhite);
+   // graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 1);
   
 #endif
 /*
@@ -491,24 +491,25 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
 
-  if (!battery_plugged) {
+    if (!battery_plugged) {
     if (!battery_plugged){
       if (battery_level < 20){
-        graphics_draw_bitmap_in_rect(ctx, icon_battery_low, GRect(105, 0, 24, 12));
+        graphics_draw_bitmap_in_rect(ctx, icon_battery_low, GRect(61, 0, 24, 12));
+        graphics_context_set_stroke_color(ctx, GColorBlack);
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        graphics_fill_rect(ctx, GRect(68, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
       }else{
-        graphics_draw_bitmap_in_rect(ctx, icon_battery, GRect(105, 0, 24, 12));
+        //graphics_draw_bitmap_in_rect(ctx, icon_battery_blank, GRect(61, 0, 24, 12));
       }
-      graphics_context_set_stroke_color(ctx, GColorBlack);
-      graphics_context_set_fill_color(ctx, GColorWhite);
-      graphics_fill_rect(ctx, GRect(112, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
+     
     }
   } else {
-    graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(105, 0, 24, 12));
+    graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(61, 0, 24, 12));
   }
 
 
    if(config_get(PERSIST_KEY_BT) && !s_connected) {
-      graphics_draw_bitmap_in_rect(ctx, icon_bt_disconected, GRect(22, 0, 24, 12));    
+      graphics_draw_bitmap_in_rect(ctx, icon_bt_disconected, GRect(42, 0, 24, 12));    
    }
 
 
@@ -518,6 +519,7 @@ static void window_load(Window *window) {
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
+  icon_battery_blank = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_BLANK);
   icon_battery_charge = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGE);
   icon_bt_disconected = gbitmap_create_with_resource(RESOURCE_ID_BLUETOOTH_DISCONNECTED);
 
@@ -592,7 +594,7 @@ static void window_load(Window *window) {
   BatteryChargeState initial = battery_state_service_peek();
   battery_level = initial.charge_percent;
   battery_plugged = initial.is_plugged;
-  s_battery_layer = layer_create(GRect(0,20,144,12));
+  s_battery_layer = layer_create(GRect(0,60,144,12));
   layer_set_update_proc(s_battery_layer, &battery_layer_update_callback);
   layer_add_child(window_layer, s_battery_layer);
 
@@ -615,6 +617,7 @@ static void window_unload(Window *window) {
   gbitmap_destroy(s_background_bitmap);
   gbitmap_destroy(icon_battery);
   gbitmap_destroy(icon_battery_low);
+  gbitmap_destroy(icon_battery_blank);
   gbitmap_destroy(icon_battery_charge);
   gbitmap_destroy(icon_bt_disconected);
   layer_destroy(s_canvas_layer);
