@@ -5,7 +5,7 @@
 // #define ANTIALIASING
 
 // Layout
-#define MARGIN 7
+#define MARGIN 9
 #define THICKNESSMARKS 3
 #define THICKNESS 3
 #define ANIM_DELTA 34

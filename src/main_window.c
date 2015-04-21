@@ -68,7 +68,7 @@ const GPathInfo HOUR_HAND_PATH_INNER_POINTS = { 5, (GPoint[] ) {
 } };
 
 static Window *s_main_window;
-static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_12_layer, *s_6_layer, *s_9_layer;
+static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_12_layer, *s_6_layer, *s_9_layer, *s_1_layer, *s_2_layer;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 
 static BitmapLayer *s_bitmapbackground_layer;
@@ -150,7 +150,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
 
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, GRect(2, 2, bounds.size.w - (2*2), bounds.size.h - (2*2)), 0, GCornerNone);
+  graphics_fill_rect(ctx, GRect(3, 3, bounds.size.w - (6), bounds.size.h - (6)), 0, GCornerNone);
   
 
 
@@ -615,6 +615,22 @@ static void window_load(Window *window) {
   text_layer_set_text(s_12_layer, "12");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_12_layer));
 
+ /* s_1_layer = text_layer_create(GRect(0, 5, 144, 30));
+  text_layer_set_background_color(s_1_layer, GColorClear);
+  text_layer_set_text_color(s_1_layer, GColorWhite);
+  text_layer_set_font(s_1_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_text_alignment(s_1_layer, GTextAlignmentCenter);
+  text_layer_set_text(s_1_layer, "11                  1");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_1_layer));
+
+  s_2_layer = text_layer_create(GRect(0, 35, 144, 30));
+  text_layer_set_background_color(s_2_layer, GColorClear);
+  text_layer_set_text_color(s_2_layer, GColorWhite);
+  text_layer_set_font(s_2_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+  text_layer_set_text_alignment(s_2_layer, GTextAlignmentCenter);
+  text_layer_set_text(s_2_layer, "10                      2");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_2_layer));
+*/
   s_6_layer = text_layer_create(GRect(43, 126, 60, 30));
   text_layer_set_background_color(s_6_layer, GColorClear);
   text_layer_set_text_color(s_6_layer, GColorWhite);
@@ -623,7 +639,7 @@ static void window_load(Window *window) {
   text_layer_set_text(s_6_layer, "6");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_6_layer));
 
-  s_9_layer = text_layer_create(GRect(10, 66, 60, 30));
+  s_9_layer = text_layer_create(GRect(12, 66, 60, 30));
   text_layer_set_background_color(s_9_layer, GColorClear);
   text_layer_set_text_color(s_9_layer, GColorWhite);
   text_layer_set_font(s_9_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
@@ -652,6 +668,8 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_month_layer);
   text_layer_destroy(s_weather_layer);
   text_layer_destroy(s_12_layer);
+ // text_layer_destroy(s_1_layer);
+ // text_layer_destroy(s_2_layer);
   text_layer_destroy(s_6_layer);
   text_layer_destroy(s_9_layer);
 
