@@ -5,7 +5,7 @@
 // #define ANTIALIASING
 
 // Layout
-#define MARGIN 9
+#define MARGIN 5
 #define THICKNESSMARKS 3
 #define THICKNESS 3
 #define ANIM_DELTA 34
@@ -13,8 +13,11 @@
 #define HAND_LENGTH_SEC_INVERSE 22
 #define HAND_LENGTH_MIN 65
 #define HAND_LENGTH_HOUR 45
-#define HOUR_HAND_TICKNESS 3
-#define MINUTE_HAND_TICKNESS 3
+#define HOUR_HAND_TICKNESS 2
+#define MINUTE_HAND_TICKNESS 2
+
+#define BACKTYPE 1 // 0 - Background | 1 - Render
+
 
 #define PERSIST_DEFAULTS_SET 3489
 
@@ -26,7 +29,7 @@
 #define PERSIST_KEY_SECOND_HAND 4
 #define NUM_SETTINGS            5
 
-#define HAND_TYPE            0 // 0 - Flat | 1 - 
+#define HAND_TYPE            2 // 0 - Flat | 1 - Stylized | 2 - Normal
 
 
 

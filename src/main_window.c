@@ -97,8 +97,8 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   bool plugged = state.is_plugged;
   int perc = state.charge_percent;
   int batt_hours = (int)(12.0F * ((float)perc / 100.0F)) + 1;
+  
   /*
-
   for(int h = 0; h < 60; h++) {   
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
@@ -160,8 +160,8 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(3, 3, bounds.size.w - (6), bounds.size.h - (6)), 0, GCornerNone);
   
-
-
+*/
+if (BACKTYPE == 1){
   for(int h = 0; h < 12; h++) {   
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
@@ -225,7 +225,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(MARGIN, MARGIN, bounds.size.w - (2*MARGIN), bounds.size.h - (2*MARGIN)), 0, GCornerNone);
-*/  
+} 
   graphics_context_set_fill_color(ctx, GColorWhite);
   graphics_fill_rect(ctx, GRect(104, 75, 25,22), 1, GCornersAll);
   
@@ -300,39 +300,44 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       graphics_draw_line_antialiased(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y), GColorDarkGray);
       graphics_draw_line_antialiased(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y), GColorDarkGray);
 #else
-      /*graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
-      graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
-      graphics_context_set_stroke_color(ctx, GColorWhite);
-      graphics_draw_line(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
-      graphics_draw_line(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
-      */
-       gpath_rotate_to(hour_hand_path, hour_angle);
-      graphics_context_set_fill_color(ctx, GColorWhite);
-      graphics_context_set_stroke_color(ctx, GColorBlack);
-      gpath_draw_filled(ctx, hour_hand_path);
-      gpath_draw_outline(ctx, hour_hand_path);
+
+      if (HAND_TYPE == 2){
+        graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
+        graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
+        graphics_context_set_stroke_color(ctx, GColorWhite);
+        graphics_draw_line(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
+        graphics_draw_line(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
+      
+      }else{ 
+      
+
+        gpath_rotate_to(hour_hand_path, hour_angle);
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        graphics_context_set_stroke_color(ctx, GColorBlack);
+        gpath_draw_filled(ctx, hour_hand_path);
+        gpath_draw_outline(ctx, hour_hand_path);
 
 
-      if (HAND_TYPE == 1){
-       gpath_rotate_to(hour_hand_path_inner, hour_angle);
-      graphics_context_set_fill_color(ctx, GColorBlack);
-      gpath_draw_filled(ctx, hour_hand_path_inner);
-      }
+        if (HAND_TYPE == 1){
+         gpath_rotate_to(hour_hand_path_inner, hour_angle);
+        graphics_context_set_fill_color(ctx, GColorBlack);
+        gpath_draw_filled(ctx, hour_hand_path_inner);
+        }
 
-      // Draw minute hand with path
-      gpath_rotate_to(minute_hand_path, minute_angle);
-      graphics_context_set_fill_color(ctx, GColorWhite);
-      graphics_context_set_stroke_color(ctx, GColorBlack);
-      gpath_draw_filled(ctx, minute_hand_path);
-      gpath_draw_outline(ctx, minute_hand_path);
+        // Draw minute hand with path
+        gpath_rotate_to(minute_hand_path, minute_angle);
+        graphics_context_set_fill_color(ctx, GColorWhite);
+        graphics_context_set_stroke_color(ctx, GColorBlack);
+        gpath_draw_filled(ctx, minute_hand_path);
+        gpath_draw_outline(ctx, minute_hand_path);
 
-       if (HAND_TYPE == 1){
-      gpath_rotate_to(minute_hand_path_inner, minute_angle);
-      graphics_context_set_fill_color(ctx, GColorBlack);
-      gpath_draw_filled(ctx, minute_hand_path_inner);
-      }
+         if (HAND_TYPE == 1){
+        gpath_rotate_to(minute_hand_path_inner, minute_angle);
+        graphics_context_set_fill_color(ctx, GColorBlack);
+        gpath_draw_filled(ctx, minute_hand_path_inner);
+        }
      
-
+      }
       
       // End draw hand
 #endif
@@ -564,7 +569,9 @@ static void window_load(Window *window) {
 
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS);
   s_bitmapbackground_layer = bitmap_layer_create(GRect(0,0,144,168));
-  bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
+  if (BACKTYPE == 0){
+    bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
+  }
   layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
 
   s_bg_layer = layer_create(bounds);
