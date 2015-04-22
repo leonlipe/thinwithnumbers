@@ -68,7 +68,7 @@ const GPathInfo HOUR_HAND_PATH_INNER_POINTS = { 5, (GPoint[] ) {
 } };
 
 static Window *s_main_window;
-static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_12_layer, *s_6_layer, *s_9_layer, *s_1_layer, *s_2_layer;
+static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 
 static BitmapLayer *s_bitmapbackground_layer;
@@ -97,7 +97,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   bool plugged = state.is_plugged;
   int perc = state.charge_percent;
   int batt_hours = (int)(12.0F * ((float)perc / 100.0F)) + 1;
-  
+  /*
 
   for(int h = 0; h < 60; h++) {   
         GPoint point = (GPoint) {
@@ -106,6 +106,14 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
           .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * HAND_LENGTH_SEC) / TRIG_MAX_RATIO) + center.x,
           //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
           .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * HAND_LENGTH_SEC) / TRIG_MAX_RATIO) + center.y,
+        };
+
+        GPoint point02 = (GPoint) {
+          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
+          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
+          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
+          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
+          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
         };
 
           #ifdef PBL_COLOR
@@ -141,9 +149,9 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
                   }
           #endif
           #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                  graphics_draw_line_antialiased(ctx, GPoint(center.x , center.y ), GPoint(point.x, point.y), GColorWhite);
+                  graphics_draw_line_antialiased(ctx, GPoint(point02.x , point02.y ), GPoint(point.x, point.y), GColorWhite);
           #else
-                graphics_draw_line(ctx, GPoint(center.x, center.y), GPoint(point.x, point.y));
+                graphics_draw_line(ctx, GPoint(point02.x, point02.y), GPoint(point.x, point.y));
           #endif
     
   }
@@ -163,6 +171,13 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
           .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(3 * HAND_LENGTH_SEC) / TRIG_MAX_RATIO) + center.y,
         };
 
+        GPoint point02 = (GPoint) {
+          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
+          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
+          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
+          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
+          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
+        };
           #ifdef PBL_COLOR
                   if(config_get(PERSIST_KEY_BATTERY)) {
                     if(h < batt_hours) {
@@ -210,7 +225,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(MARGIN, MARGIN, bounds.size.w - (2*MARGIN), bounds.size.h - (2*MARGIN)), 0, GCornerNone);
-  
+*/  
   graphics_context_set_fill_color(ctx, GColorWhite);
   graphics_fill_rect(ctx, GRect(104, 75, 25,22), 1, GCornersAll);
   
@@ -547,9 +562,9 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS_DATE);
+  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS);
   s_bitmapbackground_layer = bitmap_layer_create(GRect(0,0,144,168));
- // bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
+  bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
   layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
 
   s_bg_layer = layer_create(bounds);
@@ -607,45 +622,7 @@ static void window_load(Window *window) {
   text_layer_set_text(s_weather_layer, "");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
-  s_12_layer = text_layer_create(GRect(43, 5, 60, 30));
-  text_layer_set_background_color(s_12_layer, GColorClear);
-  text_layer_set_text_color(s_12_layer, GColorWhite);
-  text_layer_set_font(s_12_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-  text_layer_set_text_alignment(s_12_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_12_layer, "12");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_12_layer));
-
- /* s_1_layer = text_layer_create(GRect(0, 5, 144, 30));
-  text_layer_set_background_color(s_1_layer, GColorClear);
-  text_layer_set_text_color(s_1_layer, GColorWhite);
-  text_layer_set_font(s_1_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_text_alignment(s_1_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_1_layer, "11                  1");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_1_layer));
-
-  s_2_layer = text_layer_create(GRect(0, 35, 144, 30));
-  text_layer_set_background_color(s_2_layer, GColorClear);
-  text_layer_set_text_color(s_2_layer, GColorWhite);
-  text_layer_set_font(s_2_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
-  text_layer_set_text_alignment(s_2_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_2_layer, "10                      2");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_2_layer));
-*/
-  s_6_layer = text_layer_create(GRect(43, 126, 60, 30));
-  text_layer_set_background_color(s_6_layer, GColorClear);
-  text_layer_set_text_color(s_6_layer, GColorWhite);
-  text_layer_set_font(s_6_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-  text_layer_set_text_alignment(s_6_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_6_layer, "6");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_6_layer));
-
-  s_9_layer = text_layer_create(GRect(12, 66, 60, 30));
-  text_layer_set_background_color(s_9_layer, GColorClear);
-  text_layer_set_text_color(s_9_layer, GColorWhite);
-  text_layer_set_font(s_9_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
-  text_layer_set_text_alignment(s_6_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_9_layer, "9");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_9_layer));
+ 
 
   s_canvas_layer = layer_create(bounds);
   layer_set_update_proc(s_canvas_layer, draw_proc);
@@ -667,11 +644,7 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_day_in_month_layer);
   text_layer_destroy(s_month_layer);
   text_layer_destroy(s_weather_layer);
-  text_layer_destroy(s_12_layer);
- // text_layer_destroy(s_1_layer);
- // text_layer_destroy(s_2_layer);
-  text_layer_destroy(s_6_layer);
-  text_layer_destroy(s_9_layer);
+ 
 
   gpath_destroy(minute_hand_path);
   gpath_destroy(minute_hand_path_inner);
