@@ -16,7 +16,7 @@
 #define HOUR_HAND_TICKNESS 2
 #define MINUTE_HAND_TICKNESS 2
 
-#define BACKTYPE 1 // 0 - Background | 1 - Render
+#define BACKTYPE 0 // 0 - Background | 1 - Render
 
 
 #define PERSIST_DEFAULTS_SET 3489
