@@ -88,3 +88,40 @@ Pebble.addEventListener('appmessage',
   }                     
 );
 
+Pebble.addEventListener('showConfiguration', function(e) {
+  // Show config page
+  Pebble.openURL('https://dl.dropboxusercontent.com/u/318065/thin_config.html');
+});
+
+Pebble.addEventListener('webviewclosed',
+  function(e) {
+     var configuration = JSON.parse(decodeURIComponent(e.response));
+    console.log('Configuration window returned:' ,JSON.stringify(configuration));
+
+     
+    var configs = {
+      'KEY_DATE': configuration.date,
+      'KEY_DAY': configuration.dow,
+      'KEY_BT': configuration.bt,
+      'KEY_BATTERY': configuration.bat,
+      'KEY_SECOND_HAND': configuration.showSec,
+      'BACKTYPE': parseInt(configuration.back),
+      'MARGIN': parseInt(configuration.margin),
+      'HAND_LENGTH_SEC': parseInt(configuration.secLen),
+      'HAND_LENGTH_SEC_INVERSE': parseInt(configuration.secInvLen),
+      'HAND_LENGTH_MIN': parseInt(configuration.minLen),
+      'HAND_LENGTH_HOUR': parseInt(configuration.hourLen)
+    };
+
+
+    Pebble.sendAppMessage(
+      configs,
+      function(e) {
+        console.log("Sending settings data...");
+      },
+      function(e) {
+        console.log("Settings feedback failed!");
+      }
+    );
+  }
+);

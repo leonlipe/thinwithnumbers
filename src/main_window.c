@@ -13,22 +13,18 @@
 #define KEY_WIND 3
 #define KEY_SUNRISE 4
 #define KEY_SUNSET 5
-/*
-Flat Minutes
-*/
- const GPathInfo MINUTE_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
-  { MINUTE_HAND_TICKNESS*-1, 0 },
-  { MINUTE_HAND_TICKNESS, 0 }, 
-  { MINUTE_HAND_TICKNESS, -70 }, 
-  { MINUTE_HAND_TICKNESS*-1, -70 }, 
-} };
+#define KEY_DATE 6
+#define KEY_DAY 7
+#define KEY_BT 8
+#define KEY_BATTERY 9
+#define KEY_SECOND_HAND 10
+#define BACKTYPE 11
+#define MARGIN 12
+#define HAND_LENGTH_SEC 13
+#define HAND_LENGTH_SEC_INVERSE 14
+#define HAND_LENGTH_MIN 15
+#define HAND_LENGTH_HOUR 16
 
-const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
-  { HOUR_HAND_TICKNESS*-1, 0 },
-  { HOUR_HAND_TICKNESS, 0 }, 
-  { HOUR_HAND_TICKNESS, -50 }, 
-  { HOUR_HAND_TICKNESS*-1, -50 }, 
-} };
 
 
 
@@ -67,6 +63,21 @@ const GPathInfo HOUR_HAND_PATH_INNER_POINTS = { 5, (GPoint[] ) {
   { -3, -30 }, 
 } };
 
+
+const GPathInfo MINUTE_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
+  { HOUR_HAND_TICKNESS*-1, 0 },
+  { HOUR_HAND_TICKNESS, 0 }, 
+  { HOUR_HAND_TICKNESS, -70 }, 
+  { HOUR_HAND_TICKNESS*-1, -70 }, 
+} };
+
+const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
+  { HOUR_HAND_TICKNESS*-1, 0 },
+  { HOUR_HAND_TICKNESS, 0 }, 
+  { HOUR_HAND_TICKNESS, -50 }, 
+  { HOUR_HAND_TICKNESS*-1, -50 }, 
+} };
+
 static Window *s_main_window;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
@@ -103,9 +114,9 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
           //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * HAND_LENGTH_SEC) / TRIG_MAX_RATIO) + center.x,
+          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * persist_read_int(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.x,
           //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * HAND_LENGTH_SEC) / TRIG_MAX_RATIO) + center.y,
+          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * persist_read_int(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.y,
         };
 
         GPoint point02 = (GPoint) {
@@ -117,7 +128,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
         };
 
           #ifdef PBL_COLOR
-                  if(config_get(PERSIST_KEY_BATTERY)) {
+                  if(persist_read_bool(PERSIST_KEY_BATTERY)) {
                     if(h < batt_hours) {
                       if(plugged) {
                         // Charging
@@ -135,7 +146,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
                     graphics_context_set_stroke_color(ctx, GColorWhite);
                   }
           #else
-                  if(config_get(PERSIST_KEY_BATTERY)) {
+                  if(persist_read_bool(PERSIST_KEY_BATTERY)) {
                     if(h < batt_hours) {
                       // Discharging at this level
                       graphics_context_set_stroke_color(ctx, GColorWhite);
@@ -158,28 +169,28 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
 
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, GRect(3, 3, bounds.size.w - (6), bounds.size.h - (6)), 0, GCornerNone);
-  
-*/
-if (BACKTYPE == 1){
+  graphics_fill_rect(ctx, GRect(1, 1, bounds.size.w - (2), bounds.size.h - (2)), 0, GCornerNone);
+  */
+
+if (persist_read_int(PERSIST_BACKTYPE) == 1){
   for(int h = 0; h < 12; h++) {   
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
           //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(3 * HAND_LENGTH_SEC) / TRIG_MAX_RATIO) + center.x,
+          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(3 * persist_read_int(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.x,
           //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(3 * HAND_LENGTH_SEC) / TRIG_MAX_RATIO) + center.y,
+          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(3 * persist_read_int(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.y,
         };
 
-        GPoint point02 = (GPoint) {
+        /*GPoint point02 = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
           //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
           .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
           //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
           .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
-        };
+        };*/
           #ifdef PBL_COLOR
-                  if(config_get(PERSIST_KEY_BATTERY)) {
+                  if(persist_read_bool(PERSIST_KEY_BATTERY)) {
                     if(h < batt_hours) {
                       if(plugged) {
                         // Charging
@@ -197,7 +208,7 @@ if (BACKTYPE == 1){
                     graphics_context_set_stroke_color(ctx, GColorWhite);
                   }
           #else
-                  if(config_get(PERSIST_KEY_BATTERY)) {
+                  if(persist_read_bool(PERSIST_KEY_BATTERY)) {
                     if(h < batt_hours) {
                       // Discharging at this level
                       graphics_context_set_stroke_color(ctx, GColorWhite);
@@ -224,7 +235,7 @@ if (BACKTYPE == 1){
 
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, GRect(MARGIN, MARGIN, bounds.size.w - (2*MARGIN), bounds.size.h - (2*MARGIN)), 0, GCornerNone);
+  graphics_fill_rect(ctx, GRect(persist_read_int(PERSIST_MARGIN), persist_read_int(PERSIST_MARGIN), bounds.size.w - (2*persist_read_int(PERSIST_MARGIN)), bounds.size.h - (2*persist_read_int(PERSIST_MARGIN))), 0, GCornerNone);
 } 
   graphics_context_set_fill_color(ctx, GColorWhite);
   graphics_fill_rect(ctx, GRect(104, 75, 25,22), 1, GCornersAll);
@@ -263,12 +274,12 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
 
   // Plot hand ends
-  GPoint second_hand_inverse = make_hand_point(now_plus_30_seconds, 60, HAND_LENGTH_SEC_INVERSE, center);
-  GPoint second_hand_inverse_circle = make_hand_point(now_plus_30_seconds, 60, HAND_LENGTH_SEC_INVERSE+4, center);
-  GPoint second_hand_long = make_hand_point(now.seconds, 60, HAND_LENGTH_SEC, center);
-  GPoint minute_hand_long = make_hand_point(now.minutes, 60, HAND_LENGTH_MIN, center);
-  GPoint second_hand_short = make_hand_point(now.seconds, 60, (HAND_LENGTH_SEC - MARGIN + 2), center);
-  GPoint minute_hand_short = make_hand_point(now.minutes, 60, (HAND_LENGTH_MIN - MARGIN + 2), center);
+  GPoint second_hand_inverse = make_hand_point(now_plus_30_seconds, 60, persist_read_int(PERSIST_HAND_LENGTH_SEC_INVERSE), center);
+ // GPoint second_hand_inverse_circle = make_hand_point(now_plus_30_seconds, 60, persist_read_int(PERSIST_HAND_LENGTH_SEC_INVERSE)+4, center);
+  GPoint second_hand_long = make_hand_point(now.seconds, 60, persist_read_int(PERSIST_HAND_LENGTH_SEC), center);
+  GPoint minute_hand_long = make_hand_point(now.minutes, 60, persist_read_int(PERSIST_HAND_LENGTH_MIN), center);
+  GPoint second_hand_short = make_hand_point(now.seconds, 60, (persist_read_int(PERSIST_HAND_LENGTH_SEC) - persist_read_int(PERSIST_MARGIN) + 2), center);
+  GPoint minute_hand_short = make_hand_point(now.minutes, 60, (persist_read_int(PERSIST_HAND_LENGTH_MIN) - persist_read_int(PERSIST_MARGIN) + 2), center);
 
   // Adjust for minutes through the hour
   float minute_angle = TRIG_MAX_ANGLE * now.minutes / 60;
@@ -277,12 +288,12 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
   // Hour is more accurate
   GPoint hour_hand_long = (GPoint) {
-    .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)HAND_LENGTH_HOUR / TRIG_MAX_RATIO) + center.x,
-    .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)HAND_LENGTH_HOUR / TRIG_MAX_RATIO) + center.y,
+    .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)persist_read_int(PERSIST_HAND_LENGTH_HOUR) / TRIG_MAX_RATIO) + center.x,
+    .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)persist_read_int(PERSIST_HAND_LENGTH_HOUR) / TRIG_MAX_RATIO) + center.y,
   };
   GPoint hour_hand_short = (GPoint) {
-    .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)(HAND_LENGTH_HOUR - MARGIN + 2) / TRIG_MAX_RATIO) + center.x,
-    .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)(HAND_LENGTH_HOUR - MARGIN + 2) / TRIG_MAX_RATIO) + center.y,
+    .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)(persist_read_int(PERSIST_HAND_LENGTH_HOUR) - persist_read_int(PERSIST_MARGIN) + 2) / TRIG_MAX_RATIO) + center.x,
+    .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)(persist_read_int(PERSIST_HAND_LENGTH_HOUR) - persist_read_int(PERSIST_MARGIN) + 2) / TRIG_MAX_RATIO) + center.y,
   };
 
   // Draw hands
@@ -345,7 +356,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   }
 
   // Draw seconds hand
-  if(config_get(PERSIST_KEY_SECOND_HAND)) {
+                   
+  if(persist_read_bool(PERSIST_KEY_SECOND_HAND)) {
     for(int y = 0; y < THICKNESS - 1; y++) {
       for(int x = 0; x < THICKNESS - 1; x++) {
         #ifdef PBL_COLOR
@@ -528,7 +540,7 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
   }
 
 
-   if(config_get(PERSIST_KEY_BT) && !s_connected) {
+   if(persist_read_bool(PERSIST_KEY_BT) && !s_connected) {
       graphics_draw_bitmap_in_rect(ctx, icon_bt_disconected, GRect(42, 0, 24, 12));    
    }
 
@@ -569,7 +581,7 @@ static void window_load(Window *window) {
 
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS);
   s_bitmapbackground_layer = bitmap_layer_create(GRect(0,0,144,168));
-  if (BACKTYPE == 0){
+  if (persist_read_int(PERSIST_BACKTYPE) == 0){
     bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
   }
   layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
@@ -603,10 +615,10 @@ static void window_load(Window *window) {
   text_layer_set_text_color(s_month_layer, GColorWhite);
   text_layer_set_background_color(s_month_layer, GColorClear);
 
-  if(config_get(PERSIST_KEY_DAY)) {
+  if(persist_read_bool(PERSIST_KEY_DAY)) {
     layer_add_child(window_layer, text_layer_get_layer(s_day_in_month_layer));
   }
-  if(config_get(PERSIST_KEY_DATE)) {
+  if(persist_read_bool(PERSIST_KEY_DATE)) {
     layer_add_child(window_layer, text_layer_get_layer(s_weekday_layer));
     layer_add_child(window_layer, text_layer_get_layer(s_month_layer));
   }
@@ -663,7 +675,7 @@ static void window_unload(Window *window) {
 }
 
 void main_window_push() {
-  if(config_get(PERSIST_KEY_SECOND_HAND)) {
+  if(persist_read_bool(PERSIST_KEY_SECOND_HAND)) {
     tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
   } else {
     tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
@@ -687,7 +699,7 @@ void main_window_push() {
   s_animating = false;
   app_timer_register(1000, anim_handler, NULL);
 
-  if(config_get(PERSIST_KEY_BT)) {
+  if(persist_read_bool(PERSIST_KEY_BT)) {
     bluetooth_connection_service_subscribe(bt_handler);
     bt_handler(bluetooth_connection_service_peek());
   }
@@ -732,13 +744,49 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;   
        case KEY_SUNSET:
               snprintf(sunset_buffer, sizeof(sunset_buffer), "%s", t->value->cstring);
-
       break;      
-    default:
-      APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
+      case KEY_DATE:
+              persist_write_bool(PERSIST_KEY_DATE, strcmp(t->value->cstring, "true") == 0);
+      break;
+       case KEY_DAY:
+              persist_write_bool(PERSIST_KEY_DAY, strcmp(t->value->cstring, "true") == 0);              
+      break; 
+       case KEY_BT:
+              persist_write_bool(PERSIST_KEY_BT, strcmp(t->value->cstring, "true") == 0);              
+      break;   
+       case KEY_BATTERY:
+              persist_write_bool(PERSIST_KEY_BATTERY, strcmp(t->value->cstring, "true") == 0);              
+      break;  
+       case KEY_SECOND_HAND:
+              persist_write_bool(PERSIST_KEY_SECOND_HAND, strcmp(t->value->cstring, "true") == 0);              
+      break;
+       case BACKTYPE:
+              persist_write_int(PERSIST_BACKTYPE, (int)t->value->int32);              
+      break;  
+       case MARGIN:
+              persist_write_int(PERSIST_MARGIN, (int)t->value->int32);
+      break;     
+       case HAND_LENGTH_SEC:
+              persist_write_int(PERSIST_HAND_LENGTH_SEC, (int)t->value->int32);                        
+      break;         
+       case HAND_LENGTH_SEC_INVERSE:
+              persist_write_int(PERSIST_HAND_LENGTH_SEC_INVERSE, (int)t->value->int32);                        
+      break;         
+       case HAND_LENGTH_MIN:
+              persist_write_int(PERSIST_HAND_LENGTH_MIN, (int)t->value->int32);                        
+      break;         
+       case HAND_LENGTH_HOUR:
+              persist_write_int(PERSIST_HAND_LENGTH_HOUR, (int)t->value->int32);     
+
+      break;         
+      default:
+        APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
       break;
     }
 
+
+
+      
     // Look for next item
     t = dict_read_next(iterator);
   }
@@ -782,4 +830,6 @@ void comm_init() {
 
 void main_init(){
   s_last_unit_weather_change = 0;
+   
+
 }

@@ -5,19 +5,11 @@
 // #define ANTIALIASING
 
 // Layout
-#define MARGIN 5
 #define THICKNESSMARKS 3
 #define THICKNESS 3
 #define ANIM_DELTA 34
-#define HAND_LENGTH_SEC 70
-#define HAND_LENGTH_SEC_INVERSE 22
-#define HAND_LENGTH_MIN 65
-#define HAND_LENGTH_HOUR 45
-#define HOUR_HAND_TICKNESS 2
+#define HOUR_HAND_TICKNESS  2
 #define MINUTE_HAND_TICKNESS 2
-
-#define BACKTYPE 0 // 0 - Background | 1 - Render
-
 
 #define PERSIST_DEFAULTS_SET 3489
 
@@ -27,7 +19,15 @@
 #define PERSIST_KEY_BT          2
 #define PERSIST_KEY_BATTERY     3
 #define PERSIST_KEY_SECOND_HAND 4
-#define NUM_SETTINGS            5
+#define PERSIST_BACKTYPE		5
+#define PERSIST_MARGIN			6
+#define PERSIST_HAND_LENGTH_SEC 		7
+#define PERSIST_HAND_LENGTH_SEC_INVERSE 8
+#define PERSIST_HAND_LENGTH_MIN 9
+#define PERSIST_HAND_LENGTH_HOUR 10
+#define PERSIST_HAND_TYPE 11
+
+#define NUM_SETTINGS            14
 
 #define HAND_TYPE            2 // 0 - Flat | 1 - Stylized | 2 - Normal
 

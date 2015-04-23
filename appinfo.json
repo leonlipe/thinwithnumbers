@@ -17,11 +17,23 @@
     "KEY_HUMIDITY": 2,
     "KEY_WIND": 3,
     "KEY_SUNRISE": 4,
-    "KEY_SUNSET": 5
+    "KEY_SUNSET": 5,
+    "KEY_DATE": 6,
+    "KEY_DAY": 7,
+    "KEY_BT": 8,
+    "KEY_BATTERY": 9,
+    "KEY_SECOND_HAND": 10,
+    "BACKTYPE": 11,
+    "MARGIN": 12,
+    "HAND_LENGTH_SEC": 13,
+    "HAND_LENGTH_SEC_INVERSE": 14,
+    "HAND_LENGTH_MIN": 15,
+    "HAND_LENGTH_HOUR": 16
+
 
   },
   "capabilities": 
-  [ "location" ],
+  [ "location", "configurable" ],
   "resources": {
     "media": [
     {
