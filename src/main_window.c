@@ -762,7 +762,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;
        case BACKTYPE:
               if (config_get(PERSIST_BACKTYPE) != (int)t->value->int32){
-                layer_mark_dirty(s_bitmapbackground_layer);
+                layer_mark_dirty(s_bg_layer);
               }
               config_set(PERSIST_BACKTYPE, (int)t->value->int32);              
       break;  
