@@ -24,6 +24,7 @@
 #define HAND_LENGTH_SEC_INVERSE 14
 #define HAND_LENGTH_MIN 15
 #define HAND_LENGTH_HOUR 16
+#define HAND_TYPE 17
 
 
 
@@ -109,7 +110,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   int perc = state.charge_percent;
   int batt_hours = (int)(12.0F * ((float)perc / 100.0F)) + 1;
   
-  /*
+  if (config_get(PERSIST_BACKTYPE) == 1){
   for(int h = 0; h < 60; h++) {   
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
@@ -170,9 +171,9 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(1, 1, bounds.size.w - (2), bounds.size.h - (2)), 0, GCornerNone);
-  */
+  }
 
-if (config_get(PERSIST_BACKTYPE) == 1){
+if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
   for(int h = 0; h < 12; h++) {   
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
@@ -579,13 +580,13 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS);
+  /*s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS);
   s_bitmapbackground_layer = bitmap_layer_create(GRect(0,0,144,168));
   if (config_get(PERSIST_BACKTYPE) == 0){
     bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
   }
   layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
-
+*/
   s_bg_layer = layer_create(bounds);
   layer_set_update_proc(s_bg_layer, bg_update_proc);
   layer_add_child(window_layer, s_bg_layer);
@@ -780,6 +781,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;         
        case HAND_LENGTH_HOUR:
               config_set(PERSIST_HAND_LENGTH_HOUR, (int)t->value->int32);     
+
+      break;     
+       case HAND_TYPE:
+              config_set(PERSIST_HAND_TYPE, (int)t->value->int32);     
 
       break;         
       default:

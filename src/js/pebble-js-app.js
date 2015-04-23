@@ -110,7 +110,8 @@ Pebble.addEventListener('webviewclosed',
       'HAND_LENGTH_SEC': parseInt(configuration.secLen),
       'HAND_LENGTH_SEC_INVERSE': parseInt(configuration.secInvLen),
       'HAND_LENGTH_MIN': parseInt(configuration.minLen),
-      'HAND_LENGTH_HOUR': parseInt(configuration.hourLen)
+      'HAND_LENGTH_HOUR': parseInt(configuration.hourLen),
+      'HAND_TYPE': parseInt(configuration.handType)
     };
 
 
