@@ -27,11 +27,7 @@
 #define PERSIST_HAND_LENGTH_HOUR 10
 #define PERSIST_HAND_TYPE 11
 
-#define NUM_SETTINGS            14
-
-#define HAND_TYPE            2 // 0 - Flat | 1 - Stylized | 2 - Normal
-
-
+#define NUM_SETTINGS            12
 
 #define GRECT_FULL_WINDOW GRect(0,0,144,168)
 

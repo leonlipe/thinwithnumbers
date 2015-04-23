@@ -100,11 +100,11 @@ Pebble.addEventListener('webviewclosed',
 
      
     var configs = {
-      'KEY_DATE': configuration.date,
-      'KEY_DAY': configuration.dow,
-      'KEY_BT': configuration.bt,
-      'KEY_BATTERY': configuration.bat,
-      'KEY_SECOND_HAND': configuration.showSec,
+      'KEY_DATE': parseInt(configuration.date),
+      'KEY_DAY': parseInt(configuration.dow),
+      'KEY_BT': parseInt(configuration.bt),
+      'KEY_BATTERY': parseInt(configuration.bat),
+      'KEY_SECOND_HAND': parseInt(configuration.showSec),
       'BACKTYPE': parseInt(configuration.back),
       'MARGIN': parseInt(configuration.margin),
       'HAND_LENGTH_SEC': parseInt(configuration.secLen),

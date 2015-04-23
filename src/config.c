@@ -1,17 +1,17 @@
 #include "config.h"
 
-//static bool s_arr[NUM_SETTINGS];
+static int s_arr[NUM_SETTINGS];
 
 void config_init() {
   // Set defaults
- // if(!persist_exists(PERSIST_DEFAULTS_SET)) {
+  if(!persist_exists(PERSIST_DEFAULTS_SET)) {
     persist_write_bool(PERSIST_DEFAULTS_SET, true);
 
-    persist_write_bool(PERSIST_KEY_DATE, true);
-    persist_write_bool(PERSIST_KEY_DAY, true);
-    persist_write_bool(PERSIST_KEY_BT, true);
-    persist_write_bool(PERSIST_KEY_BATTERY, true);
-    persist_write_bool(PERSIST_KEY_SECOND_HAND, true);
+    persist_write_int(PERSIST_KEY_DATE, 1);
+    persist_write_int(PERSIST_KEY_DAY, 1);
+    persist_write_int(PERSIST_KEY_BT, 1);
+    persist_write_int(PERSIST_KEY_BATTERY, 1);
+    persist_write_int(PERSIST_KEY_SECOND_HAND, 1);
     persist_write_int(PERSIST_BACKTYPE,1);
     persist_write_int(PERSIST_MARGIN,6);
     persist_write_int(PERSIST_HAND_LENGTH_SEC,70);
@@ -21,13 +21,28 @@ void config_init() {
 
     persist_write_int(PERSIST_HAND_TYPE, 2);
 
-  //}
+  }
 
-  /*for(int i = 0; i < NUM_SETTINGS; i++) {
-    s_arr[i] = persist_read_bool(i);
-  }*/
+  refresh_config();
+
+  
 }
 
-/*bool config_get(int key) {
+void config_deinit(){
+  for(int i = 0; i < NUM_SETTINGS; i++) {
+     persist_write_int(i,s_arr[i] );
+  }
+}
+void refresh_config(){
+  for(int i = 0; i < NUM_SETTINGS; i++) {
+    s_arr[i] = persist_read_int(i);
+  }
+}
+
+int config_get(int key) {
   return s_arr[key];
-}*/
+}
+
+void config_set(int key, int val) {
+  s_arr[key] = val;
+}
