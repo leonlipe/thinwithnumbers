@@ -238,8 +238,11 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, GRect(config_get(PERSIST_MARGIN), config_get(PERSIST_MARGIN), bounds.size.w - (2*config_get(PERSIST_MARGIN)), bounds.size.h - (2*config_get(PERSIST_MARGIN))), 0, GCornerNone);
 } 
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  graphics_fill_rect(ctx, GRect(104, 75, 25,22), 1, GCornersAll);
+ 
+  if (config_get(PERSIST_KEY_DAY)==1){
+    graphics_context_set_fill_color(ctx, GColorWhite);
+    graphics_fill_rect(ctx, GRect(104, 75, 25,22), 1, GCornersAll);  
+  }
   
 
 }
@@ -532,7 +535,12 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
         graphics_context_set_fill_color(ctx, GColorWhite);
         graphics_fill_rect(ctx, GRect(68, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
       }else{
-        //graphics_draw_bitmap_in_rect(ctx, icon_battery_blank, GRect(61, 0, 24, 12));
+        if(config_get(PERSIST_KEY_BATTERY)){
+          graphics_draw_bitmap_in_rect(ctx, icon_battery, GRect(61, 0, 24, 12));
+          graphics_context_set_stroke_color(ctx, GColorBlack);
+          graphics_context_set_fill_color(ctx, GColorWhite);
+          graphics_fill_rect(ctx, GRect(68, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
+      }
       }
      
     }
@@ -724,27 +732,51 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     // Which key was received?
     switch(t->key) {
     case KEY_TEMPERATURE:
-            snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
+            if (true){
+              snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
+            }else{
+              snprintf(temperature_buffer, sizeof(temperature_buffer),"%s","");
+            }
 
       break;
     case KEY_CONDITIONS:
+            if (config_get(true)==1){
               snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
+            }else{
+              snprintf(conditions_buffer, sizeof(conditions_buffer), "%s","");
+            }
 
       break;
      case KEY_HUMIDITY:
+            if (true){
               snprintf(humidity_buffer, sizeof(humidity_buffer), "%d %%", (int)t->value->int32);
+            }else{
+              snprintf(humidity_buffer, sizeof(humidity_buffer), "%s","");
+            }
 
       break;
      case KEY_WIND:
+            if (true){
               snprintf(wind_speed_buffer, sizeof(wind_speed_buffer), "%s kph", t->value->cstring);
+            }else{
+              snprintf(wind_speed_buffer, sizeof(wind_speed_buffer), "%s","");
+            }
 
       break; 
        case KEY_SUNRISE:
+            if (true){
               snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s", t->value->cstring);
+            }else{
+              snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s","");
+            }
 
       break;   
        case KEY_SUNSET:
+            if (true){
               snprintf(sunset_buffer, sizeof(sunset_buffer), "%s", t->value->cstring);
+            }else{
+              snprintf(sunset_buffer, sizeof(sunset_buffer), "%s","");
+            }
       break;      
       case KEY_DATE:
               config_set(PERSIST_KEY_DATE,(int)t->value->int32);
