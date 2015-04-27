@@ -19,7 +19,7 @@ void config_init() {
     persist_write_int(PERSIST_HAND_LENGTH_MIN, 70);
     persist_write_int(PERSIST_HAND_LENGTH_HOUR, 45);
 
-    persist_write_int(PERSIST_HAND_TYPE, 2);
+    persist_write_int(PERSIST_HAND_TYPE, 0);
 
   }
 
