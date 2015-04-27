@@ -173,6 +173,8 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   graphics_fill_rect(ctx, GRect(1, 1, bounds.size.w - (2), bounds.size.h - (2)), 0, GCornerNone);
   }
 
+
+
 if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
   for(int h = 0; h < 12; h++) {   
         GPoint point = (GPoint) {
@@ -183,13 +185,7 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
           .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(3 * config_get(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.y,
         };
 
-        /*GPoint point02 = (GPoint) {
-          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
-          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
-          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
-        };*/
+        
           #ifdef PBL_COLOR
                   if(config_get(PERSIST_KEY_BATTERY)) {
                     if(h < batt_hours) {
@@ -588,13 +584,15 @@ static void window_load(Window *window) {
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
 
-  /*s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND_MAIN_NUMBERS);
+  if (config_get(PERSIST_BACKTYPE==2)){
+  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_BACKGRONUD_MODERN);
   s_bitmapbackground_layer = bitmap_layer_create(GRect(0,0,144,168));
-  if (config_get(PERSIST_BACKTYPE) == 0){
+  if (config_get(PERSIST_BACKTYPE) == 2){
     bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
   }
   layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
-*/
+}
+
   s_bg_layer = layer_create(bounds);
   layer_set_update_proc(s_bg_layer, bg_update_proc);
   layer_add_child(window_layer, s_bg_layer);

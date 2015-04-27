@@ -96,7 +96,14 @@
         "type": "png",
         "name": "BLUETOOTH_DISCONNECTED",
         "file": "images/bluetooth-disconected.png"
+    } 
+    ,
+    {
+        "type": "png",
+        "name": "BACKGRONUD_MODERN",
+        "file": "images/modern_background_new.png"
     }   
+    
     ]
   }
 }
