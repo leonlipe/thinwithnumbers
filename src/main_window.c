@@ -104,77 +104,41 @@ static bool battery_plugged;
 static void bg_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   GPoint center = grect_center_point(&bounds);
+  graphics_context_set_stroke_color(ctx, GColorWhite);
 
-  BatteryChargeState state = battery_state_service_peek();
-  bool plugged = state.is_plugged;
-  int perc = state.charge_percent;
-  int batt_hours = (int)(12.0F * ((float)perc / 100.0F)) + 1;
   
   if (config_get(PERSIST_BACKTYPE) == 1){
 
-  for(int h = 0; h < 60; h++) {   
-        GPoint point = (GPoint) {
-          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
-          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * config_get(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.x,
-          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * config_get(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.y,
-        };
- GPoint point02 = (GPoint) {
-          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
-          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
-          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
-        };
+    for(int h = 0; h < 60; h++) {   
+          GPoint point = (GPoint) {
+            //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
+            //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
+            .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * config_get(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.x,
+            //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
+            .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * config_get(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.y,
+          };
+          GPoint point02 = (GPoint) {
+            //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
+            //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
+            .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
+            //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
+            .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
+          };               
+            #if defined(ANTIALIASING) && defined(PBL_COLOR)
+                    graphics_draw_line_antialiased(ctx, GPoint(point02.x , point02.y ), GPoint(point.x, point.y), GColorWhite);
+            #else
+                  graphics_draw_line(ctx, GPoint(point02.x, point02.y), GPoint(point.x, point.y));
+            #endif
       
+    }
 
-          #ifdef PBL_COLOR
-                  if(config_get(PERSIST_KEY_BATTERY)) {
-                    if(h < batt_hours) {
-                      if(plugged) {
-                        // Charging
-                        graphics_context_set_stroke_color(ctx, GColorGreen);
-                      } else {
-                        // Discharging at this level
-                        graphics_context_set_stroke_color(ctx, GColorWhite);
-                      }
-                    } else {
-                      // Empty segment
-                      graphics_context_set_stroke_color(ctx, GColorDarkGray);
-                    }
-                  } else {
-                    // No battery indicator
-                    graphics_context_set_stroke_color(ctx, GColorWhite);
-                  }
-          #else
-                  if(config_get(PERSIST_KEY_BATTERY)) {
-                    if(h < batt_hours) {
-                      // Discharging at this level
-                      graphics_context_set_stroke_color(ctx, GColorWhite);
-                    } else {
-                      // Empty segment
-                      graphics_context_set_stroke_color(ctx, GColorWhite);
-                    }
-                  } else {
-                    // No battery indicator
-                    graphics_context_set_stroke_color(ctx, GColorWhite);
-                  }
-          #endif
-          #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                  graphics_draw_line_antialiased(ctx, GPoint(point02.x , point02.y ), GPoint(point.x, point.y), GColorWhite);
-          #else
-                graphics_draw_line(ctx, GPoint(point02.x, point02.y), GPoint(point.x, point.y));
-          #endif
-    
-  }
-
-  // Make markers
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, GRect(1, 1, bounds.size.w - (2), bounds.size.h - (2)), 0, GCornerNone);
+    // Make markers
+    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_fill_rect(ctx, GRect(1, 1, bounds.size.w - (2), bounds.size.h - (2)), 0, GCornerNone);
   }
 
 
+graphics_context_set_stroke_color(ctx, GColorWhite);
 
 if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
   for(int h = 0; h < 12; h++) {   
@@ -186,52 +150,14 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
           .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(3 * config_get(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.y,
         };
 
- GPoint point02 = (GPoint) {
+        GPoint point02 = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
           //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
           .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
           //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
           .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
         };
-        /*GPoint point02 = (GPoint) {
-          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
-          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
-          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
-        };*/
-          #ifdef PBL_COLOR
-                  if(config_get(PERSIST_KEY_BATTERY)) {
-                    if(h < batt_hours) {
-                      if(plugged) {
-                        // Charging
-                        graphics_context_set_stroke_color(ctx, GColorGreen);
-                      } else {
-                        // Discharging at this level
-                        graphics_context_set_stroke_color(ctx, GColorWhite);
-                      }
-                    } else {
-                      // Empty segment
-                      graphics_context_set_stroke_color(ctx, GColorDarkGray);
-                    }
-                  } else {
-                    // No battery indicator
-                    graphics_context_set_stroke_color(ctx, GColorWhite);
-                  }
-          #else
-                  if(config_get(PERSIST_KEY_BATTERY)) {
-                    if(h < batt_hours) {
-                      // Discharging at this level
-                      graphics_context_set_stroke_color(ctx, GColorWhite);
-                    } else {
-                      // Empty segment
-                      graphics_context_set_stroke_color(ctx, GColorWhite);
-                    }
-                  } else {
-                    // No battery indicator
-                    graphics_context_set_stroke_color(ctx, GColorWhite);
-                  }
-          #endif
+          
           #if defined(ANTIALIASING) && defined(PBL_COLOR)
                   graphics_draw_line_antialiased(ctx, GPoint(point02.x + x, point02.y + y), GPoint(point.x + x, point.y + y), GColorWhite);
           #else
@@ -251,7 +177,7 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
  
   if (config_get(PERSIST_KEY_DAY)==1){
     graphics_context_set_fill_color(ctx, GColorWhite);
-    graphics_fill_rect(ctx, GRect(104, 75, 25,22), 1, GCornersAll);  
+    graphics_fill_rect(ctx, GRect(110, 75, 25,22), 1, GCornersAll);  
   }
   
 
@@ -280,13 +206,6 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   if (now_plus_30_seconds > 60){
     now_plus_30_seconds -= 60;
   }
-
-
-
- 
-
-
-
   // Plot hand ends
   GPoint second_hand_inverse = make_hand_point(now_plus_30_seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE), center);
  // GPoint second_hand_inverse_circle = make_hand_point(now_plus_30_seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE)+4, center);
@@ -315,27 +234,27 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   // Draw hands
   for(int y = 0; y < THICKNESS; y++) {
     for(int x = 0; x < THICKNESS; x++) {
-#ifdef PBL_COLOR
-      graphics_context_set_stroke_color(ctx, GColorDarkGray);
-#elif PBL_BW 
-      graphics_context_set_stroke_color(ctx, GColorWhite);
-#endif
-#if defined(ANTIALIASING) && defined(PBL_COLOR)
-      graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GColorDarkGray);
-      graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GColorDarkGray);
-      graphics_context_set_stroke_color(ctx, GColorWhite);
-      graphics_draw_line_antialiased(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y), GColorDarkGray);
-      graphics_draw_line_antialiased(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y), GColorDarkGray);
-#else
+      #ifdef PBL_COLOR
+            graphics_context_set_stroke_color(ctx, GColorDarkGray);
+      #elif PBL_BW 
+            graphics_context_set_stroke_color(ctx, GColorWhite);
+      #endif
+      #if defined(ANTIALIASING) && defined(PBL_COLOR)
+            graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GColorDarkGray);
+            graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GColorDarkGray);
+            graphics_context_set_stroke_color(ctx, GColorWhite);
+            graphics_draw_line_antialiased(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y), GColorDarkGray);
+            graphics_draw_line_antialiased(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y), GColorDarkGray);
+      #else
 
-      
-        graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
-        graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
-        graphics_context_set_stroke_color(ctx, GColorWhite);
-        graphics_draw_line(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
-        graphics_draw_line(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
-      // End draw hand
-#endif
+            
+              graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
+              graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
+              graphics_context_set_stroke_color(ctx, GColorWhite);
+              graphics_draw_line(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
+              graphics_draw_line(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
+            // End draw hand
+      #endif
     }
   }
 }else if (config_get(PERSIST_HAND_TYPE)==1){
@@ -365,7 +284,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
         gpath_draw_filled(ctx, minute_hand_path_inner);
         }*/
 }else{
-   gpath_rotate_to(hour_hand_path, hour_angle);
+        gpath_rotate_to(hour_hand_path, hour_angle);
         graphics_context_set_fill_color(ctx, GColorWhite);
         graphics_context_set_stroke_color(ctx, GColorBlack);
         gpath_draw_filled(ctx, hour_hand_path);
@@ -470,7 +389,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
 }
 
-static void anim_handler(void *context) {
+/*static void anim_handler(void *context) {
   bool changed = false;
   s_last_time.hours -= (s_last_time.hours > 12) ? 12 : 0;
   if(s_anim_time.hours < s_last_time.hours) {
@@ -492,7 +411,7 @@ static void anim_handler(void *context) {
   } else {
     s_animating = false;
   }
-}
+}*/
 
 static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   s_last_time.days = tick_time->tm_mday;
@@ -560,8 +479,7 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
 
     if (!battery_plugged) {
-    if (!battery_plugged){
-      if (battery_level < 20){
+      /*if (battery_level < 20){
         graphics_draw_bitmap_in_rect(ctx, icon_battery_low, GRect(61, 0, 24, 12));
         graphics_context_set_stroke_color(ctx, GColorBlack);
         graphics_context_set_fill_color(ctx, GColorWhite);
@@ -572,10 +490,16 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
           graphics_context_set_stroke_color(ctx, GColorBlack);
           graphics_context_set_fill_color(ctx, GColorWhite);
           graphics_fill_rect(ctx, GRect(68, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
-      }
-      }
-     
-    }
+      }*/
+        if(config_get(PERSIST_KEY_BATTERY)){
+          graphics_context_set_stroke_color(ctx, GColorBlack);
+          graphics_context_set_fill_color(ctx, GColorBlack);
+          graphics_fill_rect(ctx, GRect(110, 2, (uint8_t)((battery_level / 100.0) * 25.0), 2), 0, GCornerNone);    
+        }
+      
+    
+
+    
   } else {
     graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(61, 0, 24, 12));
   }
@@ -585,7 +509,8 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
       graphics_draw_bitmap_in_rect(ctx, icon_bt_disconected, GRect(42, 0, 24, 12));    
    }
 
-
+ //graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(61, 0, 24, 12));
+  //graphics_draw_bitmap_in_rect(ctx, icon_bt_disconected, GRect(42, 0, 24, 12));  
 }
 
 static void window_load(Window *window) {
@@ -632,13 +557,13 @@ static void window_load(Window *window) {
   layer_set_update_proc(s_bg_layer, bg_update_proc);
   layer_add_child(window_layer, s_bg_layer);
 
-  s_weekday_layer = text_layer_create(GRect(94, 59, 44, 40));
+  s_weekday_layer = text_layer_create(GRect(100, 59, 44, 40));
   text_layer_set_text_alignment(s_weekday_layer, GTextAlignmentCenter);
   text_layer_set_font(s_weekday_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_weekday_layer, GColorWhite);
   text_layer_set_background_color(s_weekday_layer, GColorClear);
 
-  s_day_in_month_layer = text_layer_create(GRect(94, 69, 44, 40));
+  s_day_in_month_layer = text_layer_create(GRect(100, 69, 44, 40));
   text_layer_set_text_alignment(s_day_in_month_layer, GTextAlignmentCenter);
   text_layer_set_font(s_day_in_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
 #ifdef PBL_COLOR
@@ -651,7 +576,7 @@ static void window_load(Window *window) {
 
   
 
-  s_month_layer = text_layer_create(GRect(94, 93, 44, 40));
+  s_month_layer = text_layer_create(GRect(100, 93, 44, 40));
   text_layer_set_text_alignment(s_month_layer, GTextAlignmentCenter);
   text_layer_set_font(s_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_month_layer, GColorWhite);
@@ -740,8 +665,8 @@ void main_window_push() {
   time_t t = time(NULL);
   struct tm *tm_now = localtime(&t);
   tick_handler(tm_now, SECOND_UNIT);
-  s_animating = false;
-  app_timer_register(1000, anim_handler, NULL);
+ // s_animating = false;
+ // app_timer_register(1000, anim_handler, NULL);
 
   if(config_get(PERSIST_KEY_BT)) {
     bluetooth_connection_service_subscribe(bt_handler);
