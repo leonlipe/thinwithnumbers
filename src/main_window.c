@@ -494,7 +494,7 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
         if(config_get(PERSIST_KEY_BATTERY)){
           graphics_context_set_stroke_color(ctx, GColorBlack);
           graphics_context_set_fill_color(ctx, GColorBlack);
-          graphics_fill_rect(ctx, GRect(110, 2, (uint8_t)((battery_level / 100.0) * 25.0), 2), 0, GCornerNone);    
+          graphics_fill_rect(ctx, GRect(110, 17, (uint8_t)((battery_level / 100.0) * 25.0), 1), 0, GCornerNone);    
         }
       
     
@@ -509,8 +509,7 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
       graphics_draw_bitmap_in_rect(ctx, icon_bt_disconected, GRect(42, 0, 24, 12));    
    }
 
- //graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(61, 0, 24, 12));
-  //graphics_draw_bitmap_in_rect(ctx, icon_bt_disconected, GRect(42, 0, 24, 12));  
+
 }
 
 static void window_load(Window *window) {
@@ -595,7 +594,7 @@ static void window_load(Window *window) {
   BatteryChargeState initial = battery_state_service_peek();
   battery_level = initial.charge_percent;
   battery_plugged = initial.is_plugged;
-  s_battery_layer = layer_create(GRect(0,60,144,12));
+  s_battery_layer = layer_create(GRect(0,60,144,106));
   layer_set_update_proc(s_battery_layer, &battery_layer_update_callback);
   layer_add_child(window_layer, s_battery_layer);
 
