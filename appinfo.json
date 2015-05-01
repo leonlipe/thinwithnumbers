@@ -102,8 +102,27 @@
         "type": "png",
         "name": "BACKGRONUD_MODERN",
         "file": "images/modern_background_new.png"
-    }   
-    
+    },
+    {
+        "type":"font",
+        "name":"FONT_TIME_12",
+        "file":"fonts/btseps2.ttf"
+      },   
+     {
+        "type":"font",
+        "name":"FONT_TIME_14",
+        "file":"fonts/btseps2.ttf"
+      },
+      {
+        "type":"font",
+        "name":"FONT_TIME_16",
+        "file":"fonts/btseps2.ttf"
+      },
+       {
+        "type":"font",
+        "name":"FONT_TIME_18",
+        "file":"fonts/btseps2.ttf"
+      }    
     ]
   }
 }

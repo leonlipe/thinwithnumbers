@@ -80,7 +80,7 @@ const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) {
 } };
 
 static Window *s_main_window;
-static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer;
+static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_time_layer;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 
 static BitmapLayer *s_bitmapbackground_layer;
@@ -93,12 +93,12 @@ static GPath *minute_hand_path,*minute_hand_path_stylized, *minute_hand_path_inn
 
 static Time s_last_time, s_anim_time;
 static uint8_t s_last_unit_weather_change;
-static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3];
+static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3], s_time_buffer[6];
 static bool s_animating, s_connected;
 
 static uint8_t battery_level;
 static bool battery_plugged;
-
+static GFont s_time_font;
 
 
 static void bg_update_proc(Layer *layer, GContext *ctx) {
@@ -424,10 +424,12 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   snprintf(s_day_in_month_buffer, sizeof(s_day_in_month_buffer), "%d", s_last_time.days);
   strftime(s_weekday_buffer, sizeof(s_weekday_buffer), "%a", tick_time);
   strftime(s_month_buffer, sizeof(s_month_buffer), "%b", tick_time);
+  strftime(s_time_buffer, sizeof(s_time_buffer), "%H:%M", tick_time);
 
   text_layer_set_text(s_weekday_layer, s_weekday_buffer);
   text_layer_set_text(s_day_in_month_layer, s_day_in_month_buffer);
   text_layer_set_text(s_month_layer, s_month_buffer);
+  text_layer_set_text(s_time_layer, s_time_buffer);
 
   // Finally
   layer_mark_dirty(s_canvas_layer);
@@ -513,6 +515,9 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 }
 
 static void window_load(Window *window) {
+
+
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_TIME_16));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -607,6 +612,15 @@ static void window_load(Window *window) {
   text_layer_set_text(s_weather_layer, "");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
+  // layer del tiempo
+  s_time_layer = text_layer_create(GRect(0, 135, 144, 30));
+  text_layer_set_background_color(s_time_layer, GColorClear);
+  text_layer_set_text_color(s_time_layer, GColorWhite);
+  text_layer_set_font(s_time_layer,s_time_font);
+  text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
+  text_layer_set_text(s_time_layer, "");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
+
  
 
   s_canvas_layer = layer_create(bounds);
@@ -621,6 +635,11 @@ static void window_unload(Window *window) {
   gbitmap_destroy(icon_battery_blank);
   gbitmap_destroy(icon_battery_charge);
   gbitmap_destroy(icon_bt_disconected);
+
+  fonts_unload_custom_font(s_time_font);
+
+
+
   layer_destroy(s_canvas_layer);
   layer_destroy(s_bg_layer);
   layer_destroy(s_battery_layer);
