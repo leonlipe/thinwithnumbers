@@ -108,9 +108,27 @@
         "type": "png",
         "name": "ITEM_SUNRISE",
         "file": "images/sunrise.png  "
-    }
-
-    
+    },
+    {
+        "type":"font",
+        "name":"FONT_TIME_12",
+        "file":"fonts/btseps2.ttf"
+      },   
+     {
+        "type":"font",
+        "name":"FONT_TIME_14",
+        "file":"fonts/btseps2.ttf"
+      },
+      {
+        "type":"font",
+        "name":"FONT_TIME_16",
+        "file":"fonts/btseps2.ttf"
+      },
+       {
+        "type":"font",
+        "name":"FONT_TIME_18",
+        "file":"fonts/btseps2.ttf"
+      }    
     ]
   }
 }
