@@ -81,7 +81,7 @@ const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) {
 
 static Window *s_main_window;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer;
-static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
+static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer,*s_icons_layer;
 
 static BitmapLayer *s_bitmapbackground_layer;
 static GBitmap *s_background_bitmap;
@@ -607,6 +607,13 @@ static void window_load(Window *window) {
   text_layer_set_text(s_weather_layer, "");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
+  //Layer de los iconos
+  BatteryChargeState initial = battery_state_service_peek();
+  battery_level = initial.charge_percent;
+  battery_plugged = initial.is_plugged;
+  s_battery_layer = layer_create(GRect(0,60,144,106));
+  layer_set_update_proc(s_battery_layer, &battery_layer_update_callback);
+  layer_add_child(window_layer, s_battery_layer);
  
 
   s_canvas_layer = layer_create(bounds);
@@ -624,6 +631,7 @@ static void window_unload(Window *window) {
   layer_destroy(s_canvas_layer);
   layer_destroy(s_bg_layer);
   layer_destroy(s_battery_layer);
+  layer_destroy(s_icons_layer);
 
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);
