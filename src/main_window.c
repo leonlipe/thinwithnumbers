@@ -85,7 +85,7 @@ static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_wea
 
 static BitmapLayer *s_bitmapbackground_layer;
 static GBitmap *s_background_bitmap;
-static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank;
+static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank, *icon_sunrise, *icon_sunset;
 static GBitmap *icon_battery_charge;
 static GBitmap *icon_bt_disconected;
 
@@ -475,6 +475,11 @@ void battery_state_handler(BatteryChargeState charge) {
  //   conserve_power(false);
 }
 
+void icon_layer_update_callback(Layer *layer, GContext *ctx) {
+    graphics_draw_bitmap_in_rect(ctx, icon_sunrise, GRect(25, 122, 10, 10));    
+    graphics_draw_bitmap_in_rect(ctx, icon_sunset, GRect(105, 122, 10, 10));    
+
+}
 
 void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 
@@ -517,7 +522,7 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 static void window_load(Window *window) {
 
 
-  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_TIME_16));
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_TIME_18));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -525,6 +530,9 @@ static void window_load(Window *window) {
   icon_battery_charge = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGE);
   icon_bt_disconected = gbitmap_create_with_resource(RESOURCE_ID_BLUETOOTH_DISCONNECTED);
 
+  icon_sunrise = gbitmap_create_with_resource(RESOURCE_ID_ITEM_SUNRISE);
+  icon_sunset = gbitmap_create_with_resource(RESOURCE_ID_ITEM_SUNSET);
+  
  // if (config_get(PERSIST_HAND_TYPE) == 1){
   minute_hand_path_stylized = gpath_create(&MINUTE_HAND_PATH_POINTS);
   minute_hand_path = gpath_create(&MINUTE_HAND_PATH_POINTS_FLAT);
@@ -641,6 +649,8 @@ static void window_unload(Window *window) {
   gbitmap_destroy(icon_battery_blank);
   gbitmap_destroy(icon_battery_charge);
   gbitmap_destroy(icon_bt_disconected);
+  gbitmap_destroy(icon_sunset);
+  gbitmap_destroy(icon_sunrise);
 
   fonts_unload_custom_font(s_time_font);
 
