@@ -93,7 +93,7 @@ static GPath *minute_hand_path,*minute_hand_path_stylized, *minute_hand_path_inn
 
 static Time s_last_time, s_anim_time;
 static uint8_t s_last_unit_weather_change;
-static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3], s_time_buffer[6];
+static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3], s_time_buffer[12];
 static bool s_animating, s_connected;
 
 static uint8_t battery_level;
@@ -424,7 +424,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   snprintf(s_day_in_month_buffer, sizeof(s_day_in_month_buffer), "%d", s_last_time.days);
   strftime(s_weekday_buffer, sizeof(s_weekday_buffer), "%a", tick_time);
   strftime(s_month_buffer, sizeof(s_month_buffer), "%b", tick_time);
-  strftime(s_time_buffer, sizeof(s_time_buffer), "%H:%M", tick_time);
+  strftime(s_time_buffer, sizeof(s_time_buffer), "%l:%M%P", tick_time);
 
   text_layer_set_text(s_weekday_layer, s_weekday_buffer);
   text_layer_set_text(s_day_in_month_layer, s_day_in_month_buffer);
@@ -588,7 +588,7 @@ static void window_load(Window *window) {
 
   
 
-  s_month_layer = text_layer_create(GRect(100, 93, 44, 40));
+  s_month_layer = text_layer_create(GRect(100, 94, 44, 40));
   text_layer_set_text_alignment(s_month_layer, GTextAlignmentCenter);
   text_layer_set_font(s_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_month_layer, GColorWhite);
@@ -622,10 +622,10 @@ static void window_load(Window *window) {
 
 
   //Layer de los iconos
-  s_icons_layer = layer_create(GRect(0,0,144,166));
+  /*s_icons_layer = layer_create(GRect(0,0,144,166));
   layer_set_update_proc(s_icons_layer, &icon_layer_update_callback);
   layer_add_child(window_layer, s_icons_layer);
-
+  */
   // layer del tiempo
   s_time_layer = text_layer_create(GRect(0, 135, 144, 30));
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -716,8 +716,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   static char conditions_buffer[32];
   static char humidity_buffer[32];
   static char wind_speed_buffer[32];
-  static char sunrise_buffer[6];
-  static char sunset_buffer[6];
+  static char sunrise_buffer[10];
+  static char sunset_buffer[10];
   static char weather_layer_buffer[64];
  // Read first item
   Tuple *t = dict_read_first(iterator);

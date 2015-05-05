@@ -40,8 +40,8 @@ function locationSuccess(pos) {
 		  'KEY_CONDITIONS': conditions,
       'KEY_HUMIDITY': json.main.humidity,
       'KEY_WIND': wind_speed.toString(),
-      'KEY_SUNRISE': sunrise.getHours()+":"+sunrise.getMinutes(),
-      'KEY_SUNSET': sunset.getHours()+":"+sunset.getMinutes()
+      'KEY_SUNRISE': (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am"),
+      'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")
 		};
 
 		// Send to Pebble

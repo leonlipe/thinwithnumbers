@@ -10,7 +10,7 @@ void config_init() {
     persist_write_int(PERSIST_KEY_DATE, 1);
     persist_write_int(PERSIST_KEY_DAY, 1);
     persist_write_int(PERSIST_KEY_BT, 1);
-    persist_write_int(PERSIST_KEY_BATTERY, 1);
+    persist_write_int(PERSIST_KEY_BATTERY, 0);
     persist_write_int(PERSIST_KEY_SECOND_HAND, 1);
     persist_write_int(PERSIST_BACKTYPE,0);
     persist_write_int(PERSIST_MARGIN,6);
