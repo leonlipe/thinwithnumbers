@@ -27,44 +27,6 @@
 #define HAND_TYPE 17
 
 
-
-
-
-const GPathInfo MINUTE_HAND_PATH_POINTS = { 5, (GPoint[] ) { 
-  { -3, 0 },
-  { 3, 0 }, 
-  { 5, -50 }, 
-  { 0, -70 }, 
-  { -5, -50 }, 
-} };
-
-const GPathInfo MINUTE_HAND_PATH_INNER_POINTS = { 5, (GPoint[] ) { 
-  { -1, -8 },
-  { 1, -8 }, 
-  { 3, -50 }, 
-  { 0, -60 }, 
-
-  { -3, -50 }, 
-} };
-
-const GPathInfo HOUR_HAND_PATH_POINTS = { 5, (GPoint[] ) { 
-  { -3, 0 },
-  { 3, 0 }, 
-  { 4, -30 }, 
-  { 0, -50 }, 
-  { -4, -30 }, 
-} };
-
-const GPathInfo HOUR_HAND_PATH_INNER_POINTS = { 5, (GPoint[] ) { 
-  { -1, -3 },
-  { 1, -3 }, 
-  { 3, -30 }, 
-  { 0, -40 }, 
-
-  { -3, -30 }, 
-} };
-
-
 const GPathInfo MINUTE_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
   { HOUR_HAND_TICKNESS*-1, 0 },
   { HOUR_HAND_TICKNESS, 0 }, 
@@ -80,21 +42,18 @@ const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) {
 } };
 
 static Window *s_main_window;
-static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer,*s_icons_layer;
+static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_time_layer;
 
-static BitmapLayer *s_bitmapbackground_layer;
-static GBitmap *s_background_bitmap;
-static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank, *icon_sunrise, *icon_sunset;
-static GBitmap *icon_battery_charge;
-static GBitmap *icon_bt_disconected;
+static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank,*icon_battery_charge,*icon_bt_disconected;
 
-static GPath *minute_hand_path,*minute_hand_path_stylized, *minute_hand_path_inner, *hour_hand_path, *hour_hand_path_stylized, *hour_hand_path_inner;
 
-static Time s_last_time, s_anim_time;
+static GPath *minute_hand_path, *hour_hand_path;
+
+static Time s_last_time;
 static uint8_t s_last_unit_weather_change;
 static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3], s_time_buffer[12];
-static bool s_animating, s_connected;
+static bool s_connected;
 
 static uint8_t battery_level;
 static bool battery_plugged;
@@ -194,13 +153,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   GPoint center = grect_center_point(&bounds);
 
-  Time now;
-  
-  if(s_animating) {
-    now = s_anim_time;
-  } else {
-    now = s_last_time;
-  }
+  Time now = s_last_time;
+
 
   int now_plus_30_seconds = now.seconds + 30;
   if (now_plus_30_seconds > 60){
@@ -259,45 +213,12 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       #endif
     }
   }
-}else if (config_get(PERSIST_HAND_TYPE)==1){
-        gpath_rotate_to(hour_hand_path_stylized, hour_angle);
-        graphics_context_set_fill_color(ctx, GColorWhite);
-        graphics_context_set_stroke_color(ctx, GColorBlack);
-        gpath_draw_filled(ctx, hour_hand_path_stylized);
-        gpath_draw_outline(ctx, hour_hand_path_stylized);
-
-
-        /*if (config_get(PERSIST_HAND_TYPE) == 1){
-        gpath_rotate_to(hour_hand_path_inner, hour_angle);
-        graphics_context_set_fill_color(ctx, GColorBlack);
-        gpath_draw_filled(ctx, hour_hand_path_inner);
-        }*/
-
-        // Draw minute hand with path
-        gpath_rotate_to(minute_hand_path_stylized, minute_angle);
-        graphics_context_set_fill_color(ctx, GColorWhite);
-        graphics_context_set_stroke_color(ctx, GColorBlack);
-        gpath_draw_filled(ctx, minute_hand_path_stylized);
-        gpath_draw_outline(ctx, minute_hand_path_stylized);
-
-        /*if (config_get(PERSIST_HAND_TYPE) == 1){
-        gpath_rotate_to(minute_hand_path_inner, minute_angle);
-        graphics_context_set_fill_color(ctx, GColorBlack);
-        gpath_draw_filled(ctx, minute_hand_path_inner);
-        }*/
-}else{
+}else {
         gpath_rotate_to(hour_hand_path, hour_angle);
         graphics_context_set_fill_color(ctx, GColorWhite);
         graphics_context_set_stroke_color(ctx, GColorBlack);
         gpath_draw_filled(ctx, hour_hand_path);
-        gpath_draw_outline(ctx, hour_hand_path);
-
-
-        /*if (config_get(PERSIST_HAND_TYPE) == 1){
-        gpath_rotate_to(hour_hand_path_inner, hour_angle);
-        graphics_context_set_fill_color(ctx, GColorBlack);
-        gpath_draw_filled(ctx, hour_hand_path_inner);
-        }*/
+        gpath_draw_outline(ctx, hour_hand_path);   
 
         // Draw minute hand with path
         gpath_rotate_to(minute_hand_path, minute_angle);
@@ -306,11 +227,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
         gpath_draw_filled(ctx, minute_hand_path);
         gpath_draw_outline(ctx, minute_hand_path);
 
-        /*if (config_get(PERSIST_HAND_TYPE) == 1){
-        gpath_rotate_to(minute_hand_path_inner, minute_angle);
-        graphics_context_set_fill_color(ctx, GColorBlack);
-        gpath_draw_filled(ctx, minute_hand_path_inner);
-        }*/
+       
 }
   // Draw seconds hand
                    
@@ -391,29 +308,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
 }
 
-/*static void anim_handler(void *context) {
-  bool changed = false;
-  s_last_time.hours -= (s_last_time.hours > 12) ? 12 : 0;
-  if(s_anim_time.hours < s_last_time.hours) {
-    s_anim_time.hours++;
-    changed = true;
-  }
-  if(s_anim_time.minutes < s_last_time.minutes) {
-    s_anim_time.minutes++;
-    changed = true;
-  }
-  if(s_anim_time.seconds < s_last_time.seconds) {
-    s_anim_time.seconds++;
-    changed = true;
-  }
 
-  if(changed) {
-    layer_mark_dirty(s_canvas_layer);
-    app_timer_register(ANIM_DELTA, anim_handler, NULL);
-  } else {
-    s_animating = false;
-  }
-}*/
 
 static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   s_last_time.days = tick_time->tm_mday;
@@ -477,18 +372,14 @@ void battery_state_handler(BatteryChargeState charge) {
  //   conserve_power(false);
 }
 
-void icon_layer_update_callback(Layer *layer, GContext *ctx) {
-    graphics_draw_bitmap_in_rect(ctx, icon_sunrise, GRect(25, 122, 10, 10));    
-    graphics_draw_bitmap_in_rect(ctx, icon_sunset, GRect(105, 122, 10, 10));    
 
-}
 
 void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
 
     if (!battery_plugged) {
-      /*if (battery_level < 20){
+      if (battery_level < 20){
         graphics_draw_bitmap_in_rect(ctx, icon_battery_low, GRect(61, 0, 24, 12));
         graphics_context_set_stroke_color(ctx, GColorBlack);
         graphics_context_set_fill_color(ctx, GColorWhite);
@@ -499,12 +390,9 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
           graphics_context_set_stroke_color(ctx, GColorBlack);
           graphics_context_set_fill_color(ctx, GColorWhite);
           graphics_fill_rect(ctx, GRect(68, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
-      }*/
-        if(config_get(PERSIST_KEY_BATTERY)){
-          graphics_context_set_stroke_color(ctx, GColorBlack);
-          graphics_context_set_fill_color(ctx, GColorBlack);
-          graphics_fill_rect(ctx, GRect(110, 17, (uint8_t)((battery_level / 100.0) * 25.0), 1), 0, GCornerNone);    
         }
+      }
+        
       
     
 
@@ -532,40 +420,14 @@ static void window_load(Window *window) {
   icon_battery_charge = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGE);
   icon_bt_disconected = gbitmap_create_with_resource(RESOURCE_ID_BLUETOOTH_DISCONNECTED);
 
-  icon_sunrise = gbitmap_create_with_resource(RESOURCE_ID_ITEM_SUNRISE);
-  icon_sunset = gbitmap_create_with_resource(RESOURCE_ID_ITEM_SUNSET);
   
- // if (config_get(PERSIST_HAND_TYPE) == 1){
-  minute_hand_path_stylized = gpath_create(&MINUTE_HAND_PATH_POINTS);
   minute_hand_path = gpath_create(&MINUTE_HAND_PATH_POINTS_FLAT);
   gpath_move_to(minute_hand_path, grect_center_point(&GRECT_FULL_WINDOW));
-  gpath_move_to(minute_hand_path_stylized, grect_center_point(&GRECT_FULL_WINDOW));
-
-  minute_hand_path_inner = gpath_create(&MINUTE_HAND_PATH_INNER_POINTS);
-  gpath_move_to(minute_hand_path_inner, grect_center_point(&GRECT_FULL_WINDOW));
-
-  
-  hour_hand_path_stylized = gpath_create(&HOUR_HAND_PATH_POINTS);
   hour_hand_path = gpath_create(&HOUR_HAND_PATH_POINTS_FLAT);
-
-
-  gpath_move_to(hour_hand_path_stylized, grect_center_point(&GRECT_FULL_WINDOW));
   gpath_move_to(hour_hand_path, grect_center_point(&GRECT_FULL_WINDOW));
-
-  hour_hand_path_inner = gpath_create(&HOUR_HAND_PATH_INNER_POINTS);
-  gpath_move_to(hour_hand_path_inner, grect_center_point(&GRECT_FULL_WINDOW));
 
   Layer *window_layer = window_get_root_layer(window);
   GRect bounds = layer_get_bounds(window_layer);
-
-  if (config_get(PERSIST_BACKTYPE==2)){
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_BACKGRONUD_MODERN);
-  s_bitmapbackground_layer = bitmap_layer_create(GRect(0,0,144,168));
-  if (config_get(PERSIST_BACKTYPE) == 2){
-    bitmap_layer_set_bitmap(s_bitmapbackground_layer, s_background_bitmap);
-  }
-  layer_add_child(window_layer, bitmap_layer_get_layer(s_bitmapbackground_layer));
-}
 
   s_bg_layer = layer_create(bounds);
   layer_set_update_proc(s_bg_layer, bg_update_proc);
@@ -623,11 +485,7 @@ static void window_load(Window *window) {
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
 
-  //Layer de los iconos
-  /*s_icons_layer = layer_create(GRect(0,0,144,166));
-  layer_set_update_proc(s_icons_layer, &icon_layer_update_callback);
-  layer_add_child(window_layer, s_icons_layer);
-  */
+ 
   // layer del tiempo
   s_time_layer = text_layer_create(GRect(0, 135, 144, 30));
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -645,14 +503,12 @@ static void window_load(Window *window) {
 }
 
 static void window_unload(Window *window) {
-  gbitmap_destroy(s_background_bitmap);
   gbitmap_destroy(icon_battery);
   gbitmap_destroy(icon_battery_low);
   gbitmap_destroy(icon_battery_blank);
   gbitmap_destroy(icon_battery_charge);
   gbitmap_destroy(icon_bt_disconected);
-  gbitmap_destroy(icon_sunset);
-  gbitmap_destroy(icon_sunrise);
+
 
   fonts_unload_custom_font(s_time_font);
 
@@ -661,7 +517,6 @@ static void window_unload(Window *window) {
   layer_destroy(s_canvas_layer);
   layer_destroy(s_bg_layer);
   layer_destroy(s_battery_layer);
-  layer_destroy(s_icons_layer);
 
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);
@@ -670,11 +525,7 @@ static void window_unload(Window *window) {
  
 
   gpath_destroy(minute_hand_path);
-  gpath_destroy(minute_hand_path_stylized);
-  gpath_destroy(minute_hand_path_inner);
-  gpath_destroy(hour_hand_path_inner);
   gpath_destroy(hour_hand_path);
-  gpath_destroy(hour_hand_path_stylized);
 
   // Self destroying
   window_destroy(s_main_window);
@@ -702,8 +553,6 @@ void main_window_push() {
   time_t t = time(NULL);
   struct tm *tm_now = localtime(&t);
   tick_handler(tm_now, SECOND_UNIT);
- // s_animating = false;
- // app_timer_register(1000, anim_handler, NULL);
 
   if(config_get(PERSIST_KEY_BT)) {
     bluetooth_connection_service_subscribe(bt_handler);

@@ -37,26 +37,7 @@
   [ "location", "configurable" ],
   "resources": {
     "media": [
-    {
-      "type": "png",
-      "name": "IMAGE_BACKGROUND",
-      "file": "images/background.png"
-    },
-    {
-      "type": "png",
-      "name": "IMAGE_BACKGROUND_NO_MINUTE",
-      "file": "images/background_no_minute.png"
-    },
-    {
-      "type": "png",
-      "name": "IMAGE_BACKGROUND_NO_MUNITE_AND_NUMBER",
-      "file": "images/background_no_min_num.png"
-    },
-    {
-      "type": "png",
-      "name": "IMAGE_BACKGROUND_ALL_NUMBERS_DATE",
-      "file": "images/background_all_numbers_date.png"
-    },
+    
     {
       "file": "images/battery-icon.png",
       "name": "BATTERY_ICON",
@@ -78,41 +59,9 @@
       "type": "png"
     },
     {
-      "type": "png",
-      "name": "IMAGE_BACKGROUND_MAIN_NUMBERS",
-      "file": "images/background_main_numbers.png"
-    },
-    {
-      "type": "png",
-      "name": "IMAGE_BACKGROUND_MAIN_NUMBERS_DATE",
-      "file": "images/background_main_numbers_date.png"
-    },
-    {
-      "type": "png",
-      "name": "IMAGE_BACKGROUND_OLD_FONT",
-      "file": "images/background_old_font.png"
-    },
-    {
         "type": "png",
         "name": "BLUETOOTH_DISCONNECTED",
         "file": "images/bluetooth-disconected.png"
-    } 
-    ,
-    {
-        "type": "png",
-        "name": "BACKGRONUD_MODERN",
-        "file": "images/modern_background_new.png"
-    } 
-    ,
-    {
-        "type": "png",
-        "name": "ITEM_SUNRISE",
-        "file": "images/sunrise.png"
-    },
-    {
-        "type": "png",
-        "name": "ITEM_SUNSET",
-        "file": "images/sunset.png"
     },
     {
         "type":"font",
