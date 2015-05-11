@@ -27,6 +27,16 @@
 #define HAND_TYPE 17
 
 
+#define TEMPERATURE 18
+#define CONDITIONS 19
+#define HUMIDITY 20
+#define WIND 21
+#define SUNSET 22
+#define SUNRISE 23
+#define DIGITALTIME 24
+
+
+
 const GPathInfo MINUTE_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) { 
   { HOUR_HAND_TICKNESS*-1, 0 },
   { HOUR_HAND_TICKNESS, 0 }, 
@@ -662,10 +672,41 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
               config_set(PERSIST_HAND_LENGTH_HOUR, (int)t->value->int32);     
 
       break;     
-       case HAND_TYPE:
+      case HAND_TYPE:
               config_set(PERSIST_HAND_TYPE, (int)t->value->int32);     
 
-      break;         
+      break;   
+      case TEMPERATURE:
+              config_set(PERSIST_TEMPERATURE, (int)t->value->int32);     
+
+      break;   
+      case CONDITIONS:
+              config_set(PERSIST_CONDITIONS, (int)t->value->int32);     
+
+      break;   
+      case HUMIDITY:
+              config_set(PERSIST_HUMIDITY, (int)t->value->int32);     
+
+      break;   
+      case WIND:
+              config_set(PERSIST_WIND, (int)t->value->int32);     
+
+      break;   
+      case SUNSET:
+              config_set(PERSIST_SUNSET, (int)t->value->int32);     
+
+      break;   
+      case SUNRISE:
+              config_set(PERSIST_SUNRISE, (int)t->value->int32);     
+
+      break;   
+      case DIGITALTIME:
+              config_set(PERSIST_DIGITALTIME, (int)t->value->int32);     
+
+      break;   
+
+
+
       default:
         APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
       break;
@@ -678,7 +719,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
 
- snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s %s\n%s %s\n%s - %s", temperature_buffer, conditions_buffer,humidity_buffer,wind_speed_buffer,sunrise_buffer, sunset_buffer);
+  snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s %s\n%s %s\n%s  %s", temperature_buffer, conditions_buffer,humidity_buffer,wind_speed_buffer,sunrise_buffer, sunset_buffer);
   text_layer_set_text(s_weather_layer, weather_layer_buffer);
  /* Tuple *t = dict_read_first(iter);
   while(t) {
