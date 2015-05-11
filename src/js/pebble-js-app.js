@@ -111,7 +111,15 @@ Pebble.addEventListener('webviewclosed',
       'HAND_LENGTH_SEC_INVERSE': parseInt(configuration.secInvLen),
       'HAND_LENGTH_MIN': parseInt(configuration.minLen),
       'HAND_LENGTH_HOUR': parseInt(configuration.hourLen),
-      'HAND_TYPE': parseInt(configuration.handType)
+      'HAND_TYPE': parseInt(configuration.handType),
+      'TEMPERATURE': parseInt(configuration.temperature),
+      'CONDITIONS': parseInt(configuration.conditions),
+      'HUMIDITY': parseInt(configuration.humidity),
+      'WIND': parseInt(configuration.wind),
+      'SUNRISE': parseInt(configuration.sunrise),
+      'SUNSET': parseInt(configuration.sunset),
+      'DIGITALTIME': parseInt(configuration.digitaltime),
+      
     };
 
 

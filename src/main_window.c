@@ -321,8 +321,9 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   snprintf(s_day_in_month_buffer, sizeof(s_day_in_month_buffer), "%d", s_last_time.days);
   strftime(s_weekday_buffer, sizeof(s_weekday_buffer), "%a", tick_time);
   strftime(s_month_buffer, sizeof(s_month_buffer), "%b", tick_time);
-  strftime(s_time_buffer, sizeof(s_time_buffer), "%l:%M%P", tick_time);
-
+  if (config_get(PERSIST_DIGITALTIME)){
+    strftime(s_time_buffer, sizeof(s_time_buffer), "%l:%M%P", tick_time);
+  }
   text_layer_set_text(s_weekday_layer, s_weekday_buffer);
   text_layer_set_text(s_day_in_month_layer, s_day_in_month_buffer);
   text_layer_set_text(s_month_layer, s_month_buffer);
@@ -335,14 +336,14 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
    //  APP_LOG(APP_LOG_LEVEL_INFO, "Before:");
   if(tick_time->tm_hour != s_last_unit_weather_change) {
     // APP_LOG(APP_LOG_LEVEL_INFO, "Send:");
+    if (config_get(PERSIST_TEMPERATURE || config_get(PERSIST_CONDITIONS) || config_get(PERSIST_HUMIDITY
+      || config_get(PERSIST_WIND || config_get(PERSIST_SUNRISE || config_get(PERSIST_SUNSET))))))
     s_last_unit_weather_change = tick_time->tm_hour;
     // Begin dictionary
     DictionaryIterator *iter;
     app_message_outbox_begin(&iter);
-
     // Add a key-value pair
     dict_write_uint8(iter, 0, 0);
-
     // Send the message!
     app_message_outbox_send();
   }
@@ -486,7 +487,7 @@ static void window_load(Window *window) {
 
 
  
-  // layer del tiempo
+  // layer de la hora
   s_time_layer = text_layer_create(GRect(0, 135, 144, 30));
   text_layer_set_background_color(s_time_layer, GColorClear);
   text_layer_set_text_color(s_time_layer, GColorWhite);
@@ -578,7 +579,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     // Which key was received?
     switch(t->key) {
     case KEY_TEMPERATURE:
-            if (true){
+            if (config_get(PERSIST_TEMPERATURE)){
               snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
             }else{
               snprintf(temperature_buffer, sizeof(temperature_buffer),"%s","");
@@ -586,7 +587,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
       break;
     case KEY_CONDITIONS:
-            if (config_get(true)==1){
+            if (config_get(PERSIST_CONDITIONS)){
               snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
             }else{
               snprintf(conditions_buffer, sizeof(conditions_buffer), "%s","");
@@ -594,7 +595,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
       break;
      case KEY_HUMIDITY:
-            if (true){
+            if (config_get(PERSIST_HUMIDITY)){
               snprintf(humidity_buffer, sizeof(humidity_buffer), "%d %%", (int)t->value->int32);
             }else{
               snprintf(humidity_buffer, sizeof(humidity_buffer), "%s","");
@@ -602,7 +603,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
       break;
      case KEY_WIND:
-            if (true){
+            if (config_get(PERSIST_WIND)){
               snprintf(wind_speed_buffer, sizeof(wind_speed_buffer), "%s kph", t->value->cstring);
             }else{
               snprintf(wind_speed_buffer, sizeof(wind_speed_buffer), "%s","");
@@ -610,7 +611,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
       break; 
        case KEY_SUNRISE:
-            if (true){
+            if (config_get(PERSIST_SUNRISE)){
               snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s", t->value->cstring);
             }else{
               snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s","");
@@ -618,7 +619,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
       break;   
        case KEY_SUNSET:
-            if (true){
+            if (config_get(PERSIST_SUNSET)){
               snprintf(sunset_buffer, sizeof(sunset_buffer), "%s", t->value->cstring);
             }else{
               snprintf(sunset_buffer, sizeof(sunset_buffer), "%s","");
