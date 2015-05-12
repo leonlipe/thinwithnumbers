@@ -70,6 +70,50 @@ static bool battery_plugged;
 static GFont s_time_font;
 
 
+static int32_t getMarkSize(int h){
+  int32_t resultado = 75;
+  switch(h){
+    case 0  :
+       resultado = 72;
+       break; 
+    case 1  :
+       resultado = 90;
+       break; 
+    case 2  :
+       resultado = 75;
+       break;    
+    case 3  :
+       resultado = 65;
+       break;    
+    case 4  :
+       resultado = 75;
+       break;    
+    case 5  :
+       resultado = 90;
+       break;    
+    case 6  :
+       resultado = 72;
+       break;    
+    case 7  :
+       resultado = 90;
+       break;    
+    case 8  :
+       resultado = 75;
+       break;    
+    case 9  :
+       resultado = 60;
+       break;    
+    case 10  :
+       resultado = 75;
+       break;    
+    case 11  :
+       resultado = 90;
+       break;       
+} 
+return resultado;
+}
+
+
 static void bg_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   GPoint center = grect_center_point(&bounds);
@@ -110,7 +154,10 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
 graphics_context_set_stroke_color(ctx, GColorWhite);
 
 if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
-  for(int h = 0; h < 12; h++) {   
+  for(int h = 0; h < 12; h++) { 
+
+
+
         GPoint point = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
           //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
@@ -122,9 +169,9 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
         GPoint point02 = (GPoint) {
           //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
           //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
+          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 12) * getMarkSize(h) / TRIG_MAX_RATIO) + center.x,
           //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
+          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * getMarkSize(h) / TRIG_MAX_RATIO) + center.y,
         };
           
           #if defined(ANTIALIASING) && defined(PBL_COLOR)
@@ -141,7 +188,7 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
 
   // Make markers
   graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, GRect(config_get(PERSIST_MARGIN), config_get(PERSIST_MARGIN), bounds.size.w - (2*config_get(PERSIST_MARGIN)), bounds.size.h - (2*config_get(PERSIST_MARGIN))), 0, GCornerNone);
+  //graphics_fill_rect(ctx, GRect(config_get(PERSIST_MARGIN), config_get(PERSIST_MARGIN), bounds.size.w - (2*config_get(PERSIST_MARGIN)), bounds.size.h - (2*config_get(PERSIST_MARGIN))), 0, GCornerNone);
 } 
  
   if (config_get(PERSIST_KEY_DAY)==1){
@@ -151,6 +198,8 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
   
 
 }
+
+
 
 static GPoint make_hand_point(int quantity, int intervals, int len, GPoint center) {
   return (GPoint) {

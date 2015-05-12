@@ -5,7 +5,7 @@
 // #define ANTIALIASING
 
 // Layout
-#define THICKNESSMARKS 3 
+#define THICKNESSMARKS 3
 #define THICKNESS 4
 #define ANIM_DELTA 34
 #define HOUR_HAND_TICKNESS  3
