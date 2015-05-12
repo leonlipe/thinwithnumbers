@@ -215,7 +215,11 @@ static void draw_proc(Layer *layer, GContext *ctx) {
               //graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
               //graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
              
-              graphics_context_set_stroke_color(ctx, GColorWhite);
+              //if(y==0 || y==THICKNESS-1){
+              //  graphics_context_set_stroke_color(ctx, GColorBlack);
+              //}else{
+                graphics_context_set_stroke_color(ctx, GColorWhite);
+              //}
               
               graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
               graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
