@@ -175,8 +175,14 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
         };
           
           #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                  graphics_draw_line_antialiased(ctx, GPoint(point02.x + x, point02.y + y), GPoint(point.x + x, point.y + y), GColorWhite);
+         for(int y = 0; y < THICKNESSMARKS; y++) {
+              for(int x = 0; x < THICKNESSMARKS; x++) {
+                graphics_draw_line_antialiased(ctx, GPoint(point02.x + x, point02.y + y), GPoint(point.x + x, point.y + y), GColorWhite);
+                }
+            }
           #else
+              
+                  
             for(int y = 0; y < THICKNESSMARKS; y++) {
               for(int x = 0; x < THICKNESSMARKS; x++) {
                 graphics_draw_line(ctx, GPoint(point02.x + x, point02.y + y), GPoint(point.x + x, point.y + y));
