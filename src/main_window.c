@@ -214,6 +214,25 @@ static GPoint make_hand_point(int quantity, int intervals, int len, GPoint cente
   };
 }
 
+static void handsSeparators(GContext *ctx, int32_t units){
+  if (units == 0){
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+    graphics_draw_line(ctx, GPoint(72, 13), GPoint(72+THICKNESS, 13));
+  }
+  if (units == 15){
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+    graphics_draw_line(ctx, GPoint(135, 83), GPoint(135, 83+THICKNESS));
+  }
+  if (units == 30){
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+    graphics_draw_line(ctx, GPoint(72, 157), GPoint(72+THICKNESS, 157));
+  }
+  if (units == 45){
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+    graphics_draw_line(ctx, GPoint(2, 83), GPoint(2, 83+THICKNESS));
+  }
+}
+
 static void draw_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   GPoint center = grect_center_point(&bounds);
@@ -225,6 +244,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   if (now_plus_30_seconds > 60){
     now_plus_30_seconds -= 60;
   }
+
   // Plot hand ends
   GPoint second_hand_inverse = make_hand_point(now_plus_30_seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE), center);
  // GPoint second_hand_inverse_circle = make_hand_point(now_plus_30_seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE)+4, center);
@@ -234,8 +254,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   GPoint minute_hand_short = make_hand_point(now.minutes, 60, (config_get(PERSIST_HAND_LENGTH_MIN) - config_get(PERSIST_MARGIN) + 2), center);
 
   // Adjust for minutes through the hour
-  float minute_angle = TRIG_MAX_ANGLE * now.minutes / 60;
-  float hour_angle = TRIG_MAX_ANGLE * now.hours / 12;
+  float minute_angle = TRIG_MAX_ANGLE * now.minutes / 60; //now.minutes
+  float hour_angle = TRIG_MAX_ANGLE * now.hours / 12; //now.hours
   hour_angle += (minute_angle / TRIG_MAX_ANGLE) * (TRIG_MAX_ANGLE / 12);
 
   // Hour is more accurate
@@ -273,7 +293,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
               //if(y==0 || y==THICKNESS-1){
               //  graphics_context_set_stroke_color(ctx, GColorBlack);
               //}else{
-                graphics_context_set_stroke_color(ctx, GColorWhite);
+              graphics_context_set_stroke_color(ctx, GColorWhite);
               //}
               
               graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
@@ -282,6 +302,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       #endif
     }
   }
+  handsSeparators(ctx, now.minutes);
 }else {
         gpath_rotate_to(hour_hand_path, hour_angle);
         graphics_context_set_fill_color(ctx, GColorWhite);
@@ -301,32 +322,35 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   // Draw seconds hand
                    
   if(config_get(PERSIST_KEY_SECOND_HAND)) {
-    for(int y = 0; y < THICKNESS - 1; y++) {
-      for(int x = 0; x < THICKNESS - 1; x++) {
+    for(int y = 0; y < THICKNESS-1; y++) {
+      for(int x = 0; x < THICKNESS-1; x++) {
         #ifdef PBL_COLOR
                 graphics_context_set_stroke_color(ctx, GColorDarkCandyAppleRed);
         #elif PBL_BW
+                /*if(false){
+                graphics_context_set_stroke_color(ctx, GColorBlack);
+              }else{*/
                 graphics_context_set_stroke_color(ctx, GColorWhite);
+              //}
         #endif
         #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y), GColorDarkCandyAppleRed);
+                graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y ), GPoint(second_hand_short.x + x, second_hand_short.y+y ), GColorDarkCandyAppleRed);
         #else
-                 graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_inverse.x + x, second_hand_inverse.y + y));
-                 graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(second_hand_short.x + x, second_hand_short.y + y));
+                 graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
+                 graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_long.x + x, second_hand_long.y+y ));
         #endif
+
+
                 // Draw second hand tip
         #ifdef PBL_COLOR
-                graphics_context_set_stroke_color(ctx, GColorChromeYellow);
-        #elif PBL_BW
-                graphics_context_set_stroke_color(ctx, GColorWhite);
+                graphics_context_set_stroke_color(ctx, GColorChromeYellow);       
         #endif
         #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                graphics_draw_line_antialiased(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y), GColorChromeYellow);
-        #else
-                graphics_draw_line(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y));
+                graphics_draw_line_antialiased(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y), GColorChromeYellow);        
         #endif
       }
     }
+    handsSeparators(ctx, now.seconds);
   }
   // Draw circle for seconds hand
 /* graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
@@ -482,7 +506,7 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 static void window_load(Window *window) {
 
 
-  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_TIME_18));
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_TIME_24));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -557,7 +581,7 @@ static void window_load(Window *window) {
 
  
   // layer de la hora
-  s_time_layer = text_layer_create(GRect(0, 135, 144, 30));
+  s_time_layer = text_layer_create(GRect(0, 125, 144, 30));
   text_layer_set_background_color(s_time_layer, GColorClear);
   text_layer_set_text_color(s_time_layer, GColorWhite);
   text_layer_set_font(s_time_layer,s_time_font);

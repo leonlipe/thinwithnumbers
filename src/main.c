@@ -3,7 +3,7 @@
 #include "config.h"
 
 int main() {
-  //setlocale(LC_TIME, "es_ES");
+  setlocale(LC_TIME,  i18n_get_system_locale());
   comm_init();
   config_init();
   main_init();

@@ -4,7 +4,7 @@
   "longName": "Analog Simple Watch Face",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.7",
+  "versionLabel": "1.8",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite"],
   "watchapp": {
@@ -89,7 +89,12 @@
         "type":"font",
         "name":"FONT_TIME_18",
         "file":"fonts/btseps2.ttf"
-      }    
+      },
+       {
+        "type":"font",
+        "name":"FONT_TIME_24",
+        "file":"fonts/btseps2.ttf"
+      }      
     ]
   }
 }
