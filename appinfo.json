@@ -4,7 +4,7 @@
   "longName": "Analog Simple Watch Face",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.8",
+  "versionLabel": "1.9",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite"],
   "watchapp": {

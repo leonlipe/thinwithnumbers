@@ -96,7 +96,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
 Pebble.addEventListener('webviewclosed',
   function(e) {
      var configuration = JSON.parse(decodeURIComponent(e.response));
-    console.log('Configuration window returned:' ,JSON.stringify(configuration));
+    //console.log('Configuration window returned:' ,JSON.stringify(configuration));
 
      
     var configs = {
@@ -106,11 +106,11 @@ Pebble.addEventListener('webviewclosed',
       'KEY_BATTERY': parseInt(configuration.bat),
       'KEY_SECOND_HAND': parseInt(configuration.showSec),
       'BACKTYPE': parseInt(configuration.back),
-      'MARGIN': parseInt(configuration.margin),
-      'HAND_LENGTH_SEC': parseInt(configuration.secLen),
-      'HAND_LENGTH_SEC_INVERSE': parseInt(configuration.secInvLen),
-      'HAND_LENGTH_MIN': parseInt(configuration.minLen),
-      'HAND_LENGTH_HOUR': parseInt(configuration.hourLen),
+      //'MARGIN': parseInt(configuration.margin),
+      //'HAND_LENGTH_SEC': parseInt(configuration.secLen),
+      //'HAND_LENGTH_SEC_INVERSE': parseInt(configuration.secInvLen),
+      //'HAND_LENGTH_MIN': parseInt(configuration.minLen),
+      //'HAND_LENGTH_HOUR': parseInt(configuration.hourLen),
       'HAND_TYPE': parseInt(configuration.handType),
       'TEMPERATURE': parseInt(configuration.temperature),
       'CONDITIONS': parseInt(configuration.conditions),
@@ -122,6 +122,9 @@ Pebble.addEventListener('webviewclosed',
       
     };
 
+        //console.log('I sent:' ,JSON.stringify(configs));
+
+
 
     Pebble.sendAppMessage(
       configs,
@@ -129,7 +132,7 @@ Pebble.addEventListener('webviewclosed',
         console.log("Sending settings data...");
       },
       function(e) {
-        console.log("Settings feedback failed!");
+        console.log("Settings feedback failed!"+JSON.stringify(e));
       }
     );
   }
