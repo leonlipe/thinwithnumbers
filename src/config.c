@@ -27,6 +27,7 @@ void config_init() {
     persist_write_int(PERSIST_SUNSET, 1);
     persist_write_int(PERSIST_SUNRISE, 1);
     persist_write_int(PERSIST_DIGITALTIME, 1);
+    persist_write_int(PERSIST_INVERTED, 0);
 
   }
 

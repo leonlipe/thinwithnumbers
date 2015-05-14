@@ -34,6 +34,7 @@
 #define SUNSET 22
 #define SUNRISE 23
 #define DIGITALTIME 24
+#define INVERTED 25
 
 
 
@@ -54,6 +55,7 @@ const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) {
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_time_layer;
+static InverterLayer *s_inverter_layer;
 
 static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank,*icon_battery_charge,*icon_bt_disconected;
 
@@ -374,8 +376,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
    // graphics_context_set_stroke_color(ctx, GColorWhite);
     graphics_draw_circle(ctx, GPoint(center.x + 1, center.y + 1), 4);
     graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 3);
-    //graphics_context_set_fill_color(ctx, GColorWhite);
-   // graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 1);
+    graphics_context_set_fill_color(ctx, GColorBlack);
+    graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 1);
   
 #endif
 /*
@@ -594,6 +596,17 @@ static void window_load(Window *window) {
   s_canvas_layer = layer_create(bounds);
   layer_set_update_proc(s_canvas_layer, draw_proc);
   layer_add_child(window_layer, s_canvas_layer);
+
+  s_inverter_layer = inverter_layer_create(bounds);
+
+  if (config_get(PERSIST_INVERTED)){
+    layer_set_hidden(inverter_layer_get_layer(s_inverter_layer),false);
+  }else{
+    layer_set_hidden(inverter_layer_get_layer(s_inverter_layer),true);
+  }
+  
+
+  layer_add_child(window_layer,inverter_layer_get_layer(s_inverter_layer));
 }
 
 static void window_unload(Window *window) {
@@ -611,6 +624,7 @@ static void window_unload(Window *window) {
   layer_destroy(s_canvas_layer);
   layer_destroy(s_bg_layer);
   layer_destroy(s_battery_layer);
+  inverter_layer_destroy(s_inverter_layer);
 
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);
@@ -787,7 +801,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
               config_set(PERSIST_DIGITALTIME, (int)t->value->int32);     
 
       break;   
+      case INVERTED:
+              config_set(PERSIST_INVERTED, (int)t->value->int32);     
 
+      break;
 
 
       default:

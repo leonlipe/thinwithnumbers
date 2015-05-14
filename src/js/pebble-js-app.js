@@ -119,6 +119,7 @@ Pebble.addEventListener('webviewclosed',
       'SUNRISE': parseInt(configuration.sunrise),
       'SUNSET': parseInt(configuration.sunset),
       'DIGITALTIME': parseInt(configuration.digitaltime),
+      'INVERTED': parseInt(configuration.inverted)
       
     };
 
