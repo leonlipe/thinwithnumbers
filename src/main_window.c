@@ -54,6 +54,7 @@ const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) {
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_time_layer, *s_12_layer, *s_9_layer, *s_6_layer;
+static TextLayer *s_m_5_layer, *s_m_10_layer,  *s_m_20_layer,  *s_m_25_layer,  *s_m_35_layer,  *s_m_40_layer,  *s_m_50_layer,  *s_m_55_layer;
 static InverterLayer *s_inverter_layer;
 
 static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank,*icon_battery_charge,*icon_bt_disconected;
@@ -580,6 +581,26 @@ static void window_load(Window *window) {
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
   
+  // Layer de los minutos
+
+  s_m_5_layer = text_layer_create(GRect(110, 10, 85, 28));
+  text_layer_set_text_alignment(s_m_5_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_5_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_5_layer, GColorWhite);
+  text_layer_set_background_color(s_m_5_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_5_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_5_layer, "05");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_5_layer));
+
+  s_m_55_layer = text_layer_create(GRect(25, 10, 85, 28));
+  text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_55_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_55_layer, GColorWhite);
+  text_layer_set_background_color(s_m_55_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_55_layer, "55");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_55_layer));
+
   // Layer de las horas
   s_12_layer = text_layer_create(GRect(64, 10, 85, 28));
   text_layer_set_text_alignment(s_12_layer, GTextAlignmentCenter);
