@@ -25,8 +25,6 @@
 #define HAND_LENGTH_MIN 15
 #define HAND_LENGTH_HOUR 16
 #define HAND_TYPE 17
-
-
 #define TEMPERATURE 18
 #define CONDITIONS 19
 #define HUMIDITY 20
@@ -35,6 +33,7 @@
 #define SUNRISE 23
 #define DIGITALTIME 24
 #define INVERTED 25
+#define NUMBERS 26
 
 
 
@@ -54,7 +53,7 @@ const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) {
 
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
-static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_time_layer;
+static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_time_layer, *s_12_layer, *s_9_layer, *s_6_layer;
 static InverterLayer *s_inverter_layer;
 
 static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank,*icon_battery_charge,*icon_bt_disconected;
@@ -580,8 +579,50 @@ static void window_load(Window *window) {
   text_layer_set_text(s_weather_layer, "");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
 
+  
+  // Layer de las horas
+  s_12_layer = text_layer_create(GRect(64, 10, 85, 28));
+  text_layer_set_text_alignment(s_12_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_12_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_text_color(s_12_layer, GColorWhite);
+  text_layer_set_background_color(s_12_layer, GColorClear);
+  text_layer_set_text_alignment(s_12_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_12_layer, "12");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_12_layer));
 
- 
+  s_6_layer = text_layer_create(GRect(68, 124, 85, 28));
+  text_layer_set_text_alignment(s_6_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_6_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_text_color(s_6_layer, GColorWhite);
+  text_layer_set_background_color(s_6_layer, GColorClear);
+  text_layer_set_text_alignment(s_6_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_6_layer, "6");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_6_layer));
+
+  s_9_layer = text_layer_create(GRect(18, 66, 85, 28));
+  text_layer_set_text_alignment(s_9_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_9_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_text_color(s_9_layer, GColorWhite);
+  text_layer_set_background_color(s_9_layer, GColorClear);
+  text_layer_set_text_alignment(s_9_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_9_layer, "9");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_9_layer));
+
+  if (config_get(PERSIST_NUMBERS)){
+    layer_set_hidden(text_layer_get_layer(s_12_layer),false);
+    if (config_get(PERSIST_DIGITALTIME)){
+      layer_set_hidden(text_layer_get_layer(s_6_layer),true);
+    }else{
+      layer_set_hidden(text_layer_get_layer(s_6_layer),false);
+    }
+    layer_set_hidden(text_layer_get_layer(s_9_layer),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_12_layer),true);
+    layer_set_hidden(text_layer_get_layer(s_6_layer),true);
+    layer_set_hidden(text_layer_get_layer(s_9_layer),true);
+  } 
+
+
   // layer de la hora
   s_time_layer = text_layer_create(GRect(0, 125, 144, 30));
   text_layer_set_background_color(s_time_layer, GColorClear);
@@ -630,6 +671,9 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_day_in_month_layer);
   text_layer_destroy(s_month_layer);
   text_layer_destroy(s_weather_layer);
+  text_layer_destroy(s_12_layer);
+  text_layer_destroy(s_9_layer);
+  text_layer_destroy(s_6_layer);
  
 
   gpath_destroy(minute_hand_path);
@@ -803,6 +847,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;   
       case INVERTED:
               config_set(PERSIST_INVERTED, (int)t->value->int32);     
+
+      break;
+      case NUMBERS:
+              config_set(PERSIST_NUMBERS, (int)t->value->int32);     
 
       break;
 

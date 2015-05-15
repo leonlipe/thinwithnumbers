@@ -34,8 +34,9 @@
 #define PERSIST_SUNRISE 17
 #define PERSIST_DIGITALTIME 18
 #define PERSIST_INVERTED 19
+#define PERSIST_NUMBERS 20
 
-#define NUM_SETTINGS            20
+#define NUM_SETTINGS            21
 
 #define GRECT_FULL_WINDOW GRect(0,0,144,168)
 

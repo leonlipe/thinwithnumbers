@@ -4,7 +4,7 @@
   "longName": "Analog Simple Watch Face",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.10",
+  "versionLabel": "1.11",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite"],
   "watchapp": {
@@ -37,7 +37,8 @@
     "SUNSET": 22,
     "SUNRISE": 23,
     "DIGITALTIME": 24,
-    "INVERTED": 25
+    "INVERTED": 25,
+    "NUMBERS": 26
 
 
   },

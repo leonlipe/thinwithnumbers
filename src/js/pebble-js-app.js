@@ -90,6 +90,8 @@ Pebble.addEventListener('appmessage',
 
 Pebble.addEventListener('showConfiguration', function(e) {
   // Show config page
+  console.log("Show config"+JSON.stringify(e));
+
   Pebble.openURL('https://dl.dropboxusercontent.com/u/318065/thin_config.html');
 });
 
@@ -119,7 +121,8 @@ Pebble.addEventListener('webviewclosed',
       'SUNRISE': parseInt(configuration.sunrise),
       'SUNSET': parseInt(configuration.sunset),
       'DIGITALTIME': parseInt(configuration.digitaltime),
-      'INVERTED': parseInt(configuration.inverted)
+      'INVERTED': parseInt(configuration.inverted),
+      'NUMBERS': parseInt(configuration.numbers)
       
     };
 
