@@ -76,40 +76,40 @@ static int32_t getMarkSize(int h){
   int32_t resultado = 75;
   switch(h){
     case 0  :
-       resultado = 72;
+       resultado = 80;
        break; 
     case 1  :
-       resultado = 90;
+       resultado = 95;
        break; 
     case 2  :
-       resultado = 75;
+       resultado = 78;
        break;    
     case 3  :
-       resultado = 65;
+       resultado = 68;
        break;    
     case 4  :
-       resultado = 75;
+       resultado = 78;
        break;    
     case 5  :
-       resultado = 90;
+       resultado = 93;
        break;    
     case 6  :
-       resultado = 72;
+       resultado = 80;
        break;    
     case 7  :
-       resultado = 90;
+       resultado = 93;
        break;    
     case 8  :
-       resultado = 75;
+       resultado = 79;
        break;    
     case 9  :
-       resultado = 60;
+       resultado = 69;
        break;    
     case 10  :
-       resultado = 75;
+       resultado = 79 ;
        break;    
     case 11  :
-       resultado = 90;
+       resultado = 95;
        break;       
 } 
 return resultado;
@@ -432,15 +432,16 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   if(tick_time->tm_hour != s_last_unit_weather_change) {
     // APP_LOG(APP_LOG_LEVEL_INFO, "Send:");
     if (config_get(PERSIST_TEMPERATURE || config_get(PERSIST_CONDITIONS) || config_get(PERSIST_HUMIDITY
-      || config_get(PERSIST_WIND || config_get(PERSIST_SUNRISE || config_get(PERSIST_SUNSET))))))
-    s_last_unit_weather_change = tick_time->tm_hour;
-    // Begin dictionary
-    DictionaryIterator *iter;
-    app_message_outbox_begin(&iter);
-    // Add a key-value pair
-    dict_write_uint8(iter, 0, 0);
-    // Send the message!
-    app_message_outbox_send();
+      || config_get(PERSIST_WIND || config_get(PERSIST_SUNRISE || config_get(PERSIST_SUNSET)))))){
+        s_last_unit_weather_change = tick_time->tm_hour;
+        // Begin dictionary
+        DictionaryIterator *iter;
+        app_message_outbox_begin(&iter);
+        // Add a key-value pair
+        dict_write_uint8(iter, 0, 0);
+        // Send the message!
+        app_message_outbox_send();
+    }
   }
 }
 
@@ -600,6 +601,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_10_layer, GColorClear);
   text_layer_set_text_alignment(s_m_10_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_10_layer, "10");
+  layer_set_hidden(text_layer_get_layer(s_m_10_layer),true);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_10_layer));
 
   s_m_20_layer = text_layer_create(GRect(120, 110, 85, 28));
@@ -609,6 +611,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_20_layer, GColorClear);
   text_layer_set_text_alignment(s_m_20_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_20_layer, "20");
+  layer_set_hidden(text_layer_get_layer(s_m_20_layer),true);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_20_layer));
 
    s_m_25_layer = text_layer_create(GRect(110, 140, 85, 28));
@@ -618,6 +621,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_25_layer, GColorClear);
   text_layer_set_text_alignment(s_m_25_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_25_layer, "25");
+  layer_set_hidden(text_layer_get_layer(s_m_25_layer),true);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_25_layer));
 
   s_m_35_layer = text_layer_create(GRect(25, 140, 85, 28));
@@ -627,7 +631,8 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_35_layer, GColorClear);
   text_layer_set_text_alignment(s_m_35_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_35_layer, "35");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_35_layer));
+   layer_set_hidden(text_layer_get_layer(s_m_35_layer),true);
+ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_35_layer));
 
   s_m_40_layer = text_layer_create(GRect(15, 110, 85, 28));
   text_layer_set_text_alignment(s_m_40_layer, GTextAlignmentCenter);
@@ -636,7 +641,8 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_40_layer, GColorClear);
   text_layer_set_text_alignment(s_m_40_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_40_layer, "40");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer));
+    layer_set_hidden(text_layer_get_layer(s_m_40_layer),true);
+layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer));
 
   s_m_50_layer = text_layer_create(GRect(25, 10, 85, 28));
   text_layer_set_text_alignment(s_m_50_layer, GTextAlignmentCenter);
@@ -645,7 +651,8 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_50_layer, GColorClear);
   text_layer_set_text_alignment(s_m_50_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_50_layer, "50");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_50_layer));
+   layer_set_hidden(text_layer_get_layer(s_m_50_layer),true);
+ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_50_layer));
 
   s_m_55_layer = text_layer_create(GRect(15, 40, 85, 28));
   text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentCenter);
@@ -655,7 +662,7 @@ static void window_load(Window *window) {
   text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_55_layer, "55");
   layer_set_hidden(text_layer_get_layer(s_m_55_layer),true);
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_55_layer));
+ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_55_layer));
 
   // Layer de las horas
   s_12_layer = text_layer_create(GRect(65, 12, 85, 28));
