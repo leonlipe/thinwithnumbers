@@ -304,7 +304,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       #endif
     }
   }
-  handsSeparators(ctx, now.minutes);
+ // handsSeparators(ctx, now.minutes);
 }else {
         gpath_rotate_to(hour_hand_path, hour_angle);
         graphics_context_set_fill_color(ctx, GColorWhite);
@@ -352,7 +352,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
         #endif
       }
     }
-    handsSeparators(ctx, now.seconds);
+  //  handsSeparators(ctx, now.seconds);
   }
   // Draw circle for seconds hand
 /* graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
@@ -590,6 +590,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_5_layer, GColorClear);
   text_layer_set_text_alignment(s_m_5_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_5_layer, "05");
+  layer_set_hidden(text_layer_get_layer(s_m_5_layer),true);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_5_layer));
 
   s_m_10_layer = text_layer_create(GRect(120, 40, 85, 28));
@@ -653,30 +654,31 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_55_layer, GColorClear);
   text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_55_layer, "55");
+  layer_set_hidden(text_layer_get_layer(s_m_55_layer),true);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_55_layer));
 
   // Layer de las horas
-  s_12_layer = text_layer_create(GRect(64, 10, 85, 28));
+  s_12_layer = text_layer_create(GRect(65, 12, 85, 28));
   text_layer_set_text_alignment(s_12_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_12_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_font(s_12_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_color(s_12_layer, GColorWhite);
   text_layer_set_background_color(s_12_layer, GColorClear);
   text_layer_set_text_alignment(s_12_layer, GTextAlignmentLeft);
   text_layer_set_text(s_12_layer, "12");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_12_layer));
 
-  s_6_layer = text_layer_create(GRect(68, 124, 85, 28));
+  s_6_layer = text_layer_create(GRect(70, 134, 85, 28));
   text_layer_set_text_alignment(s_6_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_6_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_font(s_6_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_color(s_6_layer, GColorWhite);
   text_layer_set_background_color(s_6_layer, GColorClear);
   text_layer_set_text_alignment(s_6_layer, GTextAlignmentLeft);
   text_layer_set_text(s_6_layer, "6");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_6_layer));
 
-  s_9_layer = text_layer_create(GRect(18, 66, 85, 28));
+  s_9_layer = text_layer_create(GRect(18, 73, 85, 28));
   text_layer_set_text_alignment(s_9_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_9_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_font(s_9_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_color(s_9_layer, GColorWhite);
   text_layer_set_background_color(s_9_layer, GColorClear);
   text_layer_set_text_alignment(s_9_layer, GTextAlignmentLeft);
