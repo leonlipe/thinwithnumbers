@@ -592,7 +592,61 @@ static void window_load(Window *window) {
   text_layer_set_text(s_m_5_layer, "05");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_5_layer));
 
-  s_m_55_layer = text_layer_create(GRect(25, 10, 85, 28));
+  s_m_10_layer = text_layer_create(GRect(120, 40, 85, 28));
+  text_layer_set_text_alignment(s_m_10_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_10_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_10_layer, GColorWhite);
+  text_layer_set_background_color(s_m_10_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_10_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_10_layer, "10");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_10_layer));
+
+  s_m_20_layer = text_layer_create(GRect(120, 110, 85, 28));
+  text_layer_set_text_alignment(s_m_20_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_20_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_20_layer, GColorWhite);
+  text_layer_set_background_color(s_m_20_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_20_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_20_layer, "20");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_20_layer));
+
+   s_m_25_layer = text_layer_create(GRect(110, 140, 85, 28));
+  text_layer_set_text_alignment(s_m_25_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_25_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_25_layer, GColorWhite);
+  text_layer_set_background_color(s_m_25_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_25_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_25_layer, "25");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_25_layer));
+
+  s_m_35_layer = text_layer_create(GRect(25, 140, 85, 28));
+  text_layer_set_text_alignment(s_m_35_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_35_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_35_layer, GColorWhite);
+  text_layer_set_background_color(s_m_35_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_35_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_35_layer, "35");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_35_layer));
+
+  s_m_40_layer = text_layer_create(GRect(15, 110, 85, 28));
+  text_layer_set_text_alignment(s_m_40_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_40_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_40_layer, GColorWhite);
+  text_layer_set_background_color(s_m_40_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_40_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_40_layer, "40");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer));
+
+  s_m_50_layer = text_layer_create(GRect(25, 10, 85, 28));
+  text_layer_set_text_alignment(s_m_50_layer, GTextAlignmentCenter);
+  text_layer_set_font(s_m_50_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
+  text_layer_set_text_color(s_m_50_layer, GColorWhite);
+  text_layer_set_background_color(s_m_50_layer, GColorClear);
+  text_layer_set_text_alignment(s_m_50_layer, GTextAlignmentLeft);
+  text_layer_set_text(s_m_50_layer, "50");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_50_layer));
+
+  s_m_55_layer = text_layer_create(GRect(15, 40, 85, 28));
   text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentCenter);
   text_layer_set_font(s_m_55_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   text_layer_set_text_color(s_m_55_layer, GColorWhite);
@@ -695,6 +749,14 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_12_layer);
   text_layer_destroy(s_9_layer);
   text_layer_destroy(s_6_layer);
+  text_layer_destroy(s_m_5_layer);
+  text_layer_destroy(s_m_10_layer);
+  text_layer_destroy(s_m_20_layer);
+  text_layer_destroy(s_m_25_layer);
+  text_layer_destroy(s_m_35_layer);
+  text_layer_destroy(s_m_40_layer);
+  text_layer_destroy(s_m_50_layer);
+  text_layer_destroy(s_m_55_layer);
  
 
   gpath_destroy(minute_hand_path);
