@@ -273,6 +273,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
  if (config_get(PERSIST_HAND_TYPE) == 2){
   // Draw hands
+ // int y = 0;
   for(int y = 0; y < THICKNESS; y++) {
     for(int x = 0; x < THICKNESS; x++) {
       #ifdef PBL_COLOR
@@ -338,11 +339,11 @@ static void draw_proc(Layer *layer, GContext *ctx) {
         #if defined(ANTIALIASING) && defined(PBL_COLOR)
                 graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y ), GPoint(second_hand_short.x + x, second_hand_short.y+y ), GColorDarkCandyAppleRed);
         #else
-                 graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
+                // graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
                  graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_long.x + x, second_hand_long.y+y ));
         #endif
 
-
+/*
                 // Draw second hand tip
         #ifdef PBL_COLOR
                 graphics_context_set_stroke_color(ctx, GColorChromeYellow);       
@@ -350,6 +351,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
         #if defined(ANTIALIASING) && defined(PBL_COLOR)
                 graphics_draw_line_antialiased(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y), GColorChromeYellow);        
         #endif
+*/
       }
     }
   //  handsSeparators(ctx, now.seconds);
