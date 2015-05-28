@@ -325,33 +325,12 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   // Draw seconds hand
                    
   if(config_get(PERSIST_KEY_SECOND_HAND)) {
-    for(int y = 0; y < THICKNESS-1; y++) {
-      for(int x = 0; x < THICKNESS-1; x++) {
-        #ifdef PBL_COLOR
-                graphics_context_set_stroke_color(ctx, GColorDarkCandyAppleRed);
-        #elif PBL_BW
-                /*if(false){
-                graphics_context_set_stroke_color(ctx, GColorBlack);
-              }else{*/
-                graphics_context_set_stroke_color(ctx, GColorWhite);
-              //}
-        #endif
-        #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y ), GPoint(second_hand_short.x + x, second_hand_short.y+y ), GColorDarkCandyAppleRed);
-        #else
-                // graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
-                 graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_long.x + x, second_hand_long.y+y ));
-        #endif
-
-/*
-                // Draw second hand tip
-        #ifdef PBL_COLOR
-                graphics_context_set_stroke_color(ctx, GColorChromeYellow);       
-        #endif
-        #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                graphics_draw_line_antialiased(ctx, GPoint(second_hand_short.x + x, second_hand_short.y + y), GPoint(second_hand_long.x + x, second_hand_long.y + y), GColorChromeYellow);        
-        #endif
-*/
+    for(int y = 0; y < THICKNESS-2; y++) {
+      for(int x = 0; x < THICKNESS-2; x++) {
+       
+        graphics_context_set_stroke_color(ctx, GColorWhite);
+        // graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
+        graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_long.x + x, second_hand_long.y+y ));
       }
     }
   //  handsSeparators(ctx, now.seconds);
