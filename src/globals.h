@@ -7,6 +7,7 @@
 // Layout
 #define THICKNESSMARKS 3
 #define THICKNESS 4
+#define THICKNESS_SECONDS 2
 #define ANIM_DELTA 34
 #define HOUR_HAND_TICKNESS  3
 #define MINUTE_HAND_TICKNESS 3

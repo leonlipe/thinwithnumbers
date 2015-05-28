@@ -175,22 +175,29 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
           //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
           .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * getMarkSize(h) / TRIG_MAX_RATIO) + center.y,
         };
-          
-          #if defined(ANTIALIASING) && defined(PBL_COLOR)
-         for(int y = 0; y < THICKNESSMARKS; y++) {
-              for(int x = 0; x < THICKNESSMARKS; x++) {
-                graphics_draw_line_antialiased(ctx, GPoint(point02.x + x, point02.y + y), GPoint(point.x + x, point.y + y), GColorWhite);
-                }
-            }
-          #else
+
+        GPoint point03 = (GPoint) {
+          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
+          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
+          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 12) * 72 / TRIG_MAX_RATIO) + center.x,
+          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
+          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * 72 / TRIG_MAX_RATIO) + center.y,
+        };
+
+         GPoint point04 = (GPoint) {
+          //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
+          //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
+          .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 12) * 77 / TRIG_MAX_RATIO) + center.x,
+          //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
+          .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 12) * 77 / TRIG_MAX_RATIO) + center.y,
+        };
               
-                  
             for(int y = 0; y < THICKNESSMARKS; y++) {
               for(int x = 0; x < THICKNESSMARKS; x++) {
-                graphics_draw_line(ctx, GPoint(point02.x + x, point02.y + y), GPoint(point.x + x, point.y + y));
+                //graphics_draw_line(ctx, GPoint(point02.x + x, point02.y + y), GPoint(point.x + x, point.y + y));
+                graphics_draw_line(ctx, GPoint(point03.x + x, point03.y + y), GPoint(point04.x + x, point04.y + y));
               }
             }
-          #endif
     
   }
 
@@ -201,7 +208,7 @@ if (config_get(PERSIST_BACKTYPE) == 0 || config_get(PERSIST_BACKTYPE) == 1){
  
   if (config_get(PERSIST_KEY_DAY)==1){
     graphics_context_set_fill_color(ctx, GColorWhite);
-    graphics_fill_rect(ctx, GRect(110, 75, 25,22), 1, GCornersAll);  
+    graphics_fill_rect(ctx, GRect(100, 75, 25,22), 1, GCornersAll);  
   }
   
 
@@ -253,7 +260,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   GPoint second_hand_long = make_hand_point(now.seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC), center);
   GPoint minute_hand_long = make_hand_point(now.minutes, 60, config_get(PERSIST_HAND_LENGTH_MIN), center);
   GPoint second_hand_short = make_hand_point(now.seconds, 60, (config_get(PERSIST_HAND_LENGTH_SEC) - config_get(PERSIST_MARGIN) + 2), center);
-  GPoint minute_hand_short = make_hand_point(now.minutes, 60, (config_get(PERSIST_HAND_LENGTH_MIN) - config_get(PERSIST_MARGIN) + 2), center);
+  GPoint minute_hand_short = make_hand_point(now.minutes, 60, 20, center);
 
   // Adjust for minutes through the hour
   float minute_angle = TRIG_MAX_ANGLE * now.minutes / 60; //now.minutes
@@ -266,8 +273,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
     .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)config_get(PERSIST_HAND_LENGTH_HOUR) / TRIG_MAX_RATIO) + center.y,
   };
   GPoint hour_hand_short = (GPoint) {
-    .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)(config_get(PERSIST_HAND_LENGTH_HOUR) - config_get(PERSIST_MARGIN) + 2) / TRIG_MAX_RATIO) + center.x,
-    .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)(config_get(PERSIST_HAND_LENGTH_HOUR) - config_get(PERSIST_MARGIN) + 2) / TRIG_MAX_RATIO) + center.y,
+    .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)(20) / TRIG_MAX_RATIO) + center.x,
+    .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)(20) / TRIG_MAX_RATIO) + center.y,
   };
 
 
@@ -276,35 +283,19 @@ static void draw_proc(Layer *layer, GContext *ctx) {
  // int y = 0;
   for(int y = 0; y < THICKNESS; y++) {
     for(int x = 0; x < THICKNESS; x++) {
-      #ifdef PBL_COLOR
-            graphics_context_set_stroke_color(ctx, GColorDarkGray);
-      #elif PBL_BW 
-            graphics_context_set_stroke_color(ctx, GColorWhite);
-      #endif
-      #if defined(ANTIALIASING) && defined(PBL_COLOR)
-            graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GColorDarkGray);
-            graphics_draw_line_antialiased(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GColorDarkGray);
-            graphics_context_set_stroke_color(ctx, GColorWhite);
-            graphics_draw_line_antialiased(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y), GColorDarkGray);
-            graphics_draw_line_antialiased(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y), GColorDarkGray);
-      #else
-
-            
-              //graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
-              //graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
-             
-              //if(y==0 || y==THICKNESS-1){
-              //  graphics_context_set_stroke_color(ctx, GColorBlack);
-              //}else{
-              graphics_context_set_stroke_color(ctx, GColorWhite);
-              //}
-              
-              graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
-              graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
-            // End draw hand
-      #endif
+      graphics_context_set_stroke_color(ctx, GColorWhite);
+      graphics_draw_line(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
+      graphics_draw_line(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
     }
   }
+    for(int y = 1; y < 3; y++) {
+    for(int x = 1; x < 3; x++) {
+      graphics_context_set_stroke_color(ctx, GColorWhite);
+      graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_short.x + x, minute_hand_short.y + y));
+      graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_short.x + x, hour_hand_short.y + y));
+    }
+  }
+
  // handsSeparators(ctx, now.minutes);
 }else {
         gpath_rotate_to(hour_hand_path, hour_angle);
@@ -325,8 +316,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   // Draw seconds hand
                    
   if(config_get(PERSIST_KEY_SECOND_HAND)) {
-    for(int y = 0; y < THICKNESS-2; y++) {
-      for(int x = 0; x < THICKNESS-2; x++) {
+    for(int y = 0; y < THICKNESS_SECONDS; y++) {
+      for(int x = 0; x < THICKNESS_SECONDS; x++) {
        
         graphics_context_set_stroke_color(ctx, GColorWhite);
         // graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
@@ -511,13 +502,13 @@ static void window_load(Window *window) {
   layer_set_update_proc(s_bg_layer, bg_update_proc);
   layer_add_child(window_layer, s_bg_layer);
 
-  s_weekday_layer = text_layer_create(GRect(100, 59, 44, 40));
+  s_weekday_layer = text_layer_create(GRect(90, 59, 44, 40));
   text_layer_set_text_alignment(s_weekday_layer, GTextAlignmentCenter);
   text_layer_set_font(s_weekday_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_weekday_layer, GColorWhite);
   text_layer_set_background_color(s_weekday_layer, GColorClear);
 
-  s_day_in_month_layer = text_layer_create(GRect(100, 69, 44, 40));
+  s_day_in_month_layer = text_layer_create(GRect(90, 69, 44, 40));
   text_layer_set_text_alignment(s_day_in_month_layer, GTextAlignmentCenter);
   text_layer_set_font(s_day_in_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
 #ifdef PBL_COLOR
@@ -530,7 +521,7 @@ static void window_load(Window *window) {
 
   
 
-  s_month_layer = text_layer_create(GRect(100, 94, 44, 40));
+  s_month_layer = text_layer_create(GRect(90, 94, 44, 40));
   text_layer_set_text_alignment(s_month_layer, GTextAlignmentCenter);
   text_layer_set_font(s_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_month_layer, GColorWhite);
