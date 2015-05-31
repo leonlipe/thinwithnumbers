@@ -15,7 +15,7 @@ void config_init() {
     persist_write_int(PERSIST_BACKTYPE,0);
     persist_write_int(PERSIST_MARGIN,6);
     persist_write_int(PERSIST_HAND_LENGTH_SEC,65);
-    persist_write_int(PERSIST_HAND_LENGTH_SEC_INVERSE, 20);
+    persist_write_int(PERSIST_HAND_LENGTH_SEC_INVERSE, 15);
     persist_write_int(PERSIST_HAND_LENGTH_MIN, 65);
     persist_write_int(PERSIST_HAND_LENGTH_HOUR, 45);
 
@@ -29,6 +29,7 @@ void config_init() {
     persist_write_int(PERSIST_DIGITALTIME, 1);
     persist_write_int(PERSIST_INVERTED, 0);
     persist_write_int(PERSIST_NUMBERS, 1);
+    persist_write_int(PERSIST_MINUTES, 0);
 
   }
 

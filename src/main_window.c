@@ -241,6 +241,23 @@ static void handsSeparators(GContext *ctx, int32_t units){
     graphics_draw_line(ctx, GPoint(2, 83), GPoint(2, 83+THICKNESS));
   }
 }
+ 
+int inverse_hand(int actual_time){
+  int new_time = actual_time + 30;
+  if (new_time > 60){
+    new_time -= 60;
+  }
+  return new_time;
+}  
+
+int inverse_hand_hour(int actual_time){
+  int new_time = actual_time + 6;
+  if (new_time > 12){
+    new_time -= 12;
+  }
+  return new_time;  
+}
+
 
 static void draw_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
@@ -249,32 +266,31 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   Time now = s_last_time;
 
 
-  int now_plus_30_seconds = now.seconds + 30;
-  if (now_plus_30_seconds > 60){
-    now_plus_30_seconds -= 60;
-  }
+ 
 
   // Plot hand ends
-  GPoint second_hand_inverse = make_hand_point(now_plus_30_seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE), center);
- // GPoint second_hand_inverse_circle = make_hand_point(now_plus_30_seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE)+4, center);
+  GPoint second_hand_inverse = make_hand_point(inverse_hand(now.seconds), 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE), center);
+  GPoint second_hand_inverse_circle = make_hand_point(inverse_hand(now.seconds), 60, config_get(PERSIST_HAND_LENGTH_SEC_INVERSE)+4, center);
   GPoint second_hand_long = make_hand_point(now.seconds, 60, config_get(PERSIST_HAND_LENGTH_SEC), center);
   GPoint minute_hand_long = make_hand_point(now.minutes, 60, config_get(PERSIST_HAND_LENGTH_MIN), center);
-  GPoint second_hand_short = make_hand_point(now.seconds, 60, (config_get(PERSIST_HAND_LENGTH_SEC) - config_get(PERSIST_MARGIN) + 2), center);
-  GPoint minute_hand_short = make_hand_point(now.minutes, 60, 20, center);
+  //GPoint second_hand_short = make_hand_point(now.seconds, 60, (config_get(PERSIST_HAND_LENGTH_SEC) - config_get(PERSIST_MARGIN) + 2), center);
+  GPoint minute_hand_inverse = make_hand_point(inverse_hand(now.minutes), 60, 10, center);
 
   // Adjust for minutes through the hour
   float minute_angle = TRIG_MAX_ANGLE * now.minutes / 60; //now.minutes
   float hour_angle = TRIG_MAX_ANGLE * now.hours / 12; //now.hours
   hour_angle += (minute_angle / TRIG_MAX_ANGLE) * (TRIG_MAX_ANGLE / 12);
+  float hour_angle_inverse = TRIG_MAX_ANGLE * inverse_hand_hour(now.hours) / 12; //now.hours
+  hour_angle_inverse += (minute_angle / TRIG_MAX_ANGLE) * (TRIG_MAX_ANGLE / 12);
 
   // Hour is more accurate
   GPoint hour_hand_long = (GPoint) {
     .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)config_get(PERSIST_HAND_LENGTH_HOUR) / TRIG_MAX_RATIO) + center.x,
     .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)config_get(PERSIST_HAND_LENGTH_HOUR) / TRIG_MAX_RATIO) + center.y,
   };
-  GPoint hour_hand_short = (GPoint) {
-    .x = (int16_t)(sin_lookup(hour_angle) * (int32_t)(20) / TRIG_MAX_RATIO) + center.x,
-    .y = (int16_t)(-cos_lookup(hour_angle) * (int32_t)(20) / TRIG_MAX_RATIO) + center.y,
+  GPoint hour_hand_inverse = (GPoint) {
+    .x = (int16_t)(sin_lookup(hour_angle_inverse) * (int32_t)(8) / TRIG_MAX_RATIO) + center.x,
+    .y = (int16_t)(-cos_lookup(hour_angle_inverse) * (int32_t)(8) / TRIG_MAX_RATIO) + center.y,
   };
 
 
@@ -285,7 +301,9 @@ static void draw_proc(Layer *layer, GContext *ctx) {
     for(int x = 0; x < THICKNESS; x++) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
+      graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_inverse.x + x, minute_hand_inverse.y + y));
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
+      graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_inverse.x + x, hour_hand_inverse.y + y));
       //graphics_draw_line(ctx, GPoint(minute_hand_short.x + x, minute_hand_short.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
       //graphics_draw_line(ctx, GPoint(hour_hand_short.x + x, hour_hand_short.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
     }
@@ -322,19 +340,19 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       for(int x = 0; x < THICKNESS_SECONDS; x++) {
        
         graphics_context_set_stroke_color(ctx, GColorWhite);
-        // graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
+        graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
         graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_long.x + x, second_hand_long.y+y ));
       }
     }
   //  handsSeparators(ctx, now.seconds);
   }
   // Draw circle for seconds hand
-/* graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
+ graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
  graphics_context_set_stroke_color(ctx, GColorBlack);
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 3);
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 5);
  graphics_context_set_stroke_color(ctx, GColorWhite);
-*/
+
 
   // Center
   graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -427,10 +445,10 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
 
 static void bt_handler(bool connected) {
   // Notify disconnection
-  if(!connected && s_connected) {
+/*  if(!connected && s_connected) {
     vibes_long_pulse();
   }
-
+*/
   s_connected = connected;
   layer_mark_dirty(s_battery_layer);
 }
@@ -489,7 +507,7 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 static void window_load(Window *window) {
 
 
-  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_CHICAGO_16));
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_CHICAGO_14));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -567,7 +585,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_5_layer, GColorClear);
   text_layer_set_text_alignment(s_m_5_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_5_layer, "05");
-  layer_set_hidden(text_layer_get_layer(s_m_5_layer),true);
+  layer_set_hidden(text_layer_get_layer(s_m_5_layer),config_get(PERSIST_MINUTES));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_5_layer));
 
   s_m_10_layer = text_layer_create(GRect(120, 40, 85, 28));
@@ -577,7 +595,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_10_layer, GColorClear);
   text_layer_set_text_alignment(s_m_10_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_10_layer, "10");
-  layer_set_hidden(text_layer_get_layer(s_m_10_layer),true);
+  layer_set_hidden(text_layer_get_layer(s_m_10_layer),config_get(PERSIST_MINUTES));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_10_layer));
 
   s_m_20_layer = text_layer_create(GRect(120, 110, 85, 28));
@@ -587,7 +605,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_20_layer, GColorClear);
   text_layer_set_text_alignment(s_m_20_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_20_layer, "20");
-  layer_set_hidden(text_layer_get_layer(s_m_20_layer),true);
+  layer_set_hidden(text_layer_get_layer(s_m_20_layer),config_get(PERSIST_MINUTES));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_20_layer));
 
    s_m_25_layer = text_layer_create(GRect(110, 140, 85, 28));
@@ -597,7 +615,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_25_layer, GColorClear);
   text_layer_set_text_alignment(s_m_25_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_25_layer, "25");
-  layer_set_hidden(text_layer_get_layer(s_m_25_layer),true);
+  layer_set_hidden(text_layer_get_layer(s_m_25_layer),config_get(PERSIST_MINUTES));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_25_layer));
 
   s_m_35_layer = text_layer_create(GRect(25, 140, 85, 28));
@@ -607,7 +625,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_35_layer, GColorClear);
   text_layer_set_text_alignment(s_m_35_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_35_layer, "35");
-   layer_set_hidden(text_layer_get_layer(s_m_35_layer),true);
+   layer_set_hidden(text_layer_get_layer(s_m_35_layer),config_get(PERSIST_MINUTES));
  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_35_layer));
 
   s_m_40_layer = text_layer_create(GRect(15, 110, 85, 28));
@@ -617,7 +635,7 @@ static void window_load(Window *window) {
   text_layer_set_background_color(s_m_40_layer, GColorClear);
   text_layer_set_text_alignment(s_m_40_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_40_layer, "40");
-    layer_set_hidden(text_layer_get_layer(s_m_40_layer),true);
+    layer_set_hidden(text_layer_get_layer(s_m_40_layer),config_get(PERSIST_MINUTES));
 layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer));
 
   s_m_50_layer = text_layer_create(GRect(25, 10, 85, 28));
@@ -627,7 +645,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
   text_layer_set_background_color(s_m_50_layer, GColorClear);
   text_layer_set_text_alignment(s_m_50_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_50_layer, "50");
-   layer_set_hidden(text_layer_get_layer(s_m_50_layer),true);
+   layer_set_hidden(text_layer_get_layer(s_m_50_layer),config_get(PERSIST_MINUTES));
  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_50_layer));
 
   s_m_55_layer = text_layer_create(GRect(15, 40, 85, 28));
@@ -637,31 +655,31 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
   text_layer_set_background_color(s_m_55_layer, GColorClear);
   text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentLeft);
   text_layer_set_text(s_m_55_layer, "55");
-  layer_set_hidden(text_layer_get_layer(s_m_55_layer),true);
+  layer_set_hidden(text_layer_get_layer(s_m_55_layer),config_get(PERSIST_MINUTES));
  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_55_layer));
 
   // Layer de las horas
-  s_12_layer = text_layer_create(GRect(65, 12, 85, 28));
+  s_12_layer = text_layer_create(GRect(65, 10, 85, 28));
   text_layer_set_text_alignment(s_12_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_12_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_font(s_12_layer,s_time_font);
   text_layer_set_text_color(s_12_layer, GColorWhite);
   text_layer_set_background_color(s_12_layer, GColorClear);
   text_layer_set_text_alignment(s_12_layer, GTextAlignmentLeft);
   text_layer_set_text(s_12_layer, "12");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_12_layer));
 
-  s_6_layer = text_layer_create(GRect(70, 134, 85, 28));
+  s_6_layer = text_layer_create(GRect(70, 140, 85, 28));
   text_layer_set_text_alignment(s_6_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_6_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_font(s_6_layer, s_time_font);
   text_layer_set_text_color(s_6_layer, GColorWhite);
   text_layer_set_background_color(s_6_layer, GColorClear);
   text_layer_set_text_alignment(s_6_layer, GTextAlignmentLeft);
   text_layer_set_text(s_6_layer, "6");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_6_layer));
 
-  s_9_layer = text_layer_create(GRect(18, 73, 85, 28));
+  s_9_layer = text_layer_create(GRect(15, 73, 85, 28));
   text_layer_set_text_alignment(s_9_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_9_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
+  text_layer_set_font(s_9_layer, s_time_font);
   text_layer_set_text_color(s_9_layer, GColorWhite);
   text_layer_set_background_color(s_9_layer, GColorClear);
   text_layer_set_text_alignment(s_9_layer, GTextAlignmentLeft);
