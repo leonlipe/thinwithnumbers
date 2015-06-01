@@ -92,7 +92,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
   // Show config page
   console.log("Show config"+JSON.stringify(e));
 
-  Pebble.openURL('https://dl.dropboxusercontent.com/u/318065/thin_config.html');
+  Pebble.openURL('https://dl.dropboxusercontent.com/u/318065/analogy_config.html');
 });
 
 Pebble.addEventListener('webviewclosed',
@@ -107,22 +107,22 @@ Pebble.addEventListener('webviewclosed',
       'KEY_BT': parseInt(configuration.bt),
       'KEY_BATTERY': parseInt(configuration.bat),
       'KEY_SECOND_HAND': parseInt(configuration.showSec),
-      'BACKTYPE': parseInt(configuration.back),
+      //'BACKTYPE': parseInt(configuration.back),
       //'MARGIN': parseInt(configuration.margin),
       //'HAND_LENGTH_SEC': parseInt(configuration.secLen),
       //'HAND_LENGTH_SEC_INVERSE': parseInt(configuration.secInvLen),
       //'HAND_LENGTH_MIN': parseInt(configuration.minLen),
       //'HAND_LENGTH_HOUR': parseInt(configuration.hourLen),
-      'HAND_TYPE': parseInt(configuration.handType),
+      //'HAND_TYPE': parseInt(configuration.handType),
       'TEMPERATURE': parseInt(configuration.temperature),
-      'CONDITIONS': parseInt(configuration.conditions),
+      //'CONDITIONS': parseInt(configuration.conditions),
       'HUMIDITY': parseInt(configuration.humidity),
-      'WIND': parseInt(configuration.wind),
+      //'WIND': parseInt(configuration.wind),
       'SUNRISE': parseInt(configuration.sunrise),
       'SUNSET': parseInt(configuration.sunset),
-      'DIGITALTIME': parseInt(configuration.digitaltime),
-      'INVERTED': parseInt(configuration.inverted),
-      'NUMBERS': parseInt(configuration.numbers)
+      //'DIGITALTIME': parseInt(configuration.digitaltime),
+      'INVERTED': parseInt(configuration.inverted)
+      //'NUMBERS': parseInt(configuration.numbers)
       
     };
 

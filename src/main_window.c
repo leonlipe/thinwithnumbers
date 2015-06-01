@@ -115,6 +115,23 @@ static int32_t getMarkSize(int h){
 return resultado;
 }
 
+static int32_t getMarkHourSize(int h){
+  int32_t resultado = 75;
+  if (h>0 && h<=7){
+    resultado = 90;
+  }else if (h>7 && h<=23){
+    resultado = 70;
+  }else if (h>23 && h<=37){
+    resultado = 82;
+  }else if (h>37 && h<=53){
+    resultado = 82;
+  }else if (h>53 && h<=60){
+    resultado = 70;
+  }
+
+
+return resultado;
+}
 
 static void bg_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
@@ -122,7 +139,7 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_stroke_color(ctx, GColorWhite);
 
   
-  if (config_get(PERSIST_BACKTYPE) == 1){
+  if (config_get(PERSIST_BACKTYPE) == 0){
 
     for(int h = 0; h < 60; h++) {   
           GPoint point = (GPoint) {
@@ -132,18 +149,14 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
             //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
             .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(3 * config_get(PERSIST_HAND_LENGTH_SEC)) / TRIG_MAX_RATIO) + center.y,
           };
-          GPoint point02 = (GPoint) {
+        /*  GPoint point02 = (GPoint) {
             //int32_t second_angle = TRIG_MAX_ANGLE * t.tm_sec / 60;
             //secondHand.x = (sin_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.x;
-            .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.x,
+            .x = (int16_t)(sin_lookup(TRIG_MAX_ANGLE * h / 60) * getMarkHourSize(h) / TRIG_MAX_RATIO) + center.x,
             //secondHand.y = (-cos_lookup(second_angle) * secondHandLength / TRIG_MAX_RATIO) + center.y;
-            .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * (int32_t)(60) / TRIG_MAX_RATIO) + center.y,
-          };               
-            #if defined(ANTIALIASING) && defined(PBL_COLOR)
-                    graphics_draw_line_antialiased(ctx, GPoint(point02.x , point02.y ), GPoint(point.x, point.y), GColorWhite);
-            #else
-                  graphics_draw_line(ctx, GPoint(point02.x, point02.y), GPoint(point.x, point.y));
-            #endif
+            .y = (int16_t)(-cos_lookup(TRIG_MAX_ANGLE * h / 60) * getMarkHourSize(h) / TRIG_MAX_RATIO) + center.y,
+          }; */              
+          graphics_draw_line(ctx, GPoint(center.x, center.y), GPoint(point.x, point.y));
       
     }
 
@@ -300,6 +313,8 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   for(int y = 0; y < THICKNESS; y++) {
     for(int x = 0; x < THICKNESS; x++) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
+
+      //graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_inverse.x + x, minute_hand_inverse.y + y));
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
@@ -357,9 +372,6 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   // Center
   graphics_context_set_stroke_color(ctx, GColorBlack);
   graphics_context_set_fill_color(ctx, GColorWhite);
-#if defined(ANTIALIASING) && defined(PBL_COLOR)
-  graphics_fill_circle_antialiased(ctx, GPoint(center.x + 1, center.y + 1), 4, GColorWhite);
-#else
   //graphics_draw_circle(ctx, GPoint(center.x + 1, center.y + 1), 4);
   //graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 3);
   //graphics_context_set_fill_color(ctx, GColorBlack);
@@ -371,7 +383,6 @@ static void draw_proc(Layer *layer, GContext *ctx) {
     graphics_context_set_fill_color(ctx, GColorBlack);
     graphics_fill_circle(ctx, GPoint(center.x + 1, center.y + 1), 1);
   
-#endif
 /*
   // Draw black if disconnected
   if(config_get(PERSIST_KEY_BT) && !s_connected) {
@@ -857,7 +868,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;
      case KEY_HUMIDITY:
             if (config_get(PERSIST_HUMIDITY)){
-              snprintf(humidity_buffer, sizeof(humidity_buffer), "%d%%", (int)t->value->int32);
+              snprintf(humidity_buffer, sizeof(humidity_buffer), "Hum. %d%%", (int)t->value->int32);
             }else{
               snprintf(humidity_buffer, sizeof(humidity_buffer), "%s","");
             }
@@ -956,7 +967,8 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
       break;   
       case INVERTED:
-              config_set(PERSIST_INVERTED, (int)t->value->int32);     
+              config_set(PERSIST_INVERTED, (int)t->value->int32); 
+              //layer_mark_dirty(s_inverter_layer);    
 
       break;
       case NUMBERS:
@@ -979,10 +991,12 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
   snprintf(weather_temp_layer_buffer, sizeof(weather_temp_layer_buffer), "%s", temperature_buffer);
   text_layer_set_text(s_weather_temp_layer, weather_temp_layer_buffer);
-  snprintf(weather_hum_layer_buffer, sizeof(weather_hum_layer_buffer), "Hum. %s", humidity_buffer);
+  snprintf(weather_hum_layer_buffer, sizeof(weather_hum_layer_buffer), "%s", humidity_buffer);
   text_layer_set_text(s_weather_hum_layer, weather_hum_layer_buffer);
   snprintf(weather_sun_layer_buffer, sizeof(weather_sun_layer_buffer), "%s %s", sunrise_buffer, sunset_buffer);
   text_layer_set_text(s_weather_sun_layer, weather_sun_layer_buffer);
+ 
+
  /* Tuple *t = dict_read_first(iter);
   while(t) {
     persist_write_bool(t->key, strcmp(t->value->cstring, "true") == 0 ? true : false);
