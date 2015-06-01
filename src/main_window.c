@@ -510,6 +510,7 @@ static void window_load(Window *window) {
   s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_20));
   s_visitor_14_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_14));
   s_visitor_24_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_24));
+  s_visitor_20_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_20));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -569,10 +570,10 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, s_battery_layer);
 
   // Layer del clima
-  s_weather_temp_layer = text_layer_create(GRect(0, 30, 144, 50));
+  s_weather_temp_layer = text_layer_create(GRect(0, 90, 144, 50));
   text_layer_set_background_color(s_weather_temp_layer, GColorClear);
   text_layer_set_text_color(s_weather_temp_layer, GColorWhite);
-  text_layer_set_font(s_weather_temp_layer, s_visitor_24_font);
+  text_layer_set_font(s_weather_temp_layer, s_visitor_20_font);
   text_layer_set_text_alignment(s_weather_temp_layer, GTextAlignmentCenter);
   text_layer_set_text(s_weather_temp_layer, "");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_temp_layer));
@@ -756,6 +757,7 @@ static void window_unload(Window *window) {
   fonts_unload_custom_font(s_time_font);
   fonts_unload_custom_font(s_visitor_14_font);
   fonts_unload_custom_font(s_visitor_20_font);
+  fonts_unload_custom_font(s_visitor_24_font);
 
 
   layer_destroy(s_canvas_layer);
@@ -977,7 +979,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
   snprintf(weather_temp_layer_buffer, sizeof(weather_temp_layer_buffer), "%s", temperature_buffer);
   text_layer_set_text(s_weather_temp_layer, weather_temp_layer_buffer);
-  snprintf(weather_hum_layer_buffer, sizeof(weather_hum_layer_buffer), "%s", humidity_buffer);
+  snprintf(weather_hum_layer_buffer, sizeof(weather_hum_layer_buffer), "Hum. %s", humidity_buffer);
   text_layer_set_text(s_weather_hum_layer, weather_hum_layer_buffer);
   snprintf(weather_sun_layer_buffer, sizeof(weather_sun_layer_buffer), "%s %s", sunrise_buffer, sunset_buffer);
   text_layer_set_text(s_weather_sun_layer, weather_sun_layer_buffer);
