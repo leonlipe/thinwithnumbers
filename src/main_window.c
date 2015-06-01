@@ -53,7 +53,7 @@ const GPathInfo HOUR_HAND_PATH_POINTS_FLAT = { 4, (GPoint[] ) {
 
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
-static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_layer, *s_time_layer, *s_12_layer, *s_9_layer, *s_6_layer;
+static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_hum_layer , *s_weather_sun_layer,*s_weather_temp_layer, *s_time_layer, *s_12_layer, *s_9_layer, *s_6_layer;
 static TextLayer *s_m_5_layer, *s_m_10_layer,  *s_m_20_layer,  *s_m_25_layer,  *s_m_35_layer,  *s_m_40_layer,  *s_m_50_layer,  *s_m_55_layer;
 static InverterLayer *s_inverter_layer;
 
@@ -69,7 +69,7 @@ static bool s_connected;
 
 static uint8_t battery_level;
 static bool battery_plugged;
-static GFont s_time_font;
+static GFont s_time_font, s_visitor_14_font,s_visitor_20_font,s_visitor_24_font;
 
 
 static int32_t getMarkSize(int h){
@@ -507,7 +507,9 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
 static void window_load(Window *window) {
 
 
-  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_CHICAGO_14));
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_20));
+  s_visitor_14_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_14));
+  s_visitor_24_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_24));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -567,14 +569,29 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, s_battery_layer);
 
   // Layer del clima
-  s_weather_layer = text_layer_create(GRect(0, 90, 144, 50));
-  text_layer_set_background_color(s_weather_layer, GColorClear);
-  text_layer_set_text_color(s_weather_layer, GColorWhite);
-  text_layer_set_font(s_weather_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
-  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_weather_layer, "");
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
+  s_weather_temp_layer = text_layer_create(GRect(0, 30, 144, 50));
+  text_layer_set_background_color(s_weather_temp_layer, GColorClear);
+  text_layer_set_text_color(s_weather_temp_layer, GColorWhite);
+  text_layer_set_font(s_weather_temp_layer, s_visitor_24_font);
+  text_layer_set_text_alignment(s_weather_temp_layer, GTextAlignmentCenter);
+  text_layer_set_text(s_weather_temp_layer, "");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_temp_layer));
 
+  s_weather_hum_layer = text_layer_create(GRect(0, 110, 144, 50));
+  text_layer_set_background_color(s_weather_hum_layer, GColorClear);
+  text_layer_set_text_color(s_weather_hum_layer, GColorWhite);
+  text_layer_set_font(s_weather_hum_layer, s_visitor_14_font);
+  text_layer_set_text_alignment(s_weather_hum_layer, GTextAlignmentCenter);
+  text_layer_set_text(s_weather_hum_layer, "");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_hum_layer));
+ 
+  s_weather_sun_layer = text_layer_create(GRect(0, 120, 144, 50));
+  text_layer_set_background_color(s_weather_sun_layer, GColorClear);
+  text_layer_set_text_color(s_weather_sun_layer, GColorWhite);
+  text_layer_set_font(s_weather_sun_layer, s_visitor_14_font);
+  text_layer_set_text_alignment(s_weather_sun_layer, GTextAlignmentCenter);
+  text_layer_set_text(s_weather_sun_layer, "");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_sun_layer));
   
   // Layer de los minutos
 
@@ -638,7 +655,7 @@ static void window_load(Window *window) {
     layer_set_hidden(text_layer_get_layer(s_m_40_layer),config_get(PERSIST_MINUTES));
 layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer));
 
-  s_m_50_layer = text_layer_create(GRect(25, 10, 85, 28));
+  s_m_50_layer = text_layer_create(GRect(15, 40, 85, 28));
   text_layer_set_text_alignment(s_m_50_layer, GTextAlignmentCenter);
   text_layer_set_font(s_m_50_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   text_layer_set_text_color(s_m_50_layer, GColorWhite);
@@ -648,7 +665,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
    layer_set_hidden(text_layer_get_layer(s_m_50_layer),config_get(PERSIST_MINUTES));
  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_50_layer));
 
-  s_m_55_layer = text_layer_create(GRect(15, 40, 85, 28));
+  s_m_55_layer = text_layer_create(GRect(25, 10, 85, 28));
   text_layer_set_text_alignment(s_m_55_layer, GTextAlignmentCenter);
   text_layer_set_font(s_m_55_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14));
   text_layer_set_text_color(s_m_55_layer, GColorWhite);
@@ -661,7 +678,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
   // Layer de las horas
   s_12_layer = text_layer_create(GRect(65, 10, 85, 28));
   text_layer_set_text_alignment(s_12_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_12_layer,s_time_font);
+  text_layer_set_font(s_12_layer,fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_color(s_12_layer, GColorWhite);
   text_layer_set_background_color(s_12_layer, GColorClear);
   text_layer_set_text_alignment(s_12_layer, GTextAlignmentLeft);
@@ -670,7 +687,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
 
   s_6_layer = text_layer_create(GRect(70, 140, 85, 28));
   text_layer_set_text_alignment(s_6_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_6_layer, s_time_font);
+  text_layer_set_font(s_6_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_color(s_6_layer, GColorWhite);
   text_layer_set_background_color(s_6_layer, GColorClear);
   text_layer_set_text_alignment(s_6_layer, GTextAlignmentLeft);
@@ -679,7 +696,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
 
   s_9_layer = text_layer_create(GRect(15, 73, 85, 28));
   text_layer_set_text_alignment(s_9_layer, GTextAlignmentCenter);
-  text_layer_set_font(s_9_layer, s_time_font);
+  text_layer_set_font(s_9_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD));
   text_layer_set_text_color(s_9_layer, GColorWhite);
   text_layer_set_background_color(s_9_layer, GColorClear);
   text_layer_set_text_alignment(s_9_layer, GTextAlignmentLeft);
@@ -702,7 +719,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
 
 
   // layer de la hora
-  s_time_layer = text_layer_create(GRect(0, 145, 144, 30));
+  s_time_layer = text_layer_create(GRect(0, 135, 144, 30));
   text_layer_set_background_color(s_time_layer, GColorClear);
   text_layer_set_text_color(s_time_layer, GColorWhite);
   text_layer_set_font(s_time_layer,s_time_font);
@@ -737,7 +754,8 @@ static void window_unload(Window *window) {
 
 
   fonts_unload_custom_font(s_time_font);
-
+  fonts_unload_custom_font(s_visitor_14_font);
+  fonts_unload_custom_font(s_visitor_20_font);
 
 
   layer_destroy(s_canvas_layer);
@@ -748,7 +766,9 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);
   text_layer_destroy(s_month_layer);
-  text_layer_destroy(s_weather_layer);
+  text_layer_destroy(s_weather_temp_layer);
+  text_layer_destroy(s_weather_hum_layer);
+  text_layer_destroy(s_weather_sun_layer);
   text_layer_destroy(s_12_layer);
   text_layer_destroy(s_9_layer);
   text_layer_destroy(s_6_layer);
@@ -807,7 +827,9 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   static char wind_speed_buffer[32];
   static char sunrise_buffer[10];
   static char sunset_buffer[10];
-  static char weather_layer_buffer[64];
+  static char weather_temp_layer_buffer[20];
+  static char weather_hum_layer_buffer[20];
+  static char weather_sun_layer_buffer[20];
  // Read first item
   Tuple *t = dict_read_first(iterator);
 
@@ -953,8 +975,12 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
 
-  snprintf(weather_layer_buffer, sizeof(weather_layer_buffer), "%s %s\n%s %s\n%s  %s", temperature_buffer, conditions_buffer,humidity_buffer,wind_speed_buffer,sunrise_buffer, sunset_buffer);
-  text_layer_set_text(s_weather_layer, weather_layer_buffer);
+  snprintf(weather_temp_layer_buffer, sizeof(weather_temp_layer_buffer), "%s", temperature_buffer);
+  text_layer_set_text(s_weather_temp_layer, weather_temp_layer_buffer);
+  snprintf(weather_hum_layer_buffer, sizeof(weather_hum_layer_buffer), "%s", humidity_buffer);
+  text_layer_set_text(s_weather_hum_layer, weather_hum_layer_buffer);
+  snprintf(weather_sun_layer_buffer, sizeof(weather_sun_layer_buffer), "%s %s", sunrise_buffer, sunset_buffer);
+  text_layer_set_text(s_weather_sun_layer, weather_sun_layer_buffer);
  /* Tuple *t = dict_read_first(iter);
   while(t) {
     persist_write_bool(t->key, strcmp(t->value->cstring, "true") == 0 ? true : false);

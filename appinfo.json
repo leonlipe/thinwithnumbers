@@ -118,6 +118,22 @@
         "type":"font",
         "name":"FONT_CHICAGO_18",
         "file":"fonts/chicago.ttf"
+      },
+       {
+        "type":"font",
+        "name":"FONT_VISITOR_20",
+        "file":"fonts/visitor2.ttf"
+      },
+       {
+        "type":"font",
+        "name":"FONT_VISITOR_24",
+        "file":"fonts/visitor2.ttf"
+      }  
+      ,
+       {
+        "type":"font",
+        "name":"FONT_VISITOR_14",
+        "file":"fonts/visitor2.ttf"
       } 
     ]
   }
