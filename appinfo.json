@@ -1,10 +1,10 @@
 {
-  "uuid": "053989a0-ad94-4386-a468-9e62275fe55d",
-  "shortName": "Analog Simple Thin",
-  "longName": "Analog Simple Watch Face",
+  "uuid": "8dbeee03-1c3b-4431-8611-436d98ce7e86",
+  "shortName": "Analogy",
+  "longName": "Analog with numbers WatchFace",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.19",
+  "versionLabel": "1.0",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite"],
   "watchapp": {
