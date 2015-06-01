@@ -857,7 +857,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;
      case KEY_HUMIDITY:
             if (config_get(PERSIST_HUMIDITY)){
-              snprintf(humidity_buffer, sizeof(humidity_buffer), "%d %%", (int)t->value->int32);
+              snprintf(humidity_buffer, sizeof(humidity_buffer), "%d%%", (int)t->value->int32);
             }else{
               snprintf(humidity_buffer, sizeof(humidity_buffer), "%s","");
             }
