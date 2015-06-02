@@ -89,7 +89,7 @@ static int32_t getMarkSize(int h){
 return resultado;
 }
 
-static int32_t getMarkHourSize(int h){
+/*static int32_t getMarkHourSize(int h){
   int32_t resultado = 75;
   if (h>0 && h<=7){
     resultado = 90;
@@ -106,7 +106,7 @@ static int32_t getMarkHourSize(int h){
 
 return resultado;
 }
-
+*/
 
 /*
  Update proc
@@ -204,7 +204,7 @@ static GPoint make_hand_point(int quantity, int intervals, int len, GPoint cente
   };
 }
 
-static void handsSeparators(GContext *ctx, int32_t units){
+/*static void handsSeparators(GContext *ctx, int32_t units){
   if (units == 0){
     graphics_context_set_stroke_color(ctx, GColorBlack);
     graphics_draw_line(ctx, GPoint(72, 13), GPoint(72+THICKNESS, 13));
@@ -222,7 +222,8 @@ static void handsSeparators(GContext *ctx, int32_t units){
     graphics_draw_line(ctx, GPoint(2, 83), GPoint(2, 83+THICKNESS));
   }
 }
- 
+ */
+
 int inverse_hand(int actual_time){
   int new_time = actual_time + 30;
   if (new_time > 60){

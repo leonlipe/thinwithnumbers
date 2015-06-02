@@ -21,9 +21,9 @@ void config_init() {
 
     persist_write_int(PERSIST_HAND_TYPE, 2);
     persist_write_int(PERSIST_TEMPERATURE, 1);
-    persist_write_int(PERSIST_CONDITIONS, 1);
+    persist_write_int(PERSIST_CONDITIONS, 0);
     persist_write_int(PERSIST_HUMIDITY, 1);
-    persist_write_int(PERSIST_WIND, 1);
+    persist_write_int(PERSIST_WIND, 0);
     persist_write_int(PERSIST_SUNSET, 1);
     persist_write_int(PERSIST_SUNRISE, 1);
     persist_write_int(PERSIST_DIGITALTIME, 0);
