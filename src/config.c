@@ -30,6 +30,9 @@ void config_init() {
     persist_write_int(PERSIST_INVERTED, 0);
     persist_write_int(PERSIST_NUMBERS, 1);
     persist_write_int(PERSIST_MINUTES, 0);
+    persist_write_string(PERSIST_WE_TEMP, "");
+    persist_write_string(PERSIST_WE_HUM, "");
+    persist_write_string(PERSIST_WE_SUN, "");
 
   }
 
@@ -42,11 +45,18 @@ void config_deinit(){
   for(int i = 0; i < NUM_SETTINGS; i++) {
      persist_write_int(i,s_arr[i] );
   }
+    persist_write_string(PERSIST_WE_TEMP, temp_text);
+    persist_write_string(PERSIST_WE_HUM, hum_text);
+    persist_write_string(PERSIST_WE_SUN, sun_text);
 }
 void refresh_config(){
   for(int i = 0; i < NUM_SETTINGS; i++) {
     s_arr[i] = persist_read_int(i);
   }
+
+    persist_read_string(PERSIST_WE_TEMP, temp_text, sizeof(temp_text));
+    persist_read_string(PERSIST_WE_HUM, hum_text, sizeof(hum_text));
+    persist_read_string(PERSIST_WE_SUN, sun_text, sizeof(sun_text));
 }
 
 int config_get(int key) {

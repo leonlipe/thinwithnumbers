@@ -176,6 +176,9 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   }
 // Could print weather conditions
 
+
+  
+
 }
 
 static GPoint make_hand_point(int quantity, int intervals, int len, GPoint center) {
@@ -454,7 +457,7 @@ static void window_load(Window *window) {
   text_layer_set_text_color(s_weather_temp_layer, GColorWhite);
   text_layer_set_font(s_weather_temp_layer, s_visitor_20_font);
   text_layer_set_text_alignment(s_weather_temp_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_weather_temp_layer, "");
+  text_layer_set_text(s_weather_temp_layer, temp_text);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_temp_layer));
 
   s_weather_hum_layer = text_layer_create(GRect(0, 110, 144, 50));
@@ -462,7 +465,7 @@ static void window_load(Window *window) {
   text_layer_set_text_color(s_weather_hum_layer, GColorWhite);
   text_layer_set_font(s_weather_hum_layer, s_visitor_14_font);
   text_layer_set_text_alignment(s_weather_hum_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_weather_hum_layer, "");
+  text_layer_set_text(s_weather_hum_layer, hum_text);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_hum_layer));
  
   s_weather_sun_layer = text_layer_create(GRect(0, 120, 144, 50));
@@ -470,7 +473,7 @@ static void window_load(Window *window) {
   text_layer_set_text_color(s_weather_sun_layer, GColorWhite);
   text_layer_set_font(s_weather_sun_layer, s_visitor_14_font);
   text_layer_set_text_alignment(s_weather_sun_layer, GTextAlignmentCenter);
-  text_layer_set_text(s_weather_sun_layer, "");
+  text_layer_set_text(s_weather_sun_layer, sun_text);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_sun_layer));
   
   // Layer de los minutos
@@ -687,9 +690,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   static char wind_speed_buffer[32];
   static char sunrise_buffer[10];
   static char sunset_buffer[10];
-  static char weather_temp_layer_buffer[20];
-  static char weather_hum_layer_buffer[20];
-  static char weather_sun_layer_buffer[20];
+
  // Read first item
   Tuple *t = dict_read_first(iterator);
 
@@ -836,24 +837,10 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
 
-  snprintf(weather_temp_layer_buffer, sizeof(weather_temp_layer_buffer), "%s", temperature_buffer);
-  text_layer_set_text(s_weather_temp_layer, weather_temp_layer_buffer);
-  snprintf(weather_hum_layer_buffer, sizeof(weather_hum_layer_buffer), "%s", humidity_buffer);
-  text_layer_set_text(s_weather_hum_layer, weather_hum_layer_buffer);
-  snprintf(weather_sun_layer_buffer, sizeof(weather_sun_layer_buffer), "%s %s", sunrise_buffer, sunset_buffer);
-  text_layer_set_text(s_weather_sun_layer, weather_sun_layer_buffer);
- 
+  snprintf(temp_text, sizeof(temp_text), "%s", temperature_buffer);
+  snprintf(hum_text, sizeof(hum_text), "%s", humidity_buffer);
+  snprintf(sun_text, sizeof(sun_text), "%s %s", sunrise_buffer, sunset_buffer);
 
- /* Tuple *t = dict_read_first(iter);
-  while(t) {
-    persist_write_bool(t->key, strcmp(t->value->cstring, "true") == 0 ? true : false);
-    t = dict_read_next(iter);
-  }
-
-  // Refresh live store
-  config_init();
-  vibes_short_pulse();
-  */
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {

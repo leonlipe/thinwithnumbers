@@ -40,6 +40,10 @@
 
 #define NUM_SETTINGS            22
 
+#define PERSIST_WE_TEMP 1000
+#define PERSIST_WE_HUM 1001
+#define PERSIST_WE_SUN 1002
+
 #define GRECT_FULL_WINDOW GRect(0,0,144,168)
 
 				
