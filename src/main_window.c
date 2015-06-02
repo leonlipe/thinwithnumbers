@@ -174,6 +174,22 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
   }else{
     layer_set_hidden(inverter_layer_get_layer(s_inverter_layer),true);
   }
+
+  if (config_get(PERSIST_TEMPERATURE)){
+    layer_set_hidden(text_layer_get_layer(s_weather_temp_layer),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_temp_layer),true);
+  }
+  if (config_get(PERSIST_HUMIDITY)){
+    layer_set_hidden(text_layer_get_layer(s_weather_hum_layer),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_hum_layer),true);
+  }
+  if (config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
+    layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),true);
+  }
 // Could print weather conditions
 
 
@@ -279,14 +295,14 @@ static void draw_proc(Layer *layer, GContext *ctx) {
       }
     }
   //  handsSeparators(ctx, now.seconds);
-  }
+ 
   // Draw circle for seconds hand
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
  graphics_context_set_stroke_color(ctx, GColorBlack);
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 3);
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 5);
  graphics_context_set_stroke_color(ctx, GColorWhite);
-
+ }
 
   // Center
   graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -309,6 +325,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   snprintf(s_day_in_month_buffer, sizeof(s_day_in_month_buffer), "%d", s_last_time.days);
   strftime(s_weekday_buffer, sizeof(s_weekday_buffer), "%a", tick_time);
   strftime(s_month_buffer, sizeof(s_month_buffer), "%b", tick_time);
+
 
   text_layer_set_text(s_weekday_layer, s_weekday_buffer);
   text_layer_set_text(s_day_in_month_layer, s_day_in_month_buffer);
