@@ -72,53 +72,6 @@
         "name": "BLUETOOTH_DISCONNECTED",
         "file": "images/bluetooth-disconected.png"
     },
-    {
-        "type":"font",
-        "name":"FONT_TIME_12",
-        "file":"fonts/btseps2.ttf"
-      },   
-     {
-        "type":"font",
-        "name":"FONT_TIME_14",
-        "file":"fonts/btseps2.ttf"
-      },
-      {
-        "type":"font",
-        "name":"FONT_TIME_16",
-        "file":"fonts/btseps2.ttf"
-      },
-       {
-        "type":"font",
-        "name":"FONT_TIME_18",
-        "file":"fonts/btseps2.ttf"
-      },
-       {
-        "type":"font",
-        "name":"FONT_TIME_24",
-        "file":"fonts/btseps2.ttf"
-      }      
-      ,
-       {
-        "type":"font",
-        "name":"FONT_CHICAGO_12",
-        "file":"fonts/chicago.ttf"
-      } 
-      ,
-       {
-        "type":"font",
-        "name":"FONT_CHICAGO_14",
-        "file":"fonts/chicago.ttf"
-      },
-       {
-        "type":"font",
-        "name":"FONT_CHICAGO_16",
-        "file":"fonts/chicago.ttf"
-      } ,
-       {
-        "type":"font",
-        "name":"FONT_CHICAGO_18",
-        "file":"fonts/chicago.ttf"
-      },
        {
         "type":"font",
         "name":"FONT_VISITOR_20",
