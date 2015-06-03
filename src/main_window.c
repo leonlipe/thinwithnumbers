@@ -34,7 +34,7 @@ static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_wea
 static TextLayer *s_m_5_layer, *s_m_10_layer,  *s_m_20_layer,  *s_m_25_layer,  *s_m_35_layer,  *s_m_40_layer,  *s_m_50_layer,  *s_m_55_layer;
 static InverterLayer *s_inverter_layer;
 
-static GBitmap *icon_battery, *icon_battery_low, *icon_battery_blank,*icon_battery_charge,*icon_bt_disconected;
+static GBitmap *icon_battery, *icon_battery_low, *icon_battery_charge,*icon_bt_disconected;
 
 static Time s_last_time;
 static uint8_t s_last_unit_weather_change;
@@ -43,7 +43,7 @@ static bool s_connected;
 
 static uint8_t battery_level;
 static bool battery_plugged;
-static GFont s_visitor_14_font,s_visitor_20_font,s_visitor_24_font;
+static GFont s_visitor_14_font,s_visitor_20_font;
 
 
 static int32_t getMarkSize(int h){
@@ -274,9 +274,9 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
   // Draw hands
   // int y = 0;
+  graphics_context_set_stroke_color(ctx, GColorWhite);
   for(int y = 0; y < THICKNESS; y++) {
     for(int x = 0; x < THICKNESS; x++) {
-      graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_long.x + x, minute_hand_long.y + y));
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(minute_hand_inverse.x + x, minute_hand_inverse.y + y));
       graphics_draw_line(ctx, GPoint(center.x + x, center.y + y), GPoint(hour_hand_long.x + x, hour_hand_long.y + y));
@@ -286,11 +286,10 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
   // Draw seconds hand
                    
+  graphics_context_set_stroke_color(ctx, GColorWhite);
   if(config_get(PERSIST_KEY_SECOND_HAND)) {
     for(int y = 0; y < THICKNESS_SECONDS; y++) {
-      for(int x = 0; x < THICKNESS_SECONDS; x++) {
-       
-        graphics_context_set_stroke_color(ctx, GColorWhite);
+      for(int x = 0; x < THICKNESS_SECONDS; x++) {       
         graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_inverse.x + x, second_hand_inverse.y+y ));
         graphics_draw_line(ctx, GPoint(center.x + x, center.y+y ), GPoint(second_hand_long.x + x, second_hand_long.y+y ));
       }
@@ -325,12 +324,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   
   snprintf(s_day_in_month_buffer, sizeof(s_day_in_month_buffer), "%d", s_last_time.days);
   strftime(s_weekday_buffer, sizeof(s_weekday_buffer), "%a", tick_time);
-  strftime(s_month_buffer, sizeof(s_month_buffer), "%b", tick_time);
-
-
-  text_layer_set_text(s_weekday_layer, s_weekday_buffer);
-  text_layer_set_text(s_day_in_month_layer, s_day_in_month_buffer);
-  text_layer_set_text(s_month_layer, s_month_buffer);
+  strftime(s_month_buffer, sizeof(s_month_buffer), "%b", tick_time);  
 
   // Finally
   layer_mark_dirty(s_canvas_layer);
@@ -339,8 +333,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
    //  APP_LOG(APP_LOG_LEVEL_INFO, "Before:");
   if(tick_time->tm_hour != s_last_unit_weather_change) {
     // APP_LOG(APP_LOG_LEVEL_INFO, "Send:");
-    if (config_get(PERSIST_TEMPERATURE || config_get(PERSIST_CONDITIONS) || config_get(PERSIST_HUMIDITY
-      || config_get(PERSIST_WIND || config_get(PERSIST_SUNRISE || config_get(PERSIST_SUNSET)))))){
+    if (config_get(PERSIST_TEMPERATURE) || config_get(PERSIST_HUMIDITY) || config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
         s_last_unit_weather_change = tick_time->tm_hour;
         // Begin dictionary
         DictionaryIterator *iter;
@@ -363,18 +356,12 @@ static void bt_handler(bool connected) {
   layer_mark_dirty(s_battery_layer);
 }
 
-/*static void batt_handler(BatteryChargeState state) {
-  layer_mark_dirty(s_canvas_layer);
-}
-*/
+
 void battery_state_handler(BatteryChargeState charge) {
   battery_level = charge.charge_percent;
   battery_plugged = charge.is_plugged;
   layer_mark_dirty(s_battery_layer);
- // if (!battery_plugged && battery_level < 20)
- //   conserve_power(true);
- // else
- //   conserve_power(false);
+ 
 }
 
 
@@ -397,11 +384,6 @@ void battery_layer_update_callback(Layer *layer, GContext *ctx) {
           graphics_fill_rect(ctx, GRect(68, 4, (uint8_t)((battery_level / 100.0) * 11.0), 4), 0, GCornerNone);
         }
       }
-        
-      
-    
-
-    
   } else {
     graphics_draw_bitmap_in_rect(ctx, icon_battery_charge, GRect(61, 0, 24, 12));
   }
@@ -418,12 +400,10 @@ static void window_load(Window *window) {
 
 
   s_visitor_14_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_14));
-  s_visitor_24_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_24));
   s_visitor_20_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_20));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
-  icon_battery_blank = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_BLANK);
   icon_battery_charge = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_CHARGE);
   icon_bt_disconected = gbitmap_create_with_resource(RESOURCE_ID_BLUETOOTH_DISCONNECTED);
 
@@ -451,7 +431,11 @@ static void window_load(Window *window) {
   text_layer_set_font(s_month_layer, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
   text_layer_set_text_color(s_month_layer, GColorWhite);
   text_layer_set_background_color(s_month_layer, GColorClear);
-
+  
+  text_layer_set_text(s_weekday_layer, s_weekday_buffer);
+  text_layer_set_text(s_day_in_month_layer, s_day_in_month_buffer);
+  text_layer_set_text(s_month_layer, s_month_buffer);
+  
   if(config_get(PERSIST_KEY_DAY)) {
     layer_add_child(window_layer, text_layer_get_layer(s_day_in_month_layer));
   }
@@ -630,14 +614,12 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
 static void window_unload(Window *window) {
   gbitmap_destroy(icon_battery);
   gbitmap_destroy(icon_battery_low);
-  gbitmap_destroy(icon_battery_blank);
   gbitmap_destroy(icon_battery_charge);
   gbitmap_destroy(icon_bt_disconected);
 
 
   fonts_unload_custom_font(s_visitor_14_font);
   fonts_unload_custom_font(s_visitor_20_font);
-  fonts_unload_custom_font(s_visitor_24_font);
 
 
   layer_destroy(s_canvas_layer);
@@ -686,9 +668,6 @@ void main_window_push() {
   });
   window_stack_push(s_main_window, true);
 
-  // TODO make charging pref
-  //battery_state_service_subscribe(batt_handler);
-
   time_t t = time(NULL);
   struct tm *tm_now = localtime(&t);
   tick_handler(tm_now, SECOND_UNIT);
@@ -734,7 +713,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;
      case KEY_HUMIDITY:
             if (config_get(PERSIST_HUMIDITY)){
-              snprintf(humidity_buffer, sizeof(humidity_buffer), "Hum. %d%%", (int)t->value->int32);
+              snprintf(humidity_buffer, sizeof(humidity_buffer), "HUM %d%%", (int)t->value->int32);
             }else{
               snprintf(humidity_buffer, sizeof(humidity_buffer), "%s","");
             }

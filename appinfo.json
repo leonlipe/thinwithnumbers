@@ -52,11 +52,6 @@
       "name": "BATTERY_ICON",
       "type": "png"
     },
-     {
-      "file": "images/battery-blank.png",
-      "name": "BATTERY_ICON_BLANK",
-      "type": "png"
-    },
     {
       "file": "images/battery-icon-low.png",
       "name": "BATTERY_ICON_LOW",
@@ -73,17 +68,14 @@
         "file": "images/bluetooth-disconected.png"
     },
        {
+         "characterRegex": "[0-9:A-Za-z% ]",
         "type":"font",
         "name":"FONT_VISITOR_20",
         "file":"fonts/visitor2.ttf"
-      },
-       {
-        "type":"font",
-        "name":"FONT_VISITOR_24",
-        "file":"fonts/visitor2.ttf"
-      }  
+      } 
       ,
        {
+         "characterRegex": "[0-9:A-Za-z% ]",      
         "type":"font",
         "name":"FONT_VISITOR_14",
         "file":"fonts/visitor2.ttf"
