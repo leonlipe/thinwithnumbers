@@ -27,6 +27,9 @@
 #define DIGITALTIME 24
 #define INVERTED 25
 #define NUMBERS 26
+#define CELCIUS 27
+#define POLLTIME 28
+#define KEY_TEMPERATUREF 29
 
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
@@ -37,7 +40,7 @@ static InverterLayer *s_inverter_layer;
 static GBitmap *icon_battery, *icon_battery_low, *icon_battery_charge,*icon_bt_disconected;
 
 static Time s_last_time;
-static uint8_t s_last_unit_weather_change;
+static unsigned int s_last_unit_weather_change = 0;
 static char s_weekday_buffer[8], s_month_buffer[8], s_day_in_month_buffer[3];
 static bool s_connected;
 
@@ -316,6 +319,7 @@ static void draw_proc(Layer *layer, GContext *ctx) {
 
 
 
+
 static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   s_last_time.days = tick_time->tm_mday;
   s_last_time.hours = tick_time->tm_hour;
@@ -331,10 +335,16 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
 
     // Get weather update every 30 minutes
    //  APP_LOG(APP_LOG_LEVEL_INFO, "Before:");
-  if(tick_time->tm_hour != s_last_unit_weather_change) {
-    // APP_LOG(APP_LOG_LEVEL_INFO, "Send:");
+  unsigned int seconds_for_poll = config_get(PERSIST_POLLTIME)*60;
+  unsigned int now = mktime(tick_time);
+  //APP_LOG(APP_LOG_LEVEL_INFO, "PPT:%i, CELCIUS:%i", config_get(PERSIST_POLLTIME), config_get(PERSIST_CELCIUS));
+  //APP_LOG(APP_LOG_LEVEL_INFO, "SFP: %i, NOW: %i, LUWC:%i, LUWC+SFP:%i",seconds_for_poll, now, s_last_unit_weather_change,s_last_unit_weather_change+seconds_for_poll);
+  if( (now > s_last_unit_weather_change+seconds_for_poll) || s_last_unit_weather_change == 0)  {
+    
+
     if (config_get(PERSIST_TEMPERATURE) || config_get(PERSIST_HUMIDITY) || config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
-        s_last_unit_weather_change = tick_time->tm_hour;
+      s_last_unit_weather_change = mktime(tick_time);
+        
         // Begin dictionary
         DictionaryIterator *iter;
         app_message_outbox_begin(&iter);
@@ -682,6 +692,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
    // Store incoming information
   static char temperature_buffer[8];
+  static char temperature_bufferf[8];
   static char conditions_buffer[32];
   static char humidity_buffer[32];
   static char wind_speed_buffer[32];
@@ -703,6 +714,14 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
             }
 
       break;
+    case KEY_TEMPERATUREF:
+            if (config_get(PERSIST_TEMPERATURE)){
+              snprintf(temperature_bufferf, sizeof(temperature_bufferf), "%dF", (int)t->value->int32);
+            }else{
+              snprintf(temperature_bufferf, sizeof(temperature_bufferf),"%s","");
+            }
+
+      break;      
     case KEY_CONDITIONS:
             if (config_get(PERSIST_CONDITIONS)){
               snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
@@ -813,12 +832,15 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;   
       case INVERTED:
               config_set(PERSIST_INVERTED, (int)t->value->int32); 
-              //layer_mark_dirty(s_inverter_layer);    
-
       break;
       case NUMBERS:
               config_set(PERSIST_NUMBERS, (int)t->value->int32);     
-
+      break;
+      case CELCIUS:
+              config_set(PERSIST_CELCIUS, (int)t->value->int32);     
+      break;
+      case POLLTIME:
+              config_set(PERSIST_POLLTIME, (int)t->value->int32);     
       break;
 
 
@@ -834,7 +856,11 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
 
-  snprintf(temp_text, sizeof(temp_text), "%s", temperature_buffer);
+  if (config_get(PERSIST_CELCIUS)){
+    snprintf(temp_text, sizeof(temp_text), "%s", temperature_buffer);
+  }else{
+    snprintf(temp_text, sizeof(temp_text), "%s", temperature_bufferf);
+  }
   snprintf(hum_text, sizeof(hum_text), "%s", humidity_buffer);
   snprintf(sun_text, sizeof(sun_text), "%s %s", sunrise_buffer, sunset_buffer);
 

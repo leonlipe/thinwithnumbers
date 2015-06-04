@@ -37,8 +37,12 @@
 #define PERSIST_INVERTED 19
 #define PERSIST_NUMBERS 20
 #define PERSIST_MINUTES 21
+#define PERSIST_CELCIUS 22
+#define PERSIST_POLLTIME 23
 
-#define NUM_SETTINGS            22
+
+
+#define NUM_SETTINGS            24
 
 #define PERSIST_WE_TEMP 1000
 #define PERSIST_WE_HUM 1001

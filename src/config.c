@@ -30,10 +30,18 @@ void config_init() {
     persist_write_int(PERSIST_INVERTED, 0);
     persist_write_int(PERSIST_NUMBERS, 1);
     persist_write_int(PERSIST_MINUTES, 0);
+    persist_write_int(PERSIST_CELCIUS, 1);
+    persist_write_int(PERSIST_POLLTIME, 60);
+
+
     persist_write_string(PERSIST_WE_TEMP, "");
     persist_write_string(PERSIST_WE_HUM, "");
     persist_write_string(PERSIST_WE_SUN, "");
 
+  }
+
+  if (persist_read_int(PERSIST_POLLTIME) == 0){
+    persist_write_int(PERSIST_POLLTIME,60);
   }
 
   refresh_config();

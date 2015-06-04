@@ -21,6 +21,7 @@ function locationSuccess(pos) {
 
       // Temperature in Kelvin requires adjustment
       var temperature = Math.round(json.main.temp - 273.15);
+      var temperatureF = Math.round( ((json.main.temp - 273.15) * 1.8) +32);
       console.log('Temperature is ' + temperature);
 
       // Conditions
@@ -37,6 +38,7 @@ function locationSuccess(pos) {
       // Assemble dictionary using our keys
 		var dictionary = {
 		  'KEY_TEMPERATURE': temperature,
+      'KEY_TEMPERATUREF': temperatureF,
 		  'KEY_CONDITIONS': conditions,
       'KEY_HUMIDITY': json.main.humidity,
       'KEY_WIND': wind_speed.toString(),
@@ -122,7 +124,10 @@ Pebble.addEventListener('webviewclosed',
       'SUNSET': parseInt(configuration.sunset),
       'DIGITALTIME': 0,
       'INVERTED': parseInt(configuration.inverted),
-      'NUMBERS': 1
+      'NUMBERS': 1,
+      'CELCIUS': parseInt(configuration.celcius),
+      'POLL_TIME': parseInt(configuration.time_poll)
+
       
     };
 

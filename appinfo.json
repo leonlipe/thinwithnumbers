@@ -38,8 +38,10 @@
     "SUNRISE": 23,
     "DIGITALTIME": 24,
     "INVERTED": 25,
-    "NUMBERS": 26
-
+    "NUMBERS": 26,
+    "CELCIUS": 27,
+    "POLLTIME": 28,
+    "KEY_TEMPERATUREF": 29
 
   },
   "capabilities": 
