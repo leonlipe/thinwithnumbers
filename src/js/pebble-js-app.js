@@ -16,6 +16,8 @@ function locationSuccess(pos) {
   // Send request to OpenWeatherMap
   xhrRequest(url, 'GET', 
     function(responseText) {
+
+      try {
       // responseText contains a JSON object with weather info
       var json = JSON.parse(responseText);
 
@@ -36,17 +38,17 @@ function locationSuccess(pos) {
      var sunset = new Date(json.sys.sunset*1000);
 
       // Assemble dictionary using our keys
-		var dictionary = {
-		  'KEY_TEMPERATURE': temperature,
-      'KEY_TEMPERATUREF': temperatureF,
-		  'KEY_CONDITIONS': conditions,
-      'KEY_HUMIDITY': json.main.humidity,
-      'KEY_WIND': wind_speed.toString(),
-      'KEY_SUNRISE': (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am"),
-      'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")
-		};
+  		var dictionary = {
+  		  'KEY_TEMPERATURE': temperature,
+        'KEY_TEMPERATUREF': temperatureF,
+  		  'KEY_CONDITIONS': conditions,
+        'KEY_HUMIDITY': json.main.humidity,
+        'KEY_WIND': wind_speed.toString(),
+        'KEY_SUNRISE': (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am")+"|"+sunrise.getHours()+":"+sunrise.getMinutes(),
+        'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")+"|"+sunset.getHours()+":"+sunset.getMinutes()
+  		};
 
-		// Send to Pebble
+		// Send to Pebble if everithing is ok
 		Pebble.sendAppMessage(dictionary,
 		  function(e) {
 		    console.log('Weather info sent to Pebble successfully!');
@@ -55,6 +57,10 @@ function locationSuccess(pos) {
 		    console.log('Error sending weather info to Pebble!');
 		  }
 		);
+    }
+    catch(err) {
+      console.log("Error when getting weather");
+    }
     }      
   );
 }

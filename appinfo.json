@@ -4,7 +4,7 @@
   "longName": "Analog with numbers WatchFace",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.2",
+  "versionLabel": "1.3",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite"],
   "watchapp": {
@@ -42,7 +42,6 @@
     "CELCIUS": 27,
     "POLLTIME": 28,
     "KEY_TEMPERATUREF": 29
-
   },
   "capabilities": 
   [ "location", "configurable" ],

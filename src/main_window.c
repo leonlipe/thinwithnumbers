@@ -31,6 +31,8 @@
 #define POLLTIME 28
 #define KEY_TEMPERATUREF 29
 
+
+
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_hum_layer , *s_weather_sun_layer,*s_weather_temp_layer,  *s_12_layer, *s_9_layer, *s_6_layer;
@@ -688,6 +690,18 @@ void main_window_push() {
   }
 }
 
+char * obtain_sun_time(char * suntime, int with_format_24){
+  char *format_24 = suntime;
+      while(*format_24 != '|') format_24++;
+  *format_24++ = '\0';
+  if (with_format_24){
+    return format_24;
+  }else{
+    return suntime;
+  }
+  
+}
+
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
 
    // Store incoming information
@@ -747,8 +761,14 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
 
       break; 
        case KEY_SUNRISE:
-            if (config_get(PERSIST_SUNRISE)){
-              snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s", t->value->cstring);
+
+            if (config_get(PERSIST_SUNRISE)){              
+              if (clock_is_24h_style() == true){
+                snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s", obtain_sun_time(t->value->cstring,true));
+              }else{
+                snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s",obtain_sun_time(t->value->cstring,false));
+
+              }
             }else{
               snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s","");
             }
@@ -756,7 +776,11 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;   
        case KEY_SUNSET:
             if (config_get(PERSIST_SUNSET)){
-              snprintf(sunset_buffer, sizeof(sunset_buffer), "%s", t->value->cstring);
+              if (clock_is_24h_style() == true){
+                snprintf(sunset_buffer, sizeof(sunset_buffer), "%s",obtain_sun_time(t->value->cstring,true));
+              }else{
+                snprintf(sunset_buffer, sizeof(sunset_buffer), "%s",obtain_sun_time(t->value->cstring,false));
+              }
             }else{
               snprintf(sunset_buffer, sizeof(sunset_buffer), "%s","");
             }
@@ -842,7 +866,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       case POLLTIME:
               config_set(PERSIST_POLLTIME, (int)t->value->int32);     
       break;
-
+      
 
       default:
         APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
