@@ -47,6 +47,7 @@
 #define PERSIST_WE_TEMP 1000
 #define PERSIST_WE_HUM 1001
 #define PERSIST_WE_SUN 1002
+#define PERSIST_CONDITIONS_ID 1003
 
 #define GRECT_FULL_WINDOW GRect(0,0,144,168)
 
@@ -58,4 +59,3 @@ typedef struct {
   int seconds;
 } Time;
 
-char weather_conditions_images[5] = {1000.0, 2.0, 3.4, 7.0, 50.0};

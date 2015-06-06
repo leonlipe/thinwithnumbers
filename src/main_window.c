@@ -30,6 +30,7 @@
 #define CELCIUS 27
 #define POLLTIME 28
 #define KEY_TEMPERATUREF 29
+#define KEY_CONDITIONS_ID 30
 
 
 
@@ -49,6 +50,8 @@ static bool s_connected;
 static uint8_t battery_level;
 static bool battery_plugged;
 static GFont s_visitor_14_font,s_visitor_20_font, s_weather_12_font;
+
+
 
 
 static int32_t getMarkSize(int h){
@@ -194,6 +197,11 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
     layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),false);
   }else{
     layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),true);
+  }
+   if (config_get(PERSIST_CONDITIONS)){
+    layer_set_hidden(text_layer_get_layer(s_weather_icon),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_icon),true);
   }
 // Could print weather conditions
 
@@ -413,7 +421,7 @@ static void window_load(Window *window) {
 
   s_visitor_14_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_14));
   s_visitor_20_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_20));
-  s_weather_12_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_WEATHER_12));
+  s_weather_12_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_WEATHER_18));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -462,7 +470,7 @@ static void window_load(Window *window) {
   BatteryChargeState initial = battery_state_service_peek();
   battery_level = initial.charge_percent;
   battery_plugged = initial.is_plugged;
-  s_battery_layer = layer_create(GRect(0,60,144,106));
+  s_battery_layer = layer_create(GRect(0,30,144,106));
   layer_set_update_proc(s_battery_layer, &battery_layer_update_callback);
   layer_add_child(window_layer, s_battery_layer);
 
@@ -607,7 +615,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
   text_layer_set_text_color(s_weather_icon, GColorWhite);
   text_layer_set_background_color(s_weather_icon, GColorClear);
   text_layer_set_text_alignment(s_weather_icon, GTextAlignmentCenter);
-  text_layer_set_text(s_weather_icon, "\uf00d");
+  text_layer_set_text(s_weather_icon, cond_icon_text);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_icon));
 
   
@@ -715,6 +723,47 @@ char * obtain_sun_time(char * suntime, int with_format_24){
   
 }
 
+
+static char * obtain_weather_icon(int code){
+  char * resultado;
+    resultado = "\uf03d";
+  if (code >= 200 && code <300){
+    resultado="\uf01e";
+  }
+  if (code >= 300 && code <400){
+    resultado="\uf019";
+  }
+  if (code >= 500 && code <505){
+    resultado = "\uf009";
+  }
+  if (code == 511){
+    resultado = "\uf01b";
+  }
+  if (code >= 520 && code <600){
+    resultado = "\uf01a";
+  }
+  if (code >= 600 && code <700){
+    resultado = "\uf01b";
+  }
+  if (code >= 700 && code <800){
+    resultado = "\uf014";
+  }
+  if (code == 800){
+    resultado = "\uf00d";
+  }
+  if (code == 801){
+    resultado = "\uf002";
+  }
+  if (code == 802){
+    resultado = "\uf041";
+  }
+  if (code > 802 && code <900){
+    resultado = "\uf013";
+  }
+  return resultado;
+  
+}
+
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
 
    // Store incoming information
@@ -725,6 +774,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   static char wind_speed_buffer[32];
   static char sunrise_buffer[10];
   static char sunset_buffer[10];
+  static char conditions_id_buffer[5];
 
  // Read first item
   Tuple *t = dict_read_first(iterator);
@@ -798,6 +848,17 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
               snprintf(sunset_buffer, sizeof(sunset_buffer), "%s","");
             }
       break;      
+      case KEY_CONDITIONS_ID:
+            if (config_get(PERSIST_CONDITIONS)){
+              //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND:%d", (int)t->value->int32);
+              //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND2:%s", obtain_weather_icon((int)t->value->int32));
+              snprintf(conditions_id_buffer, sizeof(conditions_id_buffer), "%s", obtain_weather_icon((int)t->value->int32));
+            }else{
+              snprintf(conditions_id_buffer, sizeof(conditions_id_buffer),"%s","");
+            }
+
+      break;
+      
       case KEY_DATE:
               config_set(PERSIST_KEY_DATE,(int)t->value->int32);
       break;
@@ -900,6 +961,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   }
   snprintf(hum_text, sizeof(hum_text), "%s", humidity_buffer);
   snprintf(sun_text, sizeof(sun_text), "%s %s", sunrise_buffer, sunset_buffer);
+  snprintf(cond_icon_text, sizeof(cond_icon_text), "%s", conditions_id_buffer);
 
 }
 

@@ -47,8 +47,11 @@ function locationSuccess(pos) {
         'KEY_HUMIDITY': json.main.humidity,
         'KEY_WIND': wind_speed.toString(),
         'KEY_SUNRISE': (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am")+"|"+sunrise.getHours()+":"+sunrise.getMinutes(),
-        'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")+"|"+sunset.getHours()+":"+sunset.getMinutes()
+        'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")+"|"+sunset.getHours()+":"+sunset.getMinutes(),
+        'KEY_CONDITIONS_ID': conditions_code
   		};
+            console.log('Data sent: ' +  JSON.stringify(dictionary));
+
 
 		// Send to Pebble if everithing is ok
 		Pebble.sendAppMessage(dictionary,
@@ -125,7 +128,7 @@ Pebble.addEventListener('webviewclosed',
       'HAND_LENGTH_HOUR': 45,
       'HAND_TYPE': 2,
       'TEMPERATURE': parseInt(configuration.temperature),
-      'CONDITIONS': 0,
+      'CONDITIONS': 1,
       'HUMIDITY': parseInt(configuration.humidity),
       'WIND': 0,
       'SUNRISE': parseInt(configuration.sunrise),

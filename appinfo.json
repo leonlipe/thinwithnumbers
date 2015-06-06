@@ -4,7 +4,7 @@
   "longName": "Analog with numbers WatchFace",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.3",
+  "versionLabel": "1.4",
   "sdkVersion": "3",
   "targetPlatforms": ["aplite"],
   "watchapp": {
@@ -41,7 +41,8 @@
     "NUMBERS": 26,
     "CELCIUS": 27,
     "POLLTIME": 28,
-    "KEY_TEMPERATUREF": 29
+    "KEY_TEMPERATUREF": 29,
+    "KEY_CONDITIONS_ID": 30
   },
   "capabilities": 
   [ "location", "configurable" ],
@@ -83,7 +84,7 @@
       }  ,
        {
         "type":"font",
-        "name":"FONT_WEATHER_12",
+        "name":"FONT_WEATHER_18",
         "file":"fonts/weathericons.ttf"
       } 
     ]
