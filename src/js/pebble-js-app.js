@@ -27,8 +27,10 @@ function locationSuccess(pos) {
       console.log('Temperature is ' + temperature);
 
       // Conditions
-      var conditions = json.weather[0].main;      
+      var conditions = json.weather[0].main;     
+      var conditions_code = json.weather[0].id;   
       console.log('Conditions are ' + conditions);
+      console.log('Code are ' + conditions_code);
 
       console.log('Humidity ' +  json.main.humidity);
      // console.log('Wind ' +  (json.wind.speed / 0.62137));

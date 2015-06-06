@@ -57,3 +57,5 @@ typedef struct {
   int minutes;
   int seconds;
 } Time;
+
+char weather_conditions_images[5] = {1000.0, 2.0, 3.4, 7.0, 50.0};
