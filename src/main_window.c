@@ -36,7 +36,7 @@
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_hum_layer , *s_weather_sun_layer,*s_weather_temp_layer,  *s_12_layer, *s_9_layer, *s_6_layer;
-static TextLayer *s_m_5_layer, *s_m_10_layer,  *s_m_20_layer,  *s_m_25_layer,  *s_m_35_layer,  *s_m_40_layer,  *s_m_50_layer,  *s_m_55_layer;
+static TextLayer *s_m_5_layer, *s_m_10_layer,  *s_m_20_layer,  *s_m_25_layer,  *s_m_35_layer,  *s_m_40_layer,  *s_m_50_layer,  *s_m_55_layer, *s_weather_icon;
 static InverterLayer *s_inverter_layer;
 
 static GBitmap *icon_battery, *icon_battery_low, *icon_battery_charge,*icon_bt_disconected;
@@ -48,7 +48,7 @@ static bool s_connected;
 
 static uint8_t battery_level;
 static bool battery_plugged;
-static GFont s_visitor_14_font,s_visitor_20_font;
+static GFont s_visitor_14_font,s_visitor_20_font, s_weather_12_font;
 
 
 static int32_t getMarkSize(int h){
@@ -413,6 +413,7 @@ static void window_load(Window *window) {
 
   s_visitor_14_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_14));
   s_visitor_20_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_20));
+  s_weather_12_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_WEATHER_12));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -600,6 +601,17 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
   text_layer_set_text(s_9_layer, "9");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_9_layer));
 
+  s_weather_icon = text_layer_create(GRect(0, 45, 144, 25));
+  text_layer_set_text_alignment(s_weather_icon, GTextAlignmentCenter);
+  text_layer_set_font(s_weather_icon, s_weather_12_font);
+  text_layer_set_text_color(s_weather_icon, GColorWhite);
+  text_layer_set_background_color(s_weather_icon, GColorClear);
+  text_layer_set_text_alignment(s_weather_icon, GTextAlignmentCenter);
+  text_layer_set_text(s_weather_icon, "\uf00d");
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_icon));
+
+  
+
   if (config_get(PERSIST_NUMBERS)){
     layer_set_hidden(text_layer_get_layer(s_12_layer),false);
     layer_set_hidden(text_layer_get_layer(s_6_layer),false);
@@ -632,6 +644,7 @@ static void window_unload(Window *window) {
 
   fonts_unload_custom_font(s_visitor_14_font);
   fonts_unload_custom_font(s_visitor_20_font);
+  fonts_unload_custom_font(s_weather_12_font);
 
 
   layer_destroy(s_canvas_layer);
