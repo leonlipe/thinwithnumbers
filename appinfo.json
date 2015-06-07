@@ -84,7 +84,7 @@
       }  ,
        {
         "type":"font",
-        "name":"FONT_WEATHER_18",
+        "name":"FONT_WEATHER_14",
         "file":"fonts/weathericons.ttf"
       } 
     ]

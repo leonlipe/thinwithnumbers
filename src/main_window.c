@@ -421,7 +421,7 @@ static void window_load(Window *window) {
 
   s_visitor_14_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_14));
   s_visitor_20_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_VISITOR_20));
-  s_weather_12_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_WEATHER_18));
+  s_weather_12_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_WEATHER_14));
 
   icon_battery = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON);
   icon_battery_low = gbitmap_create_with_resource(RESOURCE_ID_BATTERY_ICON_LOW);
@@ -609,7 +609,7 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
   text_layer_set_text(s_9_layer, "9");
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_9_layer));
 
-  s_weather_icon = text_layer_create(GRect(0, 45, 144, 25));
+  s_weather_icon = text_layer_create(GRect(35, 95, 20, 25));
   text_layer_set_text_alignment(s_weather_icon, GTextAlignmentCenter);
   text_layer_set_font(s_weather_icon, s_weather_12_font);
   text_layer_set_text_color(s_weather_icon, GColorWhite);
@@ -785,7 +785,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     switch(t->key) {
     case KEY_TEMPERATURE:
             if (config_get(PERSIST_TEMPERATURE)){
-              snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
+                snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
             }else{
               snprintf(temperature_buffer, sizeof(temperature_buffer),"%s","");
             }
@@ -793,7 +793,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;
     case KEY_TEMPERATUREF:
             if (config_get(PERSIST_TEMPERATURE)){
-              snprintf(temperature_bufferf, sizeof(temperature_bufferf), "%dF", (int)t->value->int32);
+                snprintf(temperature_bufferf, sizeof(temperature_bufferf), "%dF", (int)t->value->int32);
             }else{
               snprintf(temperature_bufferf, sizeof(temperature_bufferf),"%s","");
             }
@@ -809,7 +809,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       break;
      case KEY_HUMIDITY:
             if (config_get(PERSIST_HUMIDITY)){
-              snprintf(humidity_buffer, sizeof(humidity_buffer), "HUM %d%%", (int)t->value->int32);
+                snprintf(humidity_buffer, sizeof(humidity_buffer), "HUM %d%%", (int)t->value->int32);
             }else{
               snprintf(humidity_buffer, sizeof(humidity_buffer), "%s","");
             }
@@ -852,7 +852,7 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
             if (config_get(PERSIST_CONDITIONS)){
               //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND:%d", (int)t->value->int32);
               //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND2:%s", obtain_weather_icon((int)t->value->int32));
-              snprintf(conditions_id_buffer, sizeof(conditions_id_buffer), "%s", obtain_weather_icon((int)t->value->int32));
+                snprintf(conditions_id_buffer, sizeof(conditions_id_buffer), "%s", obtain_weather_icon((int)t->value->int32));
             }else{
               snprintf(conditions_id_buffer, sizeof(conditions_id_buffer),"%s","");
             }
