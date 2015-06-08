@@ -42,7 +42,8 @@
     "CELCIUS": 27,
     "POLLTIME": 28,
     "KEY_TEMPERATUREF": 29,
-    "KEY_CONDITIONS_ID": 30
+    "KEY_CONDITIONS_ID": 30,
+    "KEY_CONDITIONS_ICON": 31
   },
   "capabilities": 
   [ "location", "configurable" ],

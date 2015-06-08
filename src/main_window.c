@@ -31,6 +31,7 @@
 #define POLLTIME 28
 #define KEY_TEMPERATUREF 29
 #define KEY_CONDITIONS_ID 30
+#define KEY_CONDITIONS_ICON 31
 
 
 
@@ -724,40 +725,89 @@ char * obtain_sun_time(char * suntime, int with_format_24){
 }
 
 
-static char * obtain_weather_icon(int code){
+static char * obtain_weather_icon(char * code){
   char * resultado;
     resultado = "\uf03d";
-  if (code >= 200 && code <300){
+  //if (code >= 200 && code <300){
+  if (strcmp(code, "11d")==0){
     resultado="\uf01e";
   }
-  if (code >= 300 && code <400){
+  if (strcmp(code, "11n")==0){
+    resultado="\uf01e";
+  }
+
+  //if (code >= 300 && code <400){
+  if (strcmp(code, "09d")==0){
     resultado="\uf019";
   }
-  if (code >= 500 && code <505){
+  if (strcmp(code, "09n")==0){
+    resultado="\uf019";
+  }
+
+  // Check day and night
+  //if (code >= 500 && code <505){
+  if (strcmp(code, "10d")==0){
     resultado = "\uf009";
   }
-  if (code == 511){
+  if (strcmp(code, "10n")==0){
+    resultado = "\uf026";
+  }
+
+
+  //if (code == 511){
+  if (strcmp(code, "13d")==0){
     resultado = "\uf01b";
   }
+  
+  if (strcmp(code, "13n")==0){
+    resultado = "\uf01b";
+  }
+
+  /*
   if (code >= 520 && code <600){
     resultado = "\uf01a";
   }
+
   if (code >= 600 && code <700){
     resultado = "\uf01b";
-  }
-  if (code >= 700 && code <800){
+  }*/
+  
+  //if (code >= 700 && code <800){
+  if (strcmp(code, "50d")==0){
     resultado = "\uf014";
   }
-  if (code == 800){
+  if (strcmp(code, "50n")==0){
+    resultado = "\uf014";
+  }
+
+
+
+  // Check day and night
+  //if (code == 800){
+  if (strcmp(code, "01d")==0){
     resultado = "\uf00d";
   }
-  if (code == 801){
+  if (strcmp(code, "01n")==0){
+    resultado = "\uf02e";
+  }
+  
+
+  // Check day and night
+//  if (code == 801){
+  if (strcmp(code, "02d")==0){
     resultado = "\uf002";
   }
-  if (code == 802){
+  if (strcmp(code, "02n")==0){
+    resultado = "\uf031";
+  }
+
+
+  //if (code == 802){
+  if (strcmp(code, "03d")==0){
     resultado = "\uf041";
   }
-  if (code > 802 && code <900){
+//  if (code > 802 && code <900){
+  if (strcmp(code, "04d")==0){
     resultado = "\uf013";
   }
   return resultado;
@@ -848,11 +898,21 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
               snprintf(sunset_buffer, sizeof(sunset_buffer), "%s","");
             }
       break;      
-      case KEY_CONDITIONS_ID:
+    /*  case KEY_CONDITIONS_ID:
             if (config_get(PERSIST_CONDITIONS)){
               //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND:%d", (int)t->value->int32);
               //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND2:%s", obtain_weather_icon((int)t->value->int32));
                 snprintf(conditions_id_buffer, sizeof(conditions_id_buffer), "%s", obtain_weather_icon((int)t->value->int32));
+            }else{
+              snprintf(conditions_id_buffer, sizeof(conditions_id_buffer),"%s","");
+            }
+
+      break;*/
+       case KEY_CONDITIONS_ICON:
+            if (config_get(PERSIST_CONDITIONS)){
+              //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND:%d", (int)t->value->int32);
+              //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND2:%s", obtain_weather_icon((int)t->value->int32));
+                snprintf(conditions_id_buffer, sizeof(conditions_id_buffer), "%s", obtain_weather_icon(t->value->cstring));
             }else{
               snprintf(conditions_id_buffer, sizeof(conditions_id_buffer),"%s","");
             }

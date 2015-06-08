@@ -30,15 +30,21 @@ function locationSuccess(pos) {
           // Conditions
           var conditions = json.weather[0].main;     
           var conditions_code = json.weather[0].id;   
+          var conditions_icon = json.weather[0].icon;   
           console.log('Conditions are ' + conditions);
           console.log('Code are ' + conditions_code);
-
+          console.log('Icon are ' + conditions_icon);
           console.log('Humidity ' +  json.main.humidity);
          // console.log('Wind ' +  (json.wind.speed / 0.62137));
 
          var wind_speed = Math.floor((json.wind.speed / 0.62137) * 100) / 100  ;
          var sunrise = new Date(json.sys.sunrise*1000);
          var sunset = new Date(json.sys.sunset*1000);
+         var now = new Date();
+         console.log("Now:"+(now.toString()));
+         console.log("Sunrise:"+(sunrise.toString()));
+         console.log("Sunset:"+(sunset.toString()));
+         console.log("Date res:"+(now.getTime() > sunset.getTime()));
 
           // Assemble dictionary using our keys
       		var dictionary = {
@@ -49,7 +55,8 @@ function locationSuccess(pos) {
             'KEY_WIND': wind_speed.toString(),
             'KEY_SUNRISE': (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am")+"|"+sunrise.getHours()+":"+sunrise.getMinutes(),
             'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")+"|"+sunset.getHours()+":"+sunset.getMinutes(),
-            'KEY_CONDITIONS_ID': conditions_code
+            'KEY_CONDITIONS_ID': conditions_code,
+            'KEY_CONDITIONS_ICON': conditions_icon
       		};
           console.log('Data to be sent: ' +  JSON.stringify(dictionary));
 
