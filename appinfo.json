@@ -82,12 +82,8 @@
         "type":"font",
         "name":"FONT_VISITOR_14",
         "file":"fonts/visitor2.ttf"
-      }  ,
-       {
-        "type":"font",
-        "name":"FONT_WEATHER_14",
-        "file":"fonts/weathericons.ttf"
       } 
+      
     ]
   }
 }

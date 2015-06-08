@@ -37,7 +37,7 @@ void config_init() {
     persist_write_string(PERSIST_WE_TEMP, "");
     persist_write_string(PERSIST_WE_HUM, "");
     persist_write_string(PERSIST_WE_SUN, "");
-    persist_write_string(PERSIST_CONDITIONS_ID, "");
+   // persist_write_string(PERSIST_CONDITIONS_ID, "");
 
   }
 
@@ -57,7 +57,7 @@ void config_deinit(){
     persist_write_string(PERSIST_WE_TEMP, temp_text);
     persist_write_string(PERSIST_WE_HUM, hum_text);
     persist_write_string(PERSIST_WE_SUN, sun_text);
-    persist_write_string(PERSIST_CONDITIONS_ID, cond_icon_text);
+    //persist_write_string(PERSIST_CONDITIONS_ID, cond_icon_text);
 }
 void refresh_config(){
   for(int i = 0; i < NUM_SETTINGS; i++) {
@@ -67,7 +67,7 @@ void refresh_config(){
     persist_read_string(PERSIST_WE_TEMP, temp_text, sizeof(temp_text));
     persist_read_string(PERSIST_WE_HUM, hum_text, sizeof(hum_text));
     persist_read_string(PERSIST_WE_SUN, sun_text, sizeof(sun_text));
-    persist_read_string(PERSIST_CONDITIONS_ID, cond_icon_text, sizeof(cond_icon_text));
+    //persist_read_string(PERSIST_CONDITIONS_ID, cond_icon_text, sizeof(cond_icon_text));
 }
 
 int config_get(int key) {

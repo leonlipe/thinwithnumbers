@@ -54,11 +54,11 @@ function locationSuccess(pos) {
             'KEY_HUMIDITY': json.main.humidity,
             'KEY_WIND': wind_speed.toString(),
             'KEY_SUNRISE': (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am")+"|"+sunrise.getHours()+":"+sunrise.getMinutes(),
-            'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")+"|"+sunset.getHours()+":"+sunset.getMinutes(),
-            'KEY_CONDITIONS_ID': conditions_code,
-            'KEY_CONDITIONS_ICON': conditions_icon
+            'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")+"|"+sunset.getHours()+":"+sunset.getMinutes()
       		};
           console.log('Data to be sent: ' +  JSON.stringify(dictionary));
+//            'KEY_CONDITIONS_ID': conditions_code,
+//            'KEY_CONDITIONS_ICON': conditions_icon
 
 
     		// Send to Pebble if everithing is ok
