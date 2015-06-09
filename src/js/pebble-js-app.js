@@ -9,6 +9,9 @@ var xhrRequest = function (url, type, callback) {
   xhr.send();
 };
 
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
 
 function locationSuccess(pos) {
   var url = 'http://api.openweathermap.org/data/2.5/weather?lat=' +
@@ -18,47 +21,65 @@ function locationSuccess(pos) {
     function(responseText) {
 
       try {
+        console.log("Entra a datos...")
           // responseText contains a JSON object with weather info
-          var json = JSON.parse(responseText);
 
           // Temperature in Kelvin requires adjustment
-          console.log("Temp:"+json.main.temp);
-          var temperature = Math.round(json.main.temp - 273.15);
-          var temperatureF = Math.round( ((json.main.temp - 273.15) * 1.8) +32 );
-          console.log('Temperature is ' + temperature);
+          //console.log("Temp:"+json.main.temp);
+          //console.log('Temperature is ' + temperature);
 
           // Conditions
-          var conditions = json.weather[0].main;     
-          var conditions_code = json.weather[0].id;   
-          var conditions_icon = json.weather[0].icon;   
-          console.log('Conditions are ' + conditions);
-          console.log('Code are ' + conditions_code);
-          console.log('Icon are ' + conditions_icon);
-          console.log('Humidity ' +  json.main.humidity);
-         // console.log('Wind ' +  (json.wind.speed / 0.62137));
+          //console.log('Conditions are ' + conditions);
+          //console.log('Code are ' + conditions_code);
+          //console.log('Icon are ' + conditions_icon);
+          //console.log('Humidity ' +  json.main.humidity);
+          // console.log('Wind ' +  (json.wind.speed / 0.62137));
 
-         var wind_speed = Math.floor((json.wind.speed / 0.62137) * 100) / 100  ;
-         var sunrise = new Date(json.sys.sunrise*1000);
-         var sunset = new Date(json.sys.sunset*1000);
-         var now = new Date();
-         console.log("Now:"+(now.toString()));
-         console.log("Sunrise:"+(sunrise.toString()));
-         console.log("Sunset:"+(sunset.toString()));
-         console.log("Date res:"+(now.getTime() > sunset.getTime()));
+        var json = JSON.parse(responseText);
+        var temperature = Math.round(json.main.temp - 273.15);
+        var temperatureF = Math.round( ((json.main.temp - 273.15) * 1.8) +32 );
+        var conditions = json.weather[0].main;     
+        var conditions_code = json.weather[0].id;   
+        var conditions_icon = json.weather[0].icon;   
+        var wind_speed = Math.floor((json.wind.speed / 0.62137) * 100) / 100  ;
+        var sunrise = new Date(json.sys.sunrise*1000);
+        var sunset = new Date(json.sys.sunset*1000);
+        var now = new Date();
+        var sunrise12h = (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am");
+        var sunrise24h = sunrise.getHours()+":"+sunrise.getMinutes();
+        var sunset12h = (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am");
+        var sunset24h = sunset.getHours()+":"+sunset.getMinutes();
+        var humidity = json.main.humidity;
+        var wind_speed = json.wind.speed.toString();
+         //console.log("Now:"+(now.toString()));
+         //console.log("Sunrise:"+(sunrise.toString()));
+         //console.log("Sunset:"+(sunset.toString()));
+         //console.log("Date res:"+(now.getTime() > sunset.getTime()));
 
           // Assemble dictionary using our keys
+
+
       		var dictionary = {
       		  'KEY_TEMPERATURE': temperature,
             'KEY_TEMPERATUREF': temperatureF,
       		  'KEY_CONDITIONS': conditions,
-            'KEY_HUMIDITY': json.main.humidity,
-            'KEY_WIND': wind_speed.toString(),
-            'KEY_SUNRISE': (sunrise.getHours()>12?sunrise.getHours()-12:sunrise.getHours() )+":"+sunrise.getMinutes()+ (sunrise.getHours()>12?"pm":"am")+"|"+sunrise.getHours()+":"+sunrise.getMinutes(),
-            'KEY_SUNSET': (sunset.getHours()>12? sunset.getHours()-12:sunset.getHours() )+":"+sunset.getMinutes() +(sunset.getHours()>12?"pm":"am")+"|"+sunset.getHours()+":"+sunset.getMinutes()
+            'KEY_HUMIDITY': humidity,
+            'KEY_WIND': wind_speed,
+            'KEY_SUNRISE': sunrise12h+"|"+sunrise24h,
+            'KEY_SUNSET': sunrise12h+"|"+sunset24h,
+            'KEY_CONDITIONS_ID': conditions_code,
+            'KEY_CONDITIONS_ICON': conditions_icon
       		};
+
+          console.log("Datos del server de clima");
+          if (isNaN(temperature) || isNaN(temperatureF) || isEmpty(conditions)
+            || isEmpty(humidity) || isEmpty(wind_speed) || isEmpty(sunrise)
+            || isEmpty(sunrise24h) || isEmpty(sunset) || isEmpty(sunset24h)
+            || isEmpty(conditions_code) || isEmpty(conditions_icon)){
+            throw "Error en los datos del servicio.";
+          }
           console.log('Data to be sent: ' +  JSON.stringify(dictionary));
-//            'KEY_CONDITIONS_ID': conditions_code,
-//            'KEY_CONDITIONS_ICON': conditions_icon
+          
 
 
     		// Send to Pebble if everithing is ok
@@ -72,7 +93,7 @@ function locationSuccess(pos) {
     		);
     }
     catch(err) {
-      console.log("Error when getting weather");
+      console.log("Error when getting weather:"+err.message);
     }
     }      
   );
