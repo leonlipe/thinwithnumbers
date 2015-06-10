@@ -103,6 +103,17 @@ function locationError(err) {
   console.log('Error requesting location!');
 }
 
+function putParam(parameter, value, actualLen){
+  var respuesta ="";
+  if (value){
+    respuesta=respuesta+(actualLen>0?"&":"")+parameter+"="+value;
+  }
+  return respuesta;
+
+}
+
+
+
 function getWeather() {
   navigator.geolocation.getCurrentPosition(
     locationSuccess,
@@ -132,9 +143,25 @@ Pebble.addEventListener('appmessage',
 
 Pebble.addEventListener('showConfiguration', function(e) {
   // Show config page
-  console.log("Show config"+JSON.stringify(e));
-
-  Pebble.openURL('https://dl.dropboxusercontent.com/u/318065/analogy_config.html');
+  var params = "";
+  
+  //console.log("Show config"+JSON.stringify(e));
+  params = params + putParam('KEY_DATE',window.localStorage.getItem('KEY_DATE'),params.length);
+  params = params + putParam('KEY_DAY',window.localStorage.getItem('KEY_DAY'),params.length);
+  params = params + putParam('KEY_BT',window.localStorage.getItem('KEY_BT'),params.length,params.length);
+  params = params + putParam('KEY_BATTERY',window.localStorage.getItem('KEY_BATTERY'),params.length);
+  params = params + putParam('KEY_SECOND_HAND',window.localStorage.getItem('KEY_SECOND_HAND'),params.length);
+  params = params + putParam('TEMPERATURE',window.localStorage.getItem('TEMPERATURE'),params.length);
+  params = params + putParam('CONDITIONS',window.localStorage.getItem('CONDITIONS'),params.length);
+  params = params + putParam('HUMIDITY',window.localStorage.getItem('HUMIDITY'),params.length);
+  params = params + putParam('SUNRISE',window.localStorage.getItem('SUNRISE'),params.length);
+  params = params + putParam('SUNSET',window.localStorage.getItem('SUNSET'),params.length);
+  params = params + putParam('INVERTED',window.localStorage.getItem('INVERTED'),params.length);
+  params = params + putParam('CELCIUS',window.localStorage.getItem('CELCIUS'),params.length);
+  params = params + putParam('POLLTIME',window.localStorage.getItem('POLLTIME'),params.length);
+  //console.log(params);
+  //console.log("Val from local storage:"+putParam('KEY_DATE',window.localStorage.getItem('KEY_DATE')));
+  Pebble.openURL('https://dl.dropboxusercontent.com/u/318065/analogy_config.html?'+params);
 });
 
 Pebble.addEventListener('webviewclosed',
@@ -157,7 +184,7 @@ Pebble.addEventListener('webviewclosed',
       'HAND_LENGTH_HOUR': 45,
       'HAND_TYPE': 2,
       'TEMPERATURE': parseInt(configuration.temperature),
-      'CONDITIONS': 1,
+      'CONDITIONS': parseInt(configuration.temperature),
       'HUMIDITY': parseInt(configuration.humidity),
       'WIND': 0,
       'SUNRISE': parseInt(configuration.sunrise),
@@ -166,11 +193,36 @@ Pebble.addEventListener('webviewclosed',
       'INVERTED': parseInt(configuration.inverted),
       'NUMBERS': 1,
       'CELCIUS': parseInt(configuration.celcius),
-      'POLL_TIME': parseInt(configuration.time_poll)
+      'POLLTIME': parseInt(configuration.time_poll)
 
       
     };
+      window.localStorage.setItem('KEY_DATE', parseInt(configuration.date));
+      window.localStorage.setItem('KEY_DAY', parseInt(configuration.dow));
+      window.localStorage.setItem('KEY_BT', parseInt(configuration.bt));
+      window.localStorage.setItem('KEY_BATTERY', parseInt(configuration.bat));
+      window.localStorage.setItem('KEY_SECOND_HAND', parseInt(configuration.showSec));
+      window.localStorage.setItem('TEMPERATURE', parseInt(configuration.temperature));
+      window.localStorage.setItem('CONDITIONS', parseInt(configuration.temperature));
+      window.localStorage.setItem('HUMIDITY', parseInt(configuration.humidity));
+      window.localStorage.setItem('SUNRISE', parseInt(configuration.sunrise));
+      window.localStorage.setItem('SUNSET', parseInt(configuration.sunset));
+      window.localStorage.setItem('INVERTED', parseInt(configuration.inverted));
+      window.localStorage.setItem('CELCIUS', parseInt(configuration.celcius));
+      window.localStorage.setItem('POLLTIME', parseInt(configuration.time_poll));
 
+      //window.localStorage.setItem('NUMBERS', 1);
+      //window.localStorage.setItem('DIGITALTIME', 0);
+      //window.localStorage.setItem('WIND', 0);
+      //window.localStorage.setItem('BACKTYPE', 0);
+      //window.localStorage.setItem('MARGIN', 6);
+      //window.localStorage.setItem('HAND_LENGTH_SEC', 65);
+      //window.localStorage.setItem('HAND_LENGTH_SEC_INVERSE', 15);
+      //window.localStorage.setItem('HAND_LENGTH_MIN', 65);
+      //window.localStorage.setItem('HAND_LENGTH_HOUR', 45);
+      //window.localStorage.setItem('HAND_TYPE', 2));
+
+    console.log("Saved on local storage");
         //console.log('I sent:' ,JSON.stringify(configs));
 
 
