@@ -66,7 +66,7 @@ function locationSuccess(pos) {
             'KEY_HUMIDITY': humidity,
             'KEY_WIND': wind_speed,
             'KEY_SUNRISE': sunrise12h+"|"+sunrise24h,
-            'KEY_SUNSET': sunrise12h+"|"+sunset24h,
+            'KEY_SUNSET': sunset12h+"|"+sunset24h,
             'KEY_CONDITIONS_ID': conditions_code,
             'KEY_CONDITIONS_ICON': conditions_icon
       		};
