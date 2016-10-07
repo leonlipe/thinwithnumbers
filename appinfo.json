@@ -4,9 +4,9 @@
   "longName": "Analog with numbers WatchFace",
   "companyName": "RedLeon",
   "versionCode": 1,
-  "versionLabel": "1.5",
+  "versionLabel": "1.9",
   "sdkVersion": "3",
-  "targetPlatforms": ["aplite"],
+  "targetPlatforms": ["aplite", "basalt"],
   "watchapp": {
     "watchface": true
   },

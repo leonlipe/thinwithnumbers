@@ -39,7 +39,7 @@ static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_hum_layer , *s_weather_sun_layer,*s_weather_temp_layer,  *s_12_layer, *s_9_layer, *s_6_layer;
 static TextLayer *s_m_5_layer, *s_m_10_layer,  *s_m_20_layer,  *s_m_25_layer,  *s_m_35_layer,  *s_m_40_layer,  *s_m_50_layer,  *s_m_55_layer, *s_weather_icon;
-static InverterLayer *s_inverter_layer;
+//static InverterLayer *s_inverter_layer;
 
 static GBitmap *icon_battery, *icon_battery_low, *icon_battery_charge,*icon_bt_disconected;
 
@@ -178,11 +178,11 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
     graphics_fill_rect(ctx, GRect(100, 75, 25,22), 1, GCornersAll);  
   }
   
-  if (config_get(PERSIST_INVERTED)){
+  /*if (config_get(PERSIST_INVERTED)){
     layer_set_hidden(inverter_layer_get_layer(s_inverter_layer),false);
   }else{
     layer_set_hidden(inverter_layer_get_layer(s_inverter_layer),true);
-  }
+  }*/
 
   if (config_get(PERSIST_TEMPERATURE)){
     layer_set_hidden(text_layer_get_layer(s_weather_temp_layer),false);
@@ -637,12 +637,12 @@ layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_m_40_layer
   layer_set_update_proc(s_canvas_layer, draw_proc);
   layer_add_child(window_layer, s_canvas_layer);
 
-  s_inverter_layer = inverter_layer_create(bounds);
+  //s_inverter_layer = inverter_layer_create(bounds);
 
   
   
 
-  layer_add_child(window_layer,inverter_layer_get_layer(s_inverter_layer));
+  //layer_add_child(window_layer,inverter_layer_get_layer(s_inverter_layer));
 }
 
 static void window_unload(Window *window) {
@@ -660,7 +660,7 @@ static void window_unload(Window *window) {
   layer_destroy(s_canvas_layer);
   layer_destroy(s_bg_layer);
   layer_destroy(s_battery_layer);
-  inverter_layer_destroy(s_inverter_layer);
+//  inverter_layer_destroy(s_inverter_layer);
 
   text_layer_destroy(s_weekday_layer);
   text_layer_destroy(s_day_in_month_layer);

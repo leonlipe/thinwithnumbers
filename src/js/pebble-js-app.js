@@ -161,7 +161,7 @@ Pebble.addEventListener('showConfiguration', function(e) {
   params = params + putParam('POLLTIME',window.localStorage.getItem('POLLTIME'),params.length);
   //console.log(params);
   //console.log("Val from local storage:"+putParam('KEY_DATE',window.localStorage.getItem('KEY_DATE')));
-  Pebble.openURL('https://dl.dropboxusercontent.com/u/318065/analogy_config.html?'+params);
+  Pebble.openURL('http://leonlipe.github.io/pblanalogy/analogy_config.html?'+params);
 });
 
 Pebble.addEventListener('webviewclosed',
