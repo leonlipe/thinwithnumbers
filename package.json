@@ -1,0 +1,114 @@
+{
+  "version": "2.0.0",
+  "author": "RedLeon",
+  "private": true,
+  "dependencies": {
+    "pebble-clay": "^1.0.3",
+    "pebble-events": "^1.2.0",
+    "pebble-generic-weather": "^1.1.5"
+  },
+  "keywords": [
+    "pebble-app"
+  ],
+  "pebble": {
+    "sdkVersion": "3",
+    "resources": {
+      "media": [
+        {
+          "type": "png",
+          "name": "BATTERY_ICON",
+          "file": "images/battery-icon.png"
+        },
+        {
+          "type": "png",
+          "name": "BATTERY_ICON_LOW",
+          "file": "images/battery-icon-low.png"
+        },
+        {
+          "type": "png",
+          "name": "BATTERY_CHARGE",
+          "file": "images/battery-charge.png"
+        },
+        {
+          "type": "png",
+          "name": "BLUETOOTH_DISCONNECTED",
+          "file": "images/bluetooth-disconected.png"
+        },
+        {
+          "type": "font",
+          "characterRegex": "[0-9:A-Za-z% ]",
+          "name": "FONT_VISITOR_20",
+          "file": "fonts/visitor2.ttf"
+        },
+        {
+          "type": "font",
+          "characterRegex": "[0-9:A-Za-z% ]",
+          "name": "FONT_VISITOR_14",
+          "file": "fonts/visitor2.ttf"
+        },
+        {
+          "type": "font",
+          "name": "FONT_WEATHER_14",
+          "file": "fonts/weathericons.ttf"
+        }
+      ]
+    },
+    "projectType": "native",
+    "uuid": "8dbeee03-1c3b-4431-8611-436d98ce7e86",
+    "messageKeys": {
+      "KEY_TEMPERATURE": 0,
+      "HAND_LENGTH_MIN": 15,
+      "INVERTED": 25,
+      "KEY_TEMPERATUREF": 29,
+      "KEY_CONDITIONS_ID": 30,
+      "KEY_BATTERY": 9,
+      "KEY_BT": 8,
+      "BACKTYPE": 11,
+      "KEY_HUMIDITY": 2,
+      "KEY_WIND": 3,
+      "KEY_SUNRISE": 4,
+      "HAND_LENGTH_SEC": 13,
+      "NUMBERS": 26,
+      "HAND_TYPE": 17,
+      "KEY_SUNSET": 5,
+      "HAND_LENGTH_SEC_INVERSE": 14,
+      "CONDITIONS": 19,
+      "HAND_LENGTH_HOUR": 16,
+      "TEMPERATURE": 18,
+      "KEY_DATE": 6,
+      "dummy": 0,
+      "CELCIUS": 27,
+      "DIGITALTIME": 24,
+      "POLLTIME": 28,
+      "HUMIDITY": 20,
+      "KEY_CONDITIONS_ICON": 31,
+      "KEY_SECOND_HAND": 10,
+      "SUNSET": 22,
+      "SUNRISE": 23,
+      "KEY_CONDITIONS": 1,
+      "KEY_DAY": 7,
+      "MARGIN": 12,
+      "WIND": 21,
+      "weatherProvider": 100,
+      "weatherApi": 101,
+      "READY": 102
+    },
+    "enableMultiJS": true,
+    "displayName": "Analogy",
+    "watchapp": {
+      "onlyShownOnCommunication": false,
+      "hiddenApp": false,
+      "watchface": true
+    },
+    "targetPlatforms": [
+      "aplite",
+      "basalt",
+      "diorite"
+    ],
+    "capabilities": [
+      "location",
+      "configurable"
+    ]
+  },
+  "name": "Analogy"
+}

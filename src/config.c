@@ -38,6 +38,8 @@ void config_init() {
     persist_write_string(PERSIST_WE_HUM, "");
     persist_write_string(PERSIST_WE_SUN, "");
     persist_write_string(PERSIST_CONDITIONS_ID, "");
+    persist_write_string(PERSIST_WEATHER_API, "");
+    persist_write_int(PERSIST_SERVICE_PROVIDER, 0);
 
   }
 
@@ -68,6 +70,9 @@ void refresh_config(){
     persist_read_string(PERSIST_WE_HUM, hum_text, sizeof(hum_text));
     persist_read_string(PERSIST_WE_SUN, sun_text, sizeof(sun_text));
     persist_read_string(PERSIST_CONDITIONS_ID, cond_icon_text, sizeof(cond_icon_text));
+
+    persist_read_string(PERSIST_WEATHER_API, weatherApi, sizeof(weatherApi));
+    weatherProvider = persist_read_int(PERSIST_SERVICE_PROVIDER);
 }
 
 int config_get(int key) {

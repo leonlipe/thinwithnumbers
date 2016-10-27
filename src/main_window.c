@@ -1,4 +1,6 @@
 #include "main_window.h"
+#include <pebble-generic-weather/pebble-generic-weather.h>
+#include <pebble-events/pebble-events.h>
 
 #define KEY_TEMPERATURE 0
 #define KEY_CONDITIONS 1
@@ -32,14 +34,19 @@
 #define KEY_TEMPERATUREF 29
 #define KEY_CONDITIONS_ID 30
 #define KEY_CONDITIONS_ICON 31
+#define READY 102
+#define KEY_weatherApi 101
+#define KEY_weatherProvider 100
 
+#define DEBUG false
+
+static GenericWeatherStatus weather_last_status;
 
 
 static Window *s_main_window;
 static Layer *s_canvas_layer, *s_bg_layer, *s_battery_layer;
 static TextLayer *s_weekday_layer, *s_day_in_month_layer, *s_month_layer, *s_weather_hum_layer , *s_weather_sun_layer,*s_weather_temp_layer,  *s_12_layer, *s_9_layer, *s_6_layer;
 static TextLayer *s_m_5_layer, *s_m_10_layer,  *s_m_20_layer,  *s_m_25_layer,  *s_m_35_layer,  *s_m_40_layer,  *s_m_50_layer,  *s_m_55_layer, *s_weather_icon;
-//static InverterLayer *s_inverter_layer;
 
 static GBitmap *icon_battery, *icon_battery_low, *icon_battery_charge,*icon_bt_disconected;
 
@@ -53,6 +60,92 @@ static bool battery_plugged;
 static GFont s_visitor_14_font,s_visitor_20_font, s_weather_12_font;
 
 
+static void clear_weather_text(){
+  snprintf(temp_text, sizeof(temp_text), "%s", "");
+  snprintf(sun_text, sizeof(sun_text), "%s", "");
+  snprintf(hum_text, sizeof(hum_text),  "%s", "");
+  snprintf(cond_icon_text, sizeof(cond_icon_text),  "%s", "");
+
+}
+
+static char * obtain_weather_icon(int code, int day){
+  char * resultado;
+    resultado = "\uf03d";
+  //if (code >= 200 && code <300){
+  switch (code){
+    case  GenericWeatherConditionClearSky:
+      if (day){
+        resultado = "\uf00d";
+      }else{
+        resultado = "\uf02e";
+      }
+    break;
+  case GenericWeatherConditionFewClouds:
+      if (day){
+       resultado = "\uf002";
+      }else{
+        resultado = "\uf031";
+      }
+    break;
+  case GenericWeatherConditionScatteredClouds:
+       
+    resultado = "\uf041";
+  
+    break;
+  case GenericWeatherConditionBrokenClouds:
+    resultado = "\uf013";
+      
+    break;
+  case GenericWeatherConditionShowerRain:
+       if (day){
+         resultado="\uf019";
+        }else{
+          resultado="\uf019";
+        }
+  
+    break;
+  case GenericWeatherConditionRain:
+        if (day){
+          resultado = "\uf009";
+        }else{
+          resultado = "\uf026";
+        }
+    break;
+  case GenericWeatherConditionThunderstorm:
+      if (day){
+          resultado="\uf01e";
+        }else{
+          resultado="\uf01e";
+        }
+    break;
+  case GenericWeatherConditionSnow:
+        if (day){
+            resultado = "\uf01b";
+          }else{
+            resultado = "\uf01b";
+          }
+    break;
+  case GenericWeatherConditionMist:
+        if (day){
+          resultado = "\uf014";
+        }else{
+          resultado = "\uf014";
+        }
+    break;
+  case GenericWeatherConditionUnknown:
+       resultado = "\uf03d";
+    break;
+  default:
+      resultado = "\uf03d";
+
+
+
+  }
+
+  
+  return resultado;
+  
+}
 
 
 static int32_t getMarkSize(int h){
@@ -98,24 +191,113 @@ static int32_t getMarkSize(int h){
 return resultado;
 }
 
-/*static int32_t getMarkHourSize(int h){
-  int32_t resultado = 75;
-  if (h>0 && h<=7){
-    resultado = 90;
-  }else if (h>7 && h<=23){
-    resultado = 70;
-  }else if (h>23 && h<=37){
-    resultado = 82;
-  }else if (h>37 && h<=53){
-    resultado = 82;
-  }else if (h>53 && h<=60){
-    resultado = 70;
+
+static void weather_callback(GenericWeatherInfo *info, GenericWeatherStatus status){
+  char sunset[10];
+  char sunrise[10];
+  if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "API:%s",weatherApi);
+ 
+  clear_weather_text();
+  switch(status) {
+    case GenericWeatherStatusAvailable:
+    {
+      weather_last_status = GenericWeatherStatusAvailable;  
+      if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Weather units config: %d",config_get(PERSIST_CELCIUS));
+      if (config_get(PERSIST_CELCIUS)){
+        snprintf(temp_text, sizeof(temp_text),"%dC",info->temp_c);
+      }else{
+        snprintf(temp_text, sizeof(temp_text),"%dF",info->temp_f);
+      }
+
+       // snprintf(sunset, sizeof(sunset), "%02d:%02d", hour, minute, second);
+       if (config_get(PERSIST_SUNSET))
+         strftime(sunset, sizeof(sunset), clock_is_24h_style() ? "%H:%M" : "%I:%M", localtime(&info->timesunset));
+       if (config_get(PERSIST_SUNRISE))
+         strftime(sunrise, sizeof(sunrise), clock_is_24h_style() ? "%H:%M" : "%I:%M", localtime(&info->timesunrise));
+       snprintf(sun_text, sizeof(sun_text),"%s %s",sunrise,sunset);
+       snprintf(hum_text, sizeof(hum_text), "%s", info->name);
+       snprintf(cond_icon_text, sizeof(cond_icon_text), "%s", obtain_weather_icon(info->condition, info->day));
+
+
+      if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "Generic weather fetch callback: %s",temp_text);
+    }
+      break;
+    case GenericWeatherStatusNotYetFetched:
+    weather_last_status = GenericWeatherStatusNotYetFetched;  
+      if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "GenericWeatherStatusNotYetFetched");
+      snprintf(temp_text, sizeof(temp_text),"%s","");
+      //text_layer_set_text(s_text_layer, "GenericWeatherStatusNotYetFetched");
+      break;
+    case GenericWeatherStatusBluetoothDisconnected:
+    weather_last_status = GenericWeatherStatusBluetoothDisconnected;  
+    if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "GenericWeatherStatusBluetoothDisconnected");
+      snprintf(temp_text, sizeof(temp_text),"%s","blu");
+      //text_layer_set_text(s_text_layer, "GenericWeatherStatusBluetoothDisconnected");
+      break;
+    case GenericWeatherStatusPending:
+    weather_last_status = GenericWeatherStatusPending;  
+    if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "GenericWeatherStatusPending");
+      snprintf(temp_text, sizeof(temp_text),"%s","");
+      //text_layer_set_text(s_text_layer, "GenericWeatherStatusPending");
+      break;
+    case GenericWeatherStatusFailed:
+    weather_last_status = GenericWeatherStatusFailed;  
+    if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "GenericWeatherStatusFailed");
+      snprintf(temp_text, sizeof(temp_text),"%s","");
+      //text_layer_set_text(s_text_layer, "GenericWeatherStatusFailed");
+      break;
+    case GenericWeatherStatusBadKey:
+    weather_last_status = GenericWeatherStatusBadKey;  
+    if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "GenericWeatherStatusBadKey");
+        snprintf(temp_text, sizeof(temp_text),"%s","");
+      //text_layer_set_text(s_text_layer, "GenericWeatherStatusBadKey");
+      break;
+    case GenericWeatherStatusLocationUnavailable:
+    weather_last_status = GenericWeatherStatusLocationUnavailable;  
+    if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_DEBUG, "GenericWeatherStatusLocationUnavailable");
+        snprintf(temp_text, sizeof(temp_text),"%s","");
+      //text_layer_set_text(s_text_layer, "GenericWeatherStatusLocationUnavailable");
+      break;
   }
 
+  
 
-return resultado;
 }
-*/
+
+
+static void review_layers(){
+   if (config_get(PERSIST_TEMPERATURE)){
+    layer_set_hidden(text_layer_get_layer(s_weather_temp_layer),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_temp_layer),true);
+  }
+  if (config_get(PERSIST_HUMIDITY)){
+    layer_set_hidden(text_layer_get_layer(s_weather_hum_layer),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_hum_layer),true);
+  }
+  if (config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
+    layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),true);
+  }
+  
+   if (config_get(PERSIST_CONDITIONS)){
+    layer_set_hidden(text_layer_get_layer(s_weather_icon),false);
+  }else{
+    layer_set_hidden(text_layer_get_layer(s_weather_icon),true);
+  }
+}  
+
 
 /*
  Update proc
@@ -178,33 +360,8 @@ static void bg_update_proc(Layer *layer, GContext *ctx) {
     graphics_fill_rect(ctx, GRect(100, 75, 25,22), 1, GCornersAll);  
   }
   
-  /*if (config_get(PERSIST_INVERTED)){
-    layer_set_hidden(inverter_layer_get_layer(s_inverter_layer),false);
-  }else{
-    layer_set_hidden(inverter_layer_get_layer(s_inverter_layer),true);
-  }*/
-
-  if (config_get(PERSIST_TEMPERATURE)){
-    layer_set_hidden(text_layer_get_layer(s_weather_temp_layer),false);
-  }else{
-    layer_set_hidden(text_layer_get_layer(s_weather_temp_layer),true);
-  }
-  if (config_get(PERSIST_HUMIDITY)){
-    layer_set_hidden(text_layer_get_layer(s_weather_hum_layer),false);
-  }else{
-    layer_set_hidden(text_layer_get_layer(s_weather_hum_layer),true);
-  }
-  if (config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
-    layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),false);
-  }else{
-    layer_set_hidden(text_layer_get_layer(s_weather_sun_layer),true);
-  }
-  
-   if (config_get(PERSIST_CONDITIONS)){
-    layer_set_hidden(text_layer_get_layer(s_weather_icon),false);
-  }else{
-    layer_set_hidden(text_layer_get_layer(s_weather_icon),true);
-  }
+ 
+  review_layers();
 // Could print weather conditions
 
 
@@ -219,25 +376,7 @@ static GPoint make_hand_point(int quantity, int intervals, int len, GPoint cente
   };
 }
 
-/*static void handsSeparators(GContext *ctx, int32_t units){
-  if (units == 0){
-    graphics_context_set_stroke_color(ctx, GColorBlack);
-    graphics_draw_line(ctx, GPoint(72, 13), GPoint(72+THICKNESS, 13));
-  }
-  if (units == 15){
-    graphics_context_set_stroke_color(ctx, GColorBlack);
-    graphics_draw_line(ctx, GPoint(135, 83), GPoint(135, 83+THICKNESS));
-  }
-  if (units == 30){
-    graphics_context_set_stroke_color(ctx, GColorBlack);
-    graphics_draw_line(ctx, GPoint(72, 157), GPoint(72+THICKNESS, 157));
-  }
-  if (units == 45){
-    graphics_context_set_stroke_color(ctx, GColorBlack);
-    graphics_draw_line(ctx, GPoint(2, 83), GPoint(2, 83+THICKNESS));
-  }
-}
- */
+
 
 int inverse_hand(int actual_time){
   int new_time = actual_time + 30;
@@ -300,8 +439,13 @@ static void draw_proc(Layer *layer, GContext *ctx) {
   }
 
   // Draw seconds hand
-                   
-  graphics_context_set_stroke_color(ctx, GColorWhite);
+  
+  #if defined(PBL_COLOR)
+    graphics_context_set_stroke_color(ctx, GColorRed);
+  #else
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+  #endif                 
+  
   if(config_get(PERSIST_KEY_SECOND_HAND)) {
     for(int y = 0; y < THICKNESS_SECONDS; y++) {
       for(int x = 0; x < THICKNESS_SECONDS; x++) {       
@@ -313,10 +457,20 @@ static void draw_proc(Layer *layer, GContext *ctx) {
  
   // Draw circle for seconds hand
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 4);
- graphics_context_set_stroke_color(ctx, GColorBlack);
+  #if defined(PBL_COLOR)
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+  #else
+    graphics_context_set_stroke_color(ctx, GColorBlack);
+  #endif      
+ 
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 3);
  graphics_draw_circle(ctx, GPoint(second_hand_inverse_circle.x + 1, second_hand_inverse_circle.y + 1), 5);
- graphics_context_set_stroke_color(ctx, GColorWhite);
+ #if defined(PBL_COLOR)
+    graphics_context_set_stroke_color(ctx, GColorRed);
+  #else
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+  #endif     
+ 
  }
 
   // Center
@@ -345,35 +499,23 @@ static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   // Finally
   layer_mark_dirty(s_canvas_layer);
 
-    // Get weather update every 30 minutes
-   //  APP_LOG(APP_LOG_LEVEL_INFO, "Before:");
   unsigned int seconds_for_poll = config_get(PERSIST_POLLTIME)*60;
   unsigned int now = mktime(tick_time);
-  //APP_LOG(APP_LOG_LEVEL_INFO, "PPT:%i, CELCIUS:%i", config_get(PERSIST_POLLTIME), config_get(PERSIST_CELCIUS));
-  //APP_LOG(APP_LOG_LEVEL_INFO, "SFP: %i, NOW: %i, LUWC:%i, LUWC+SFP:%i",seconds_for_poll, now, s_last_unit_weather_change,s_last_unit_weather_change+seconds_for_poll);
   if( (now > s_last_unit_weather_change+seconds_for_poll) || s_last_unit_weather_change == 0)  {
     
 
     if (config_get(PERSIST_TEMPERATURE) || config_get(PERSIST_HUMIDITY) || config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
       s_last_unit_weather_change = mktime(tick_time);
         
-        // Begin dictionary
-        DictionaryIterator *iter;
-        app_message_outbox_begin(&iter);
-        // Add a key-value pair
-        dict_write_uint8(iter, 0, 0);
-        // Send the message!
-        app_message_outbox_send();
+        
+        if(DEBUG)
+          APP_LOG(APP_LOG_LEVEL_INFO,"Entra a callback de clima");
+         generic_weather_fetch(weather_callback);  
     }
   }
 }
 
 static void bt_handler(bool connected) {
-  // Notify disconnection
-/*  if(!connected && s_connected) {
-    vibes_long_pulse();
-  }
-*/
   s_connected = connected;
   layer_mark_dirty(s_battery_layer);
 }
@@ -683,7 +825,7 @@ static void window_unload(Window *window) {
 
   text_layer_destroy(s_weather_icon);
 
-
+  generic_weather_deinit();
 
   // Self destroying
   window_destroy(s_main_window);
@@ -715,107 +857,12 @@ void main_window_push() {
   }
 }
 
-char * obtain_sun_time(char * suntime, int with_format_24){
-  char *format_24 = suntime;
-      while(*format_24 != '|') format_24++;
-  *format_24++ = '\0';
-  if (with_format_24){
-    return format_24;
-  }else{
-    return suntime;
-  }
-  
-}
-
-
-static char * obtain_weather_icon(char * code){
-  char * resultado;
-    resultado = "\uf03d";
-  //if (code >= 200 && code <300){
-  if (strcmp(code, "11d")==0){
-    resultado="\uf01e";
-  }
-  if (strcmp(code, "11n")==0){
-    resultado="\uf01e";
-  }
-
-  //if (code >= 300 && code <400){
-  if (strcmp(code, "09d")==0){
-    resultado="\uf019";
-  }
-  if (strcmp(code, "09n")==0){
-    resultado="\uf019";
-  }
-
-  // Check day and night
-  //if (code >= 500 && code <505){
-  if (strcmp(code, "10d")==0){
-    resultado = "\uf009";
-  }
-  if (strcmp(code, "10n")==0){
-    resultado = "\uf026";
-  }
-
-
-  //if (code == 511){
-  if (strcmp(code, "13d")==0){
-    resultado = "\uf01b";
-  }
-  
-  if (strcmp(code, "13n")==0){
-    resultado = "\uf01b";
-  }
-
-  
-  
-  if (strcmp(code, "50d")==0){
-    resultado = "\uf014";
-  }
-  if (strcmp(code, "50n")==0){
-    resultado = "\uf014";
-  }
-
-
-
-  if (strcmp(code, "01d")==0){
-    resultado = "\uf00d";
-  }
-  if (strcmp(code, "01n")==0){
-    resultado = "\uf02e";
-  }
-  
-
-  if (strcmp(code, "02d")==0){
-    resultado = "\uf002";
-  }
-  if (strcmp(code, "02n")==0){
-    resultado = "\uf031";
-  }
-
-
-  //if (code == 802){
-  if (strcmp(code, "03d")==0){
-    resultado = "\uf041";
-  }
-//  if (code > 802 && code <900){
-  if (strcmp(code, "04d")==0){
-    resultado = "\uf013";
-  }
-  return resultado;
-  
-}
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
-
-   // Store incoming information
-  static char temperature_buffer[8];
-  static char temperature_bufferf[8];
-  static char conditions_buffer[32];
-  static char humidity_buffer[32];
-  static char wind_speed_buffer[32];
-  static char sunrise_buffer[10];
-  static char sunset_buffer[10];
-  static char conditions_id_buffer[5];
+  bool updated_config = false;
+  if (DEBUG)
+  APP_LOG(APP_LOG_LEVEL_INFO, "Entra a inbox received call");
+ 
 
  // Read first item
   Tuple *t = dict_read_first(iterator);
@@ -823,172 +870,111 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
   // For all items
   while(t != NULL) {
     // Which key was received?
-    switch(t->key) {
-    case KEY_TEMPERATURE:
-            if (config_get(PERSIST_TEMPERATURE)){
-                snprintf(temperature_buffer, sizeof(temperature_buffer), "%dC", (int)t->value->int32);
-            }else{
-              snprintf(temperature_buffer, sizeof(temperature_buffer),"%s","");
-            }
+    switch(t->key) {                
+      case KEY_weatherApi:
+            updated_config = true;
+            persist_write_string(PERSIST_WEATHER_API, t->value->cstring);
+            persist_read_string(PERSIST_WEATHER_API, weatherApi, sizeof(weatherApi));             
+            generic_weather_set_api_key(weatherApi);
 
       break;
-    case KEY_TEMPERATUREF:
-            if (config_get(PERSIST_TEMPERATURE)){
-                snprintf(temperature_bufferf, sizeof(temperature_bufferf), "%dF", (int)t->value->int32);
-            }else{
-              snprintf(temperature_bufferf, sizeof(temperature_bufferf),"%s","");
-            }
+      case KEY_weatherProvider:
+              updated_config = true;
+              if(DEBUG)
+                APP_LOG(APP_LOG_LEVEL_INFO, "Provider actual: %d",weatherProvider);
+              persist_write_int(PERSIST_SERVICE_PROVIDER, (int)t->value->cstring[0]-'0');
+                            if(DEBUG)
+                APP_LOG(APP_LOG_LEVEL_INFO, "Provider del config: %d",(int)t->value->cstring[0]-'0');
 
-      break;      
-     case KEY_CONDITIONS:
-           if (config_get(PERSIST_CONDITIONS)){
-              snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", t->value->cstring);
-            }else{
-              snprintf(conditions_buffer, sizeof(conditions_buffer), "%s","");
-            }
+              weatherProvider = persist_read_int(PERSIST_SERVICE_PROVIDER);
+              if(DEBUG)
+                APP_LOG(APP_LOG_LEVEL_INFO, "Provider nuevo: %d",weatherProvider);
+              generic_weather_set_provider(weatherProvider);
 
       break;
-     case KEY_HUMIDITY:
-            if (config_get(PERSIST_HUMIDITY)){
-                snprintf(humidity_buffer, sizeof(humidity_buffer), "HUM %d%%", (int)t->value->int32);
-            }else{
-              snprintf(humidity_buffer, sizeof(humidity_buffer), "%s","");
-            }
-
-      break;
-     case KEY_WIND:
-            if (config_get(PERSIST_WIND)){
-              snprintf(wind_speed_buffer, sizeof(wind_speed_buffer), "%s kph", t->value->cstring);
-            }else{
-              snprintf(wind_speed_buffer, sizeof(wind_speed_buffer), "%s","");
-            }
-
-      break; 
-       case KEY_SUNRISE:
-
-            if (config_get(PERSIST_SUNRISE)){              
-              if (clock_is_24h_style() == true){
-                snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s", obtain_sun_time(t->value->cstring,true));
-              }else{
-                snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s",obtain_sun_time(t->value->cstring,false));
-
-              }
-            }else{
-              snprintf(sunrise_buffer, sizeof(sunrise_buffer), "%s","");
-            }
-
-      break;   
-       case KEY_SUNSET:
-            if (config_get(PERSIST_SUNSET)){
-              if (clock_is_24h_style() == true){
-                snprintf(sunset_buffer, sizeof(sunset_buffer), "%s",obtain_sun_time(t->value->cstring,true));
-              }else{
-                snprintf(sunset_buffer, sizeof(sunset_buffer), "%s",obtain_sun_time(t->value->cstring,false));
-              }
-            }else{
-              snprintf(sunset_buffer, sizeof(sunset_buffer), "%s","");
-            }
-      break;      
-      case KEY_CONDITIONS_ID:
-            
-
-      break;
-        case KEY_CONDITIONS_ICON:
-      
-            if (config_get(PERSIST_CONDITIONS)){
-              //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND:%d", (int)t->value->int32);
-              //APP_LOG(APP_LOG_LEVEL_INFO, "IMGCOND2:%s", obtain_weather_icon((int)t->value->int32));
-                snprintf(conditions_id_buffer, sizeof(conditions_id_buffer), "%s", obtain_weather_icon(t->value->cstring));
-            }else{
-              snprintf(conditions_id_buffer, sizeof(conditions_id_buffer),"%s","");
-            }
-      
-      break;
-      
       case KEY_DATE:
+              updated_config = true;
               config_set(PERSIST_KEY_DATE,(int)t->value->int32);
       break;
        case KEY_DAY:
+              updated_config = true;
               config_set(PERSIST_KEY_DAY, (int)t->value->int32);              
       break; 
        case KEY_BT:
+              updated_config = true;
               config_set(PERSIST_KEY_BT, (int)t->value->int32);              
       break;   
        case KEY_BATTERY:
+              updated_config = true;
               config_set(PERSIST_KEY_BATTERY, (int)t->value->int32);              
       break;  
        case KEY_SECOND_HAND:
+              updated_config = true;
               config_set(PERSIST_KEY_SECOND_HAND, (int)t->value->int32);              
       break;
-       case BACKTYPE:
-              if (config_get(PERSIST_BACKTYPE) != (int)t->value->int32){
-                layer_mark_dirty(s_bg_layer);
-              }
-              config_set(PERSIST_BACKTYPE, (int)t->value->int32);              
-      break;  
-       case MARGIN:
-              config_set(PERSIST_MARGIN, (int)t->value->int32);
-      break;     
-       case HAND_LENGTH_SEC:
-              config_set(PERSIST_HAND_LENGTH_SEC, (int)t->value->int32);                        
-      break;         
-       case HAND_LENGTH_SEC_INVERSE:
-              config_set(PERSIST_HAND_LENGTH_SEC_INVERSE, (int)t->value->int32);                        
-      break;         
-       case HAND_LENGTH_MIN:
-              config_set(PERSIST_HAND_LENGTH_MIN, (int)t->value->int32);                        
-      break;         
-       case HAND_LENGTH_HOUR:
-              config_set(PERSIST_HAND_LENGTH_HOUR, (int)t->value->int32);     
 
-      break;     
-      case HAND_TYPE:
-              config_set(PERSIST_HAND_TYPE, (int)t->value->int32);     
-
-      break;   
       case TEMPERATURE:
-              config_set(PERSIST_TEMPERATURE, (int)t->value->int32);     
+              updated_config = true;
+              config_set(PERSIST_TEMPERATURE, (int)t->value->int32);  
+              config_set(PERSIST_CONDITIONS, (int)t->value->int32);        
 
       break;   
       case CONDITIONS:
+              updated_config = true;
               config_set(PERSIST_CONDITIONS, (int)t->value->int32);     
 
       break;   
       case HUMIDITY:
+              updated_config = true;
               config_set(PERSIST_HUMIDITY, (int)t->value->int32);     
 
       break;   
       case WIND:
+              updated_config = true;
               config_set(PERSIST_WIND, (int)t->value->int32);     
 
       break;   
       case SUNSET:
+              updated_config = true;
               config_set(PERSIST_SUNSET, (int)t->value->int32);     
 
       break;   
       case SUNRISE:
+              updated_config = true;
               config_set(PERSIST_SUNRISE, (int)t->value->int32);     
 
       break;   
       case DIGITALTIME:
+              updated_config = true;
               config_set(PERSIST_DIGITALTIME, (int)t->value->int32);     
 
       break;   
       case INVERTED:
+              updated_config = true;
               config_set(PERSIST_INVERTED, (int)t->value->int32); 
       break;
       case NUMBERS:
+              updated_config = true;
               config_set(PERSIST_NUMBERS, (int)t->value->int32);     
       break;
       case CELCIUS:
+              updated_config = true;
               config_set(PERSIST_CELCIUS, (int)t->value->int32);     
       break;
       case POLLTIME:
+              updated_config = true;
               config_set(PERSIST_POLLTIME, (int)t->value->int32);     
+      break;
+
+      case READY:
+        if (config_get(PERSIST_TEMPERATURE) || config_get(PERSIST_HUMIDITY) || config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
+             generic_weather_fetch(weather_callback);  
+           }
       break;
       
 
       default:
+      if (DEBUG)
         APP_LOG(APP_LOG_LEVEL_ERROR, "Key %d not recognized!", (int)t->key);
       break;
     }
@@ -1000,42 +986,39 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
     t = dict_read_next(iterator);
   }
 
-  if (config_get(PERSIST_CELCIUS)){
-    snprintf(temp_text, sizeof(temp_text), "%s", temperature_buffer);
-  }else{
-    snprintf(temp_text, sizeof(temp_text), "%s", temperature_bufferf);
-  }
-  snprintf(hum_text, sizeof(hum_text), "%s", humidity_buffer);
-  snprintf(sun_text, sizeof(sun_text), "%s %s", sunrise_buffer, sunset_buffer);
-  snprintf(cond_icon_text, sizeof(cond_icon_text), "%s", conditions_id_buffer);
 
+   if(updated_config){
+    if (DEBUG)
+      APP_LOG(APP_LOG_LEVEL_INFO,"Entra a updated config");
+     if (config_get(PERSIST_TEMPERATURE) || config_get(PERSIST_HUMIDITY) || config_get(PERSIST_SUNRISE) || config_get(PERSIST_SUNSET)){
+       generic_weather_fetch(weather_callback); 
+      if (DEBUG)
+        APP_LOG(APP_LOG_LEVEL_INFO,"Entra a update weather");
+     }
+     review_layers();
+   }
+ 
 }
 
-static void inbox_dropped_callback(AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Message dropped!");
-}
-
-static void outbox_failed_callback(DictionaryIterator *iterator, AppMessageResult reason, void *context) {
-  APP_LOG(APP_LOG_LEVEL_ERROR, "Outbox send failed!");
-}
-
-static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Outbox send success!");
-}
 
 
 void comm_init() {
-  app_message_register_inbox_received(inbox_received_callback);
-  app_message_register_inbox_dropped(inbox_dropped_callback);
-  app_message_register_outbox_failed(outbox_failed_callback);
-  app_message_register_outbox_sent(outbox_sent_callback);
-
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
+  events_app_message_request_inbox_size(1024);
+  events_app_message_request_outbox_size(1024);
+  events_app_message_register_inbox_received(inbox_received_callback,NULL);
+  events_app_message_open();
+  
 
 }
 
 void main_init(){
   s_last_unit_weather_change = 0;
+  clear_weather_text();
+  generic_weather_init();
+  generic_weather_set_provider(weatherProvider);
+  generic_weather_set_api_key(weatherApi);
+  generic_weather_set_feels_like(false);
+
    
 
 }

@@ -1,0 +1,158 @@
+[
+  { 
+    "type": "heading", 
+    "defaultValue": "Analogy" 
+  }, 
+  { 
+    "type": "text", 
+    "defaultValue": "Analogy Configuration Page, here you can change options for the watchface." 
+  },
+  {
+  "type": "section",
+  "items": [
+    {
+      "type": "heading",
+      "defaultValue": "Date options"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "KEY_DATE",
+      "label": "Enable date"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "KEY_DAY",
+      "label": "Enable day of week"
+    }
+  ]
+  },
+  {
+  "type": "section",
+  "items": [
+    {
+      "type": "heading",
+      "defaultValue": "Icon options"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "KEY_BT",
+      "label": "Enable bluetooth icon"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "KEY_BATTERY",
+      "label": "Enable battery icon"
+    }
+  ]
+  },
+  {
+  "type": "section",
+  "items": [
+    {
+      "type": "heading",
+      "defaultValue": "Watch options"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "KEY_SECOND_HAND",
+      "label": "Enable seconds"
+    }
+    ]
+  },
+  {
+  "type": "section",
+  "items": [
+  {
+      "type": "heading",
+      "defaultValue": "Temperature options"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "TEMPERATURE",
+      "label": "Enable temperature"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "CELCIUS",
+      "label": "Use Celcius"
+    },
+    {
+      "type": "select",
+      "messageKey": "weatherProvider",
+      "defaultValue": "0",
+      "label": "Weather provider",
+       "options": [
+        { 
+          "label": "Open Weather Map", 
+          "value": "0" 
+        },
+        { 
+          "label": "Weather Underground",
+          "value": "1" 
+        },
+        { 
+          "label": "Forecast IO",
+          "value": "2" 
+        },
+        { 
+          "label": "Yahoo Weather",
+          "value": "3" 
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "messageKey": "POLLTIME",
+      "defaultValue": "0",
+      "label": "Weather update interval",
+      "options": [
+        { 
+          "label": "15 Min.", 
+          "value": "15" 
+        },
+        { 
+          "label": "30 Min.",
+          "value": "30" 
+        },
+        { 
+          "label": "60 Min.",
+          "value": "60" 
+        },
+        { 
+          "label": "90 Min.",
+          "value": "90" 
+        },
+        { 
+          "label": "120 Min.",
+          "value": "120" 
+        }
+      ]
+    },
+    {
+      "type": "input",
+      "messageKey": "weatherApi",
+      "label": "API Key"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "HUMIDITY",
+      "label": "Show location name"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "SUNRISE",
+      "label": "Show sunrise"
+    },
+    {
+      "type": "toggle",
+      "messageKey": "SUNSET",
+      "label": "Show sunset"
+    }
+  ]
+  },
+
+  {
+  "type": "submit",
+  "defaultValue": "Save"
+}
+]

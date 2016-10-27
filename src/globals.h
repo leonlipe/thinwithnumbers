@@ -43,6 +43,8 @@
 
 
 #define NUM_SETTINGS            24
+#define PERSIST_WEATHER_API 25
+#define PERSIST_SERVICE_PROVIDER 26
 
 #define PERSIST_WE_TEMP 1000
 #define PERSIST_WE_HUM 1001
@@ -59,3 +61,5 @@ typedef struct {
   int seconds;
 } Time;
 
+char weatherApi[50];
+int weatherProvider;
